@@ -9,9 +9,9 @@ namespace SocialNetwork.Domain.Interfaces
 {
     public interface IPostRepository
     {
-        public Post GetById(int id);
-        public Post Create(Post post);
-        public Post Update(Post post);
-        public void DeleteById(int id);
+        public Task<Post> GetById(int id);
+        public Task<Post> Create(Post post);
+        public Task<Post> Update(Post post);
+        public Task DeleteById(int id);
     }
 }
