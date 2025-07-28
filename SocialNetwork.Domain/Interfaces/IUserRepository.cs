@@ -9,9 +9,10 @@ namespace SocialNetwork.Domain.Interfaces
 {
     public interface IUserRepository
     {
-        public Task Add(User user);
-        public Task Update(User user);
-        public Task Delete(int id);
-        public Task<User> GetById(int id);
+        public Task CreateAsync(User user);
+        public Task UpdateAsync(User user);
+        public Task DeleteAsync(Guid id);
+        public Task<User?> GetById(Guid id);
+        public Task<IEnumerable<User>> GetAllAsync();
     }
 }
