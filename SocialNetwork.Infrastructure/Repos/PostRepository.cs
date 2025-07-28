@@ -1,0 +1,60 @@
+﻿using SocialNetwork.Domain.Entities;
+using SocialNetwork.Domain.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace SocialNetwork.Infrastructure.Repos
+{
+    public class PostRepository : IPostRepository
+    {
+        private SocialDbContext _context;
+
+        public PostRepository(SocialDbContext context) 
+        {
+            _context = context;
+        }
+
+        public async Task CreateAsync(Post post)
+        {
+            _context.Posts.Add(post);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task DeleteAsync(Guid id)
+        {
+            var post = await _context.Posts.FirstOrDefaultAsync(p => p.Id == id);
+
+            if (post == null) return;
+
+            _context.Posts.Remove(post);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<IEnumerable<Post>> GetAll()
+        {
+            return await _context.Posts
+                .AsNoTracking()
+                .ToListAsync();
+        }
+
+        public async Task<Post?> GetById(Guid id)
+        {
+            return await _context.Posts.FirstOrDefaultAsync(p => p.Id == id);
+        }
+
+        public async Task UpdateAsync(Post updatedPost)
+        {
+            var existingPost = await _context.Posts.FirstOrDefaultAsync(p => p.Id == updatedPost.Id);
+
+            if (existingPost == null) return;
+
+            existingPost.Text = updatedPost.Text;
+            existingPost.UpdatedAt = DateTime.UtcNow;
+            await _context.SaveChangesAsync();
+        }
+    }
+}

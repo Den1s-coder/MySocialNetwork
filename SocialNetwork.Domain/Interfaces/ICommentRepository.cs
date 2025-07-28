@@ -9,9 +9,10 @@ namespace SocialNetwork.Domain.Interfaces
 {
     public interface ICommentRepository
     {
-        public Comment GetById(int id);
-        public List<Comment> GetAll();
-        public Comment Update(Comment comment);
-        public void Delete(int id);
+        public Task CreateAsync(Comment comment);
+        public Task<Comment?> GetById(Guid id);
+        public Task<IEnumerable<Comment>> GetAll();
+        public Task UpdateAsync(Comment comment);
+        public Task DeleteAsync(Guid id);
     }
 }

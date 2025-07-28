@@ -8,9 +8,9 @@ namespace SocialNetwork.Domain.Entities
 {
     public class User : BaseEntity
     {
-        public string Name { get; private set; }
-        public string Email { get; private set; }
-        public string PasswordHash { get; private set; }
+        public string Name { get; set; }
+        public string Email { get; set; }
+        public string PasswordHash { get; set; }
         public List<Post> UserPosts { get; set; }
 
         private User( string name, string email, string password) 
