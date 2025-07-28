@@ -18,7 +18,7 @@ namespace SocialNetwork.Infrastructure.Repos
             _context = context;
         }
 
-        public async Task Delete(Guid id)
+        public async Task DeleteAsync(Guid id)
         {
             var comment = await _context.Comments.FirstOrDefaultAsync(c => c.Id == id);
 
@@ -40,7 +40,7 @@ namespace SocialNetwork.Infrastructure.Repos
             return await _context.Comments.FirstOrDefaultAsync(c => c.Id == id);
         }
 
-        public async Task Update(Comment updatedComment)
+        public async Task UpdateAsync(Comment updatedComment)
         {
             var existingComment = await _context.Comments.FirstOrDefaultAsync(c => c.Id == updatedComment.Id);
 
@@ -49,6 +49,12 @@ namespace SocialNetwork.Infrastructure.Repos
             existingComment.Text = updatedComment.Text;
             existingComment.UpdatedAt = DateTime.UtcNow;
 
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task CreateAsync(Comment comment)
+        {
+            _context.Comments.Add(comment);
             await _context.SaveChangesAsync();
         }
     }
