@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SocialNetwork.Infrastructure.Repos
 {
-    public class PostRepository : IPostRepository
+    public class PostRepository : IGenerycRepository<Post>
     {
         private SocialDbContext _context;
 
@@ -34,14 +34,14 @@ namespace SocialNetwork.Infrastructure.Repos
             await _context.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<Post>> GetAll()
+        public async Task<IEnumerable<Post>> GetAllAsync()
         {
             return await _context.Posts
                 .AsNoTracking()
                 .ToListAsync();
         }
 
-        public async Task<Post?> GetById(Guid id)
+        public async Task<Post?> GetByIdAsync(Guid id)
         {
             return await _context.Posts.FirstOrDefaultAsync(p => p.Id == id);
         }

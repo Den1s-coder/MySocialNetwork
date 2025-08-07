@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace SocialNetwork_Server.Controllers
+namespace SocialNetwork.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]

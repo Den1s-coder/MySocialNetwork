@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SocialNetwork.Infrastructure.Repos
 {
-    public class UserRepository : IUserRepository
+    public class UserRepository : IGenerycRepository<User>
     {
         private SocialDbContext _context;
 
@@ -40,7 +40,7 @@ namespace SocialNetwork.Infrastructure.Repos
             return await _context.Users.AsNoTracking().ToListAsync();
         }
 
-        public Task<User?> GetById(Guid id)
+        public Task<User?> GetByIdAsync(Guid id)
         {
             return _context.Users.FirstOrDefaultAsync(u => u.Id == id);
         }

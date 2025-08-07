@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 
 namespace SocialNetwork.Domain.Interfaces
 {
-    public interface IUserRepository
+    public interface IGenerycRepository<T> where T : class
     {
-        public Task CreateAsync(User user);
-        public Task UpdateAsync(User user);
+        public Task<IEnumerable<T>> GetAllAsync();
+        public Task<T?> GetByIdAsync(Guid id);
+        public Task CreateAsync(T T);
+        public Task UpdateAsync(T T);
         public Task DeleteAsync(Guid id);
-        public Task<User?> GetById(Guid id);
-        public Task<IEnumerable<User>> GetAllAsync();
     }
 }

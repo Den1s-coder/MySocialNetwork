@@ -1,4 +1,4 @@
-namespace SocialNetwork_Server
+namespace SocialNetwork.API
 {
     public class WeatherForecast
     {

@@ -13,17 +13,18 @@ namespace SocialNetwork.Domain.Entities
         public string PasswordHash { get; set; }
         public List<Post> UserPosts { get; set; }
 
-        private User( string name, string email, string password) 
+        private User( string name, string email, string passwordHash) 
         {
+            Id = Guid.NewGuid();
             Name = name;
             Email = email;
-            PasswordHash = password;
+            PasswordHash = passwordHash;
             UserPosts = new List<Post>();
         }
 
-        public User CreateUser(string Name, string Email, string Password) 
+        public User CreateUser(string Name, string Email, string PasswordHash) 
         {
-            return new User( Name, Email, Password);
+            return new User( Name, Email, PasswordHash);
         }
     }
 }
