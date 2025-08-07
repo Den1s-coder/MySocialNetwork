@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SocialNetwork.Infrastructure.Repos
 {
-    public class UserRepository : IUserRepository
+    public class UserRepository : IGenerycRepository<User>
     {
         private SocialDbContext _context;
 

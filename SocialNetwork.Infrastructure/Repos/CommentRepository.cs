@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SocialNetwork.Infrastructure.Repos
 {
-    internal class CommentRepository : ICommentRepository
+    internal class CommentRepository : IGenerycRepository<Comment>
     {
         private SocialDbContext _context { get; set; }
 
@@ -28,14 +28,14 @@ namespace SocialNetwork.Infrastructure.Repos
             await _context.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<Comment>> GetAll()
+        public async Task<IEnumerable<Comment>> GetAllAsync()
         {
             return await _context.Comments
                 .AsNoTracking()
                 .ToListAsync();
         }
 
-        public async Task<Comment?> GetById(Guid id)
+        public async Task<Comment?> GetByIdAsync(Guid id)
         {
             return await _context.Comments.FirstOrDefaultAsync(c => c.Id == id);
         }
