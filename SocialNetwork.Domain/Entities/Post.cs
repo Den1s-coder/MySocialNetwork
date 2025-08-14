@@ -16,16 +16,12 @@ namespace SocialNetwork.Domain.Entities
 
         public Post() { } //for EF migrations
 
-        public Post(string text, Guid userId, User user) 
+        public Post(string text, Guid userId) 
         { 
             Id = Guid.NewGuid();
             Text = text;
             UserId = userId;
-            User = user;
             Comments = new List<Comment>();
         }
-
-
-
     }
 }
