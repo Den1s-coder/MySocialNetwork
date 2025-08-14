@@ -1,4 +1,6 @@
-﻿using System;
+﻿using SocialNetwork.Application.DTO;
+using SocialNetwork.Domain.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,5 +10,12 @@ namespace SocialNetwork.Domain.Interfaces
 {
     public interface IPostService
     {
+        Task<IEnumerable<Post>> GetAllAsync();
+        Task<Post?> GetByIdAsync(Guid id);
+        Task CreateAsync(CreatePostDto postDto);
+        Task BanPost(Guid id);
+        Task<IEnumerable<Post>> GetPostsByUserIdAsync(Guid userId);
+        Task<IEnumerable<Post>> GetPostsByTagAsync(string tag);
+        Task<IEnumerable<Post>> GetPostsByDateRangeAsync(DateTime startDate, DateTime endDate);
     }
 }
