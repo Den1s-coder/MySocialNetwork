@@ -1,4 +1,6 @@
-﻿using System;
+﻿using SocialNetwork.Application.DTO;
+using SocialNetwork.Domain.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +10,11 @@ namespace SocialNetwork.Application.Interfaces
 {
     public interface IUserService
     {
-        Task<UserDto>
+        public Task<IEnumerable<User>> GetAllUserIdsAsync();
+        public Task<User?> GetByIdAsync(Guid id);
+        public Task CreateAsync(CreateUserDto userDto);
+        public Task BanUser(Guid id);
+        public Task<User?> GetUserByEmailAsync(string email);
+        public Task<User?> GetUserByNameAsync(string name);
     }
 }
