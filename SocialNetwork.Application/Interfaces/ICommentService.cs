@@ -1,7 +1,7 @@
 ﻿using SocialNetwork.Application.DTO;
 using SocialNetwork.Domain.Entities;
 
-namespace SocialNetwork.Domain.Interfaces
+namespace SocialNetwork.Application.Interfaces
 {
     public interface ICommentService
     {
