@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SocialNetwork.Domain.Interfaces
+namespace SocialNetwork.Application.Interfaces
 {
     public interface IPostService
     {
