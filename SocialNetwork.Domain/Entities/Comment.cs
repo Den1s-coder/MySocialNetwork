@@ -9,16 +9,16 @@ namespace SocialNetwork.Domain.Entities
     public class Comment : BaseEntity
     {
         public string Text { get; set; }
-        public User Author { get; set; }
+        public Guid AuthorId { get; set; }
         public bool IsBanned { get; set; } = false;
 
         public Comment() { } // for EF migrations
 
-        public Comment( string text, User user)
+        public Comment( string text, Guid user)
         {
             Id = Guid.NewGuid();
             Text = text;
-            Author = user;
+            AuthorId = user;
         }
     }
 }
