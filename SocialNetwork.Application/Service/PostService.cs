@@ -1,47 +1,68 @@
-﻿using SocialNetwork.Application.DTO;
+﻿using AutoMapper;
+using SocialNetwork.Application.DTO;
 using SocialNetwork.Application.Interfaces;
 using SocialNetwork.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using SocialNetwork.Domain.Interfaces;
+using SocialNetwork.Infrastructure.Repos;
 
 namespace SocialNetwork.Application.Service
 {
     public class PostService : IPostService
     {
-        public Task BanPost(Guid id)
+        private readonly IGenerycRepository<Post> _postRepository;
+        private readonly IMapper _mapper;
+        public PostService(IGenerycRepository<Post> postRepository, IMapper mapper) 
         {
-            throw new NotImplementedException();
+            _postRepository = postRepository;
+            _mapper = mapper;
+        }
+        public async Task BanPost(Guid id)
+        {
+            var post = await _postRepository.GetByIdAsync(id);
+            if(post == null)
+            {
+                throw new ArgumentException("Post not found");
+            }
+            post.IsBanned = true;
+            await _postRepository.UpdateAsync(post);
         }
 
-        public Task CreateAsync(CreatePostDto postDto)
+        public async Task CreateAsync(CreatePostDto postDto)
         {
-            throw new NotImplementedException();
+            if (postDto == null)
+                throw new ArgumentNullException("postDTO is null");
+
+            var post = _mapper.Map<Post>(postDto);
+
+            if (post == null)
+                throw new InvalidOperationException("Mapping failed");
+
+            await _postRepository.CreateAsync(post);
         }
 
-        public Task<IEnumerable<Post>> GetAllAsync()
+        public async Task<IEnumerable<Post>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            return await _postRepository.GetAllAsync();
         }
 
         public Task<Post?> GetByIdAsync(Guid id)
         {
-            throw new NotImplementedException();
+            return _postRepository.GetByIdAsync(id);
         }
 
-        public Task<IEnumerable<Post>> GetPostsByDateRangeAsync(DateTime startDate, DateTime endDate)
+        //TODO: Implement these methods
+
+        public Task<IEnumerable<Post>> GetPostsByDateRangeAsync(DateTime startDate, DateTime endDate)//TODO
         {
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<Post>> GetPostsByTagAsync(string tag)
+        public Task<IEnumerable<Post>> GetPostsByTagAsync(string tag)//TODO
         {
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<Post>> GetPostsByUserIdAsync(Guid userId)
+        public Task<IEnumerable<Post>> GetPostsByUserIdAsync(Guid userId) //TODO
         {
             throw new NotImplementedException();
         }
