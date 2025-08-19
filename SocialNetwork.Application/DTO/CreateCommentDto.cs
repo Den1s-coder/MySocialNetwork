@@ -9,7 +9,7 @@ namespace SocialNetwork.Application.DTO
 {
     public class CreateCommentDto
     {
-        public string Content { get; set; }
-        public User Author { get; set; }
+        public string Text { get; set; }
+        public Guid UserId { get; set; }
     }
 }
