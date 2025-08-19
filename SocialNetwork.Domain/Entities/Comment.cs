@@ -10,6 +10,7 @@ namespace SocialNetwork.Domain.Entities
     {
         public string Text { get; set; }
         public User Author { get; set; }
+        public bool IsBanned { get; set; } = false;
 
         public Comment() { } // for EF migrations
 
