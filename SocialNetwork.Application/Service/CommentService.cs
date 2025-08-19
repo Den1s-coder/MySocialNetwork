@@ -1,6 +1,9 @@
-﻿using SocialNetwork.Application.DTO;
-using SocialNetwork.Domain.Entities;
+﻿using AutoMapper;
+using SocialNetwork.Application.DTO;
 using SocialNetwork.Application.Interfaces;
+using SocialNetwork.Domain.Entities;
+using SocialNetwork.Domain.Interfaces;
+using SocialNetwork.Infrastructure.Repos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,24 +14,48 @@ namespace SocialNetwork.Application.Service
 {
     public class CommentService : ICommentService
     {
-        public Task BanComment(Guid id)
+
+        private readonly IGenerycRepository<Comment> _commentRepository;
+        private readonly IMapper _mapper;
+
+        public CommentService(IGenerycRepository<Comment> commentRepository, IMapper mapper)
         {
-            throw new NotImplementedException();
+            _commentRepository = commentRepository;
+            _mapper = mapper;
         }
 
-        public Task CreateAsync(CreateCommentDto commentDto)
+        public async Task BanComment(Guid id)
         {
-            throw new NotImplementedException();
+            var post = await _commentRepository.GetByIdAsync(id);
+            if (post == null)
+            {
+                throw new ArgumentException("Comment not found");
+            }
+            post.IsBanned = true;
+            await _commentRepository.UpdateAsync(post);
+        }
+
+        public async Task CreateAsync(CreateCommentDto commentDto)
+        {
+            if (commentDto == null)
+                throw new ArgumentNullException("commentDTO is null");
+
+            var comment = _mapper.Map<Comment>(commentDto);
+
+            if (comment == null)
+                throw new InvalidOperationException("Mapping failed");
+
+            await _commentRepository.CreateAsync(comment);
         }
 
         public Task<IEnumerable<Comment>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            return _commentRepository.GetAllAsync();
         }
 
         public Task<Comment?> GetByIdAsync(Guid id)
         {
-            throw new NotImplementedException();
+            return _commentRepository.GetByIdAsync(id);
         }
     }
 }
