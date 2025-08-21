@@ -1,44 +1,65 @@
-﻿using SocialNetwork.Application.DTO;
+﻿using AutoMapper;
+using SocialNetwork.Application.DTO;
 using SocialNetwork.Application.Interfaces;
 using SocialNetwork.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using SocialNetwork.Domain.Interfaces;
 
 namespace SocialNetwork.Application.Service
 {
     public class UserService : IUserService
     {
-        public Task BanUser(Guid id)
+
+        private readonly IUserRepository _userRepository;
+        private readonly IMapper _mapper;
+
+        public UserService(IUserRepository userRepository, IMapper mapper)
         {
-            throw new NotImplementedException();
+            _userRepository = userRepository;
+            _mapper = mapper;
         }
 
-        public Task CreateAsync(CreateUserDto userDto)
+        public async Task BanUser(Guid id)
         {
-            throw new NotImplementedException();
+            var user = await _userRepository.GetByIdAsync(id);
+            if (user == null)
+            {
+                throw new ArgumentException("User not found");
+            }
+            user.IsBanned = true;
+            await _userRepository.UpdateAsync(user);
         }
 
-        public Task<IEnumerable<User>> GetAllUserIdsAsync()
+        public async Task CreateAsync(CreateUserDto userDto)
         {
-            throw new NotImplementedException();
+            if (userDto == null)
+                throw new ArgumentNullException("userDTO is null");
+
+            var user = _mapper.Map<User>(userDto);
+
+            if (user == null)
+                throw new InvalidOperationException("Mapping failed");
+
+            await _userRepository.CreateAsync(user);
         }
 
-        public Task<User?> GetByIdAsync(Guid id)
+        public async Task<IEnumerable<User>> GetAllUsersAsync()
         {
-            throw new NotImplementedException();
+            return await _userRepository.GetAllAsync();
         }
 
-        public Task<User?> GetUserByEmailAsync(string email)
+        public async Task<User?> GetByIdAsync(Guid id)
         {
-            throw new NotImplementedException();
+            return await _userRepository.GetByIdAsync(id);
         }
 
-        public Task<User?> GetUserByNameAsync(string name)
+        public async Task<User?> GetUserByEmailAsync(string email)
         {
-            throw new NotImplementedException();
+            return await _userRepository.GetByEmailAsync(email);
+        }
+
+        public async Task<User?> GetUserByNameAsync(string name)
+        {
+            return await _userRepository.GetByUserNameAsync(name);
         }
     }
 }

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SocialNetwork.Infrastructure.Repos
 {
-    public class UserRepository : IGenerycRepository<User>
+    public class UserRepository : IUserRepository
     {
         private SocialDbContext _context;
 
@@ -40,9 +40,19 @@ namespace SocialNetwork.Infrastructure.Repos
             return await _context.Users.AsNoTracking().ToListAsync();
         }
 
+        public Task<User?> GetByEmailAsync(string email)
+        {
+            return _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+        }
+
         public Task<User?> GetByIdAsync(Guid id)
         {
             return _context.Users.FirstOrDefaultAsync(u => u.Id == id);
+        }
+
+        public Task<User?> GetByUserNameAsync(string UserName)
+        {
+            return _context.Users.FirstOrDefaultAsync(u => u.Name == UserName);
         }
 
         public async Task UpdateAsync(User updatedUser)
