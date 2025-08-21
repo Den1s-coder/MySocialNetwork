@@ -10,7 +10,7 @@ namespace SocialNetwork.Application.Interfaces
 {
     public interface IUserService
     {
-        public Task<IEnumerable<User>> GetAllUserIdsAsync();
+        public Task<IEnumerable<User>> GetAllUsersAsync();
         public Task<User?> GetByIdAsync(Guid id);
         public Task CreateAsync(CreateUserDto userDto);
         public Task BanUser(Guid id);
