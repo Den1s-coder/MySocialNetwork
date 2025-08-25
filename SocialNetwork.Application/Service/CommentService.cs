@@ -15,10 +15,10 @@ namespace SocialNetwork.Application.Service
     public class CommentService : ICommentService
     {
 
-        private readonly IGenerycRepository<Comment> _commentRepository;
+        private readonly ICommentRepository _commentRepository;
         private readonly IMapper _mapper;
 
-        public CommentService(IGenerycRepository<Comment> commentRepository, IMapper mapper)
+        public CommentService(ICommentRepository commentRepository, IMapper mapper)
         {
             _commentRepository = commentRepository;
             _mapper = mapper;
@@ -56,6 +56,14 @@ namespace SocialNetwork.Application.Service
         public Task<Comment?> GetByIdAsync(Guid id)
         {
             return _commentRepository.GetByIdAsync(id);
+        }
+
+        public async Task<IEnumerable<Comment>> GetPostCommentsAsync(Guid id)
+        {
+            if (id == Guid.Empty)
+                throw new ArgumentException("Invalid post ID");
+
+            return await _commentRepository.GetPostCommentsAsync(id);
         }
     }
 }
