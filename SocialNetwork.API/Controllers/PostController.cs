@@ -1,5 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using SocialNetwork.Application.DTO;
+using SocialNetwork.Application.Interfaces;
+using SocialNetwork.Application.Service;
 using SocialNetwork.Domain.Entities;
+using SocialNetwork.Domain.Interfaces;
 
 namespace SocialNetwork.API.Controllers
 {
@@ -7,31 +12,54 @@ namespace SocialNetwork.API.Controllers
     [ApiController]
     public class PostController : ControllerBase
     {
-        [HttpGet]
-        public Task<IActionResult> GetAllPosts()
+        private readonly IPostService _postService;
+
+        public PostController(IPostService postService)
         {
-            return ;
+            _postService = postService;
         }
 
-        [HttpGet("{id}")]
-        public Task<IActionResult> GetById(int id)
+        [HttpGet]
+        public async Task<IActionResult> GetAllPosts()
         {
-            return "value";
+            var posts = await _postService.GetAllAsync();
+
+            return Ok(posts);
+        }
+
+        [HttpGet("{postId:guid}")]
+        public async Task<IActionResult> GetById(Guid postId)
+        {
+            var post = await _postService.GetByIdAsync(postId);
+
+            return Ok(post);
         }
 
         [HttpPost]
-        public Task<IActionResult> Post([FromBody] string value)
+        public async Task<IActionResult> Create([FromBody] CreatePostDto createPostDto)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            await _postService.CreateAsync(createPostDto);
+
+            return Ok();
         }
 
         [HttpPut("{id}")]
-        public Task<IActionResult> Put(int id, [FromBody] string value)
+        public async Task<IActionResult> Update(int id, [FromBody] string value)//TODO: Realise Update post and aa DTO for Update
         {
+
+            return Ok();
         }
 
-        [HttpDelete("{id}")]
-        public Task<IActionResult> Delete(int id)
+        [Authorize(Roles = "Admin")]
+        [HttpDelete("{postId:guid}")]
+        public async Task<IActionResult> BanPost(Guid postId)
         {
+            await _postService.BanPost(postId);
+
+            return Ok();
         }
     }
 }
