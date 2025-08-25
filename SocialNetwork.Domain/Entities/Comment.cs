@@ -10,6 +10,7 @@ namespace SocialNetwork.Domain.Entities
     {
         public string Text { get; set; }
         public Guid AuthorId { get; set; }
+        public Guid PostId { get; set; }
         public bool IsBanned { get; set; } = false;
 
         public Comment() { } // for EF migrations

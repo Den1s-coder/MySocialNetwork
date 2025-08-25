@@ -13,6 +13,7 @@ namespace SocialNetwork.Application.Mappings
         {
             CreateMap<Domain.Entities.Comment, DTO.CreateCommentDto>()
                 .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.AuthorId))
+                .ForMember(dest => dest.PostId, opt => opt.MapFrom(src => src.PostId))
                 .ReverseMap();
         }
     }
