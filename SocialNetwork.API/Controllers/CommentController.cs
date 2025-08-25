@@ -1,4 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using SocialNetwork.Application.DTO;
+using SocialNetwork.Application.Interfaces;
+using SocialNetwork.Domain.Entities;
 
 namespace SocialNetwork.API.Controllers
 {
@@ -6,31 +10,40 @@ namespace SocialNetwork.API.Controllers
     [ApiController]
     public class CommentController : ControllerBase
     {
-        [HttpGet]
-        public Task<IActionResult> Get()
+        private readonly ICommentService _commentService;
+
+        public CommentController(ICommentService commentService)
         {
-            
+            _commentService = commentService;
         }
 
-        [HttpGet("{id}")]
-        public Task<IActionResult> Get(int id)
+        [HttpGet("{postId:guid}/comments")]
+        public async Task<IActionResult> Get(Guid postId)
         {
-            
+            IEnumerable<Comment> comments = await _commentService.GetPostCommentsAsync(postId);
+
+            return Ok(comments);
         }
 
-        [HttpPost]
-        public Task<IActionResult> Post([FromBody] string value)
+        [HttpPost("CreateComment")]
+        public async Task<IActionResult> Create([FromBody] CreateCommentDto createCommentDto)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            await _commentService.CreateAsync(createCommentDto);
+
+            return Ok();
         }
 
-        [HttpPut("{id}")]
-        public Task<IActionResult> Put(int id, [FromBody] string value)
-        {
-        }
 
-        [HttpDelete("{id}")]
-        public Task<IActionResult> Delete(int id)
+        [Authorize(Roles = "Admin")]
+        [HttpDelete("{commentId:guid}")]
+        public async Task<IActionResult> Ban(Guid commentId)
         {
+            await _commentService.BanComment(commentId);
+
+            return Ok();
         }
     }
 }
