@@ -13,10 +13,12 @@ namespace SocialNetwork.API.Controllers
     public class PostController : ControllerBase
     {
         private readonly IPostService _postService;
+        private readonly ILogger<PostController> _logger;
 
-        public PostController(IPostService postService)
+        public PostController(IPostService postService, ILogger<PostController> logger)
         {
             _postService = postService;
+            _logger = logger;
         }
 
         [HttpGet]
@@ -39,7 +41,10 @@ namespace SocialNetwork.API.Controllers
         public async Task<IActionResult> Create([FromBody] CreatePostDto createPostDto)
         {
             if (!ModelState.IsValid)
+            {
+                _logger.LogWarning("Invalid model state for CreatePostDto: {@ModelState}", ModelState);
                 return BadRequest(ModelState);
+            }
 
             await _postService.CreateAsync(createPostDto);
 

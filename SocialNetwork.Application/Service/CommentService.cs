@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.Extensions.Logging;
 using SocialNetwork.Application.DTO;
 using SocialNetwork.Application.Interfaces;
 using SocialNetwork.Domain.Entities;
@@ -17,11 +18,15 @@ namespace SocialNetwork.Application.Service
 
         private readonly ICommentRepository _commentRepository;
         private readonly IMapper _mapper;
+        private readonly ILogger<CommentService> _logger;
 
-        public CommentService(ICommentRepository commentRepository, IMapper mapper)
+        public CommentService(ICommentRepository commentRepository, 
+            IMapper mapper, 
+            ILogger<CommentService> logger)
         {
             _commentRepository = commentRepository;
             _mapper = mapper;
+            _logger = logger;
         }
 
         public async Task BanComment(Guid id)
@@ -46,6 +51,8 @@ namespace SocialNetwork.Application.Service
                 throw new InvalidOperationException("Mapping failed");
 
             await _commentRepository.CreateAsync(comment);
+
+            _logger.LogInformation("Comment created successfully. AuthorId: {UserId}", comment.AuthorId);
         }
 
         public Task<IEnumerable<Comment>> GetAllAsync()
