@@ -11,10 +11,12 @@ namespace SocialNetwork.API.Controllers
     public class CommentController : ControllerBase
     {
         private readonly ICommentService _commentService;
+        private readonly ILogger<CommentController> _logger;
 
-        public CommentController(ICommentService commentService)
+        public CommentController(ICommentService commentService, ILogger<CommentController> logger)
         {
             _commentService = commentService;
+            _logger = logger;
         }
 
         [HttpGet("{postId:guid}/comments")]
@@ -29,7 +31,10 @@ namespace SocialNetwork.API.Controllers
         public async Task<IActionResult> Create([FromBody] CreateCommentDto createCommentDto)
         {
             if (!ModelState.IsValid)
+            {
+                _logger.LogWarning("Invalid model state for CreatePostDto: {@ModelState}", ModelState);
                 return BadRequest(ModelState);
+            }
 
             await _commentService.CreateAsync(createCommentDto);
 

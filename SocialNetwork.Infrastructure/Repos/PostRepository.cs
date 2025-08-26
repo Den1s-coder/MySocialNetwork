@@ -50,7 +50,8 @@ namespace SocialNetwork.Infrastructure.Repos
         {
             var existingPost = await _context.Posts.FirstOrDefaultAsync(p => p.Id == updatedPost.Id);
 
-            if (existingPost == null) return;
+            if (existingPost == null) 
+                throw new ArgumentException("Post not found");
 
             existingPost.Text = updatedPost.Text;
             existingPost.UpdatedAt = DateTime.UtcNow;
