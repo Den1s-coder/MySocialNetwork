@@ -35,11 +35,11 @@ namespace SocialNetwork.API.Controllers
         {
             _logger.LogInformation("Login endpoint called");
 
-            await _authService.LoginAsync(loginDto);
+            var token = await _authService.LoginAsync(loginDto);
 
             _logger.LogInformation("User Succesfully login");
 
-            return Ok();
+            return Ok(token);
         }
     }
 }
