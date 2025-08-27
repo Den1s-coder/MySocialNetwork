@@ -8,9 +8,10 @@ namespace SocialNetwork.Application.Mappings
     {
         public UserProfile() 
         {
-            CreateMap<User, CreateUserDto>()
+            CreateMap<User, RegisterDto>()
                 .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.Name))
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
+                .ForMember(dest => dest.Password, opt => opt.MapFrom(src => src.PasswordHash))
                 .ReverseMap();
 
             CreateMap<User, UserDto>()
