@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using SocialNetwork.Application.DTO;
 using SocialNetwork.Application.Interfaces;
 using SocialNetwork.Domain.Entities;
@@ -27,19 +28,6 @@ namespace SocialNetwork.Application.Service
             }
             user.IsBanned = true;
             await _userRepository.UpdateAsync(user);
-        }
-
-        public async Task CreateAsync(CreateUserDto userDto)
-        {
-            if (userDto == null)
-                throw new ArgumentNullException("userDTO is null");
-
-            var user = _mapper.Map<User>(userDto);
-
-            if (user == null)
-                throw new InvalidOperationException("Mapping failed");
-
-            await _userRepository.CreateAsync(user);
         }
 
         public async Task<IEnumerable<User>> GetAllUsersAsync()
