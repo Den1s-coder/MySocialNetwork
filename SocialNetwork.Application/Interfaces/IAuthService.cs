@@ -10,6 +10,6 @@ namespace SocialNetwork.Application.Interfaces
     public interface IAuthService
     {
         public Task RegisterAsync(RegisterDto userDto);
-        public Task LoginAsync(LoginDto loginDto);
+        public Task<string> LoginAsync(LoginDto loginDto);
     }
 }
