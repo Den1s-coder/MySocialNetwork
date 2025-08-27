@@ -1,5 +1,4 @@
-﻿using SocialNetwork.Domain.Entities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -8,13 +7,11 @@ using System.Threading.Tasks;
 
 namespace SocialNetwork.Application.DTO
 {
-    public class CreateCommentDto
+    public class LoginDto
     {
-        [Required] 
-        public string Text { get; set; }
         [Required]
-        public Guid UserId { get; set; }
+        public string Username { get; set; }
         [Required]
-        public Guid PostId { get; set; }    
+        public string Password { get; set; }
     }
 }
