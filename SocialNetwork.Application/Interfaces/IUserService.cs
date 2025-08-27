@@ -12,7 +12,6 @@ namespace SocialNetwork.Application.Interfaces
     {
         public Task<IEnumerable<User>> GetAllUsersAsync();
         public Task<User?> GetByIdAsync(Guid id);
-        public Task CreateAsync(CreateUserDto userDto);
         public Task BanUser(Guid id);
         public Task<User?> GetUserByEmailAsync(string email);
         public Task<User?> GetUserByNameAsync(string name);

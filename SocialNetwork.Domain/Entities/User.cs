@@ -14,6 +14,9 @@ namespace SocialNetwork.Domain.Entities
         public List<Post> UserPosts { get; set; }
         public bool IsBanned { get; set; } = false;
 
+
+        public User() { } // for EF migrations
+
         private User( string name, string email, string passwordHash) 
         {
             Id = Guid.NewGuid();
