@@ -30,24 +30,32 @@ namespace SocialNetwork.Application.Service
             await _userRepository.UpdateAsync(user);
         }
 
-        public async Task<IEnumerable<User>> GetAllUsersAsync()
+        public async Task<IEnumerable<UserDto>> GetAllUsersAsync()
         {
-            return await _userRepository.GetAllAsync();
+            var users = await _userRepository.GetAllAsync();
+            
+            return _mapper.Map<IEnumerable<UserDto>>(users);
         }
 
-        public async Task<User?> GetByIdAsync(Guid id)
+        public async Task<UserDto> GetByIdAsync(Guid id)
         {
-            return await _userRepository.GetByIdAsync(id);
+            var user = await _userRepository.GetByIdAsync(id);
+
+            return _mapper.Map<UserDto?>(user);
         }
 
-        public async Task<User?> GetUserByEmailAsync(string email)
+        public async Task<UserDto> GetUserByEmailAsync(string email)
         {
-            return await _userRepository.GetByEmailAsync(email);
+            var user = await _userRepository.GetByEmailAsync(email);
+
+            return _mapper.Map<UserDto?>(user);
         }
 
-        public async Task<User?> GetUserByNameAsync(string name)
+        public async Task<UserDto> GetUserByNameAsync(string name)
         {
-            return await _userRepository.GetByUserNameAsync(name);
+            var user = await _userRepository.GetByUserNameAsync(name);
+
+            return _mapper.Map<UserDto?>(user);
         }
     }
 }
