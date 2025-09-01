@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SocialNetwork.Application.DTO;
 using SocialNetwork.Application.Interfaces;
 using SocialNetwork.Domain.Entities;
+using System.Security.Claims;
 
 namespace SocialNetwork.API.Controllers
 {
@@ -36,6 +37,10 @@ namespace SocialNetwork.API.Controllers
                 _logger.LogWarning("Invalid model state for CreatePostDto: {@ModelState}", ModelState);
                 return BadRequest(ModelState);
             }
+
+            var UserIdClaim = Guid.Parse(User.Claims.First(c => c.Type == ClaimTypes.Sid).Value);
+
+            createCommentDto.UserId = UserIdClaim;
 
             await _commentService.CreateAsync(createCommentDto);
 
