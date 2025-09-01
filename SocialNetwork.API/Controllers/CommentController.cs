@@ -27,6 +27,7 @@ namespace SocialNetwork.API.Controllers
             return Ok(comments);
         }
 
+        [Authorize]
         [HttpPost("CreateComment")]
         public async Task<IActionResult> Create([FromBody] CreateCommentDto createCommentDto)
         {
