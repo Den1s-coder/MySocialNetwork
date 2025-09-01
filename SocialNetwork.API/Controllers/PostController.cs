@@ -1,10 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using SocialNetwork.Application.DTO;
 using SocialNetwork.Application.Interfaces;
 using SocialNetwork.Application.Service;
 using SocialNetwork.Domain.Entities;
 using SocialNetwork.Domain.Interfaces;
+using System.Security.Claims;
 
 namespace SocialNetwork.API.Controllers
 {
@@ -37,6 +40,7 @@ namespace SocialNetwork.API.Controllers
             return Ok(post);
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreatePostDto createPostDto)
         {
@@ -46,11 +50,16 @@ namespace SocialNetwork.API.Controllers
                 return BadRequest(ModelState);
             }
 
+            var UserIdClaim = Guid.Parse(User.Claims.First(c => c.Type == ClaimTypes.Sid).Value);
+
+            createPostDto.UserId = UserIdClaim;
+
             await _postService.CreateAsync(createPostDto);
 
             return Ok();
         }
 
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] string value)//TODO: Realise Update post and aa DTO for Update
         {
