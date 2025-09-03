@@ -15,6 +15,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SocialNetwork.Application",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocialNetwork.API", "SocialNetwork.API\SocialNetwork.API.csproj", "{A55CE1C7-B234-4ABB-9FEE-0B0ED97960F9}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "backend", "backend", "{36D591C7-65C7-A0D1-1CBC-10CDE441BDC8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "frontend", "frontend", "{BCD6CD0E-C394-4D76-AB29-9AC012CAB650}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -40,6 +44,12 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{ED1CD0A3-F8ED-4D2A-B566-25DAB52B534D} = {36D591C7-65C7-A0D1-1CBC-10CDE441BDC8}
+		{D16C22B1-12F2-4542-97B6-C34119E0ECA9} = {36D591C7-65C7-A0D1-1CBC-10CDE441BDC8}
+		{2CCE4929-5790-4522-8A63-294915BD13AF} = {36D591C7-65C7-A0D1-1CBC-10CDE441BDC8}
+		{A55CE1C7-B234-4ABB-9FEE-0B0ED97960F9} = {36D591C7-65C7-A0D1-1CBC-10CDE441BDC8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7286080C-8324-4701-A333-9F30DF4DB7D1}
