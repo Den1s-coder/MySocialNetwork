@@ -15,21 +15,18 @@ namespace SocialNetwork.Domain.Entities
         public List<Comment> UserComments { get; set; }
         public bool IsBanned { get; set; } = false;
 
+        public List<UserChat>? UserChats { get; set; } = new List<UserChat>();
+        public List<Message>? Messages { get; set; } = new List<Message>();
 
         public User() { } // for EF migrations
 
-        private User( string name, string email, string passwordHash) 
+        public User( string name, string email, string passwordHash) 
         {
             Id = Guid.NewGuid();
             Name = name;
             Email = email;
             PasswordHash = passwordHash;
             UserPosts = new List<Post>();
-        }
-
-        public User CreateUser(string Name, string Email, string PasswordHash) 
-        {
-            return new User( Name, Email, PasswordHash);
         }
     }
 }
