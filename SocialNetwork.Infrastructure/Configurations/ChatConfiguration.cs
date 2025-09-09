@@ -22,6 +22,10 @@ namespace SocialNetwork.Infrastructure.Configurations
                 .HasMaxLength(100)
                 .IsRequired();
 
+            builder.Property(c => c.Type)
+                .HasConversion<int>()
+                .IsRequired();
+
             builder.Property(c => c.CreatedAt)
                 .IsRequired();
 
