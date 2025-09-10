@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SocialNetwork.Application.DTO
 {
-    public class CreateCommentDto
+    public record CreateCommentDto
     {
         [Required] 
         public string Text { get; set; }

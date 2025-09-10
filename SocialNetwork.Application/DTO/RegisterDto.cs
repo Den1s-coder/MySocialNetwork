@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SocialNetwork.Application.DTO
 {
-    public class RegisterDto
+    public record RegisterDto
     {
         [Required]
         public string UserName { get; set; }
