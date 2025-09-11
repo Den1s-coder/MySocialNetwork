@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using SocialNetwork.API.Extensions;
+using SocialNetwork.API.Hubs;
 using SocialNetwork.API.Middleware;
 using SocialNetwork.Application.Interfaces;
 using SocialNetwork.Application.Mappings;
@@ -15,6 +16,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
+builder.Services.AddSignalR();
 builder.Services.AddControllers();
 
 builder.Services.AddAutoMapper(typeof(CommentProfile), typeof(PostProfile), typeof(UserProfile));
@@ -37,33 +39,7 @@ builder.Services.AddDbContext<SocialDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(options =>
-{
-    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-    {
-        Name = "Authorization",
-        Description = "Enter 'Bearer' [space] and then your valid token in the text input below.",
-        In = ParameterLocation.Header,
-        Type = SecuritySchemeType.Http,
-        BearerFormat = "JWT",
-        Scheme = "Bearer"
-
-    });
-    options.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                }
-            },
-            new string[] {}
-        }
-    });
-});
+builder.Services.AddSwaggerAuth();
 
 var app = builder.Build();
 
@@ -82,5 +58,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHub<ChatHub>("/chatHub");
 
 app.Run();

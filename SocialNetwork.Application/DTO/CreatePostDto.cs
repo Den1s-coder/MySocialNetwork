@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SocialNetwork.Application.DTO
 {
-    public class CreatePostDto
+    public record CreatePostDto
     {
         [Required]
         public string Text { get; set; }

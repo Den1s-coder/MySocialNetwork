@@ -19,7 +19,6 @@ namespace SocialNetwork.Application.Service
             _chatRepository = chatRepository;
         }
 
-
         public async Task AddUserToChatAsync(Guid chatId, Guid userId)
         {
             var chat = await _chatRepository.GetByIdAsync(chatId);
