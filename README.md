@@ -1,3 +1,8 @@
+[![.NET](https://img.shields.io/badge/.NET-8.0-blue.svg)](https://dotnet.microsoft.com/download)
+[![Entity Framework Core](https://img.shields.io/badge/EF%20Core-9.0-green.svg)](https://docs.microsoft.com/en-us/ef/core/)
+[![SignalR](https://img.shields.io/badge/SignalR-Real--time-orange.svg)](https://docs.microsoft.com/en-us/aspnet/core/signalr/)
+
+
 # 🌐 Social Network Server
 
 Backend part of a social network built on .NET 8 using Clean Architecture principles.
