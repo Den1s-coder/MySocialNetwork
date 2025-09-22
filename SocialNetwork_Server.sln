@@ -3,25 +3,25 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35327.3
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SocialNetwork.Domain", "SocialNetwork.Domain\SocialNetwork.Domain.csproj", "{ED1CD0A3-F8ED-4D2A-B566-25DAB52B534D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SocialNetwork.Domain", "backend\SocialNetwork.Domain\SocialNetwork.Domain.csproj", "{ED1CD0A3-F8ED-4D2A-B566-25DAB52B534D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SocialNetwork.Infrastructure", "SocialNetwork.Infrastructure\SocialNetwork.Infrastructure.csproj", "{D16C22B1-12F2-4542-97B6-C34119E0ECA9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SocialNetwork.Infrastructure", "backend\SocialNetwork.Infrastructure\SocialNetwork.Infrastructure.csproj", "{D16C22B1-12F2-4542-97B6-C34119E0ECA9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SocialNetwork.Application", "SocialNetwork.Application\SocialNetwork.Application.csproj", "{2CCE4929-5790-4522-8A63-294915BD13AF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SocialNetwork.Application", "backend\SocialNetwork.Application\SocialNetwork.Application.csproj", "{2CCE4929-5790-4522-8A63-294915BD13AF}"
 	ProjectSection(ProjectDependencies) = postProject
 		{D16C22B1-12F2-4542-97B6-C34119E0ECA9} = {D16C22B1-12F2-4542-97B6-C34119E0ECA9}
 		{ED1CD0A3-F8ED-4D2A-B566-25DAB52B534D} = {ED1CD0A3-F8ED-4D2A-B566-25DAB52B534D}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocialNetwork.API", "SocialNetwork.API\SocialNetwork.API.csproj", "{A55CE1C7-B234-4ABB-9FEE-0B0ED97960F9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocialNetwork.API", "backend\SocialNetwork.API\SocialNetwork.API.csproj", "{A55CE1C7-B234-4ABB-9FEE-0B0ED97960F9}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "backend", "backend", "{36D591C7-65C7-A0D1-1CBC-10CDE441BDC8}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "frontend", "frontend", "{BCD6CD0E-C394-4D76-AB29-9AC012CAB650}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocialNetwork.Tests", "SocialNetwork.Tests\SocialNetwork.Tests.csproj", "{C8347D7A-BCAB-4A78-95F0-EC170F663A68}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocialNetwork.Tests", "backend\SocialNetwork.Tests\SocialNetwork.Tests.csproj", "{C8347D7A-BCAB-4A78-95F0-EC170F663A68}"
 EndProject
-Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "socialnetwork.client", "SocialNetwork.Client\socialnetwork.client.esproj", "{4DC804AE-3BB5-AE3D-34FA-F63086ECC03E}"
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "socialnetwork.client", "frontend\socialnetwork.client\socialnetwork.client.esproj", "{4DC804AE-3BB5-AE3D-34FA-F63086ECC03E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
