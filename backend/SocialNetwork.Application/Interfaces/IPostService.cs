@@ -10,12 +10,12 @@ namespace SocialNetwork.Application.Interfaces
 {
     public interface IPostService
     {
-        Task<IEnumerable<Post>> GetAllAsync();
-        Task<Post?> GetByIdAsync(Guid id);
+        Task<IEnumerable<PostDto>> GetAllAsync();
+        Task<PostDto?> GetByIdAsync(Guid id);
         Task CreateAsync(CreatePostDto postDto);
         Task BanPost(Guid id);
-        Task<IEnumerable<Post>> GetPostsByUserIdAsync(Guid userId);
-        Task<IEnumerable<Post>> GetPostsByTagAsync(string tag);
-        Task<IEnumerable<Post>> GetPostsByDateRangeAsync(DateTime startDate, DateTime endDate);
+        Task<IEnumerable<PostDto>> GetPostsByUserIdAsync(Guid userId);
+        Task<IEnumerable<PostDto>> GetPostsByTagAsync(string tag);
+        Task<IEnumerable<PostDto>> GetPostsByDateRangeAsync(DateTime startDate, DateTime endDate);
     }
 }

@@ -23,7 +23,7 @@ namespace SocialNetwork.API.Controllers
         [HttpGet("{postId:guid}/comments")]
         public async Task<IActionResult> Get(Guid postId)
         {
-            IEnumerable<Comment> comments = await _commentService.GetPostCommentsAsync(postId);
+            var comments = await _commentService.GetPostCommentsAsync(postId);
 
             return Ok(comments);
         }

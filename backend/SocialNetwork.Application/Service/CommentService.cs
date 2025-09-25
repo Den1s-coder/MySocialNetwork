@@ -55,22 +55,28 @@ namespace SocialNetwork.Application.Service
             _logger.LogInformation("Comment created successfully. AuthorId: {UserId}", comment.AuthorId);
         }
 
-        public Task<IEnumerable<Comment>> GetAllAsync()
+        public async Task<IEnumerable<CommentDto>> GetAllAsync()
         {
-            return _commentRepository.GetAllAsync();
+            var comments = await _commentRepository.GetAllAsync();
+
+            return _mapper.Map<IEnumerable<CommentDto>>(comments);
         }
 
-        public Task<Comment?> GetByIdAsync(Guid id)
+        public async Task<CommentDto?> GetByIdAsync(Guid id)
         {
-            return _commentRepository.GetByIdAsync(id);
+            var comment = await _commentRepository.GetByIdAsync(id);
+
+            return _mapper.Map<CommentDto?>(comment);
         }
 
-        public async Task<IEnumerable<Comment>> GetPostCommentsAsync(Guid id)
+        public async Task<IEnumerable<CommentDto>> GetPostCommentsAsync(Guid id)
         {
             if (id == Guid.Empty)
                 throw new ArgumentException("Invalid post ID");
 
-            return await _commentRepository.GetPostCommentsAsync(id);
+            var comments = await _commentRepository.GetPostCommentsAsync(id);
+
+            return _mapper.Map<IEnumerable<CommentDto>>(comments);
         }
     }
 }
