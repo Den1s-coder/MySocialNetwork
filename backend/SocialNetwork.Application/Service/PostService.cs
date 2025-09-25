@@ -37,12 +37,12 @@ namespace SocialNetwork.Application.Service
             await _postRepository.UpdateAsync(post);
         }
 
-        public async Task CreateAsync(CreatePostDto postDto)
+        public async Task CreateAsync(CreatePostDto createPostDto)
         {
-            if (postDto == null)
+            if (createPostDto == null)
                 throw new ArgumentNullException("postDTO is null");
 
-            var post = _mapper.Map<Post>(postDto);
+            var post = _mapper.Map<Post>(createPostDto);
 
             if (post == null)
                 throw new InvalidOperationException("Mapping failed");
@@ -54,29 +54,33 @@ namespace SocialNetwork.Application.Service
             _logger.LogInformation("Post created successfully. AuthorId: {UserId}", post.UserId);
         }
 
-        public async Task<IEnumerable<Post>> GetAllAsync()
+        public async Task<IEnumerable<PostDto>> GetAllAsync()
         {
-            return await _postRepository.GetAllAsync();
+            var posts = await _postRepository.GetAllAsync();
+
+            return _mapper.Map<IEnumerable<PostDto>>(posts);
         }
 
-        public Task<Post?> GetByIdAsync(Guid id)
+        public async Task<PostDto?> GetByIdAsync(Guid id)
         {
-            return _postRepository.GetByIdAsync(id);
+            var post = await _postRepository.GetByIdAsync(id);
+
+            return _mapper.Map<PostDto?>(post);
         }
 
         //TODO: Implement these methods
 
-        public Task<IEnumerable<Post>> GetPostsByDateRangeAsync(DateTime startDate, DateTime endDate)//TODO
+        public Task<IEnumerable<PostDto>> GetPostsByDateRangeAsync(DateTime startDate, DateTime endDate)//TODO
         {
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<Post>> GetPostsByTagAsync(string tag)//TODO
+        public Task<IEnumerable<PostDto>> GetPostsByTagAsync(string tag)//TODO
         {
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<Post>> GetPostsByUserIdAsync(Guid userId) //TODO
+        public Task<IEnumerable<PostDto>> GetPostsByUserIdAsync(Guid userId) //TODO
         {
             throw new NotImplementedException();
         }

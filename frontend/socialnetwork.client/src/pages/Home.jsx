@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-const API_BASE = 'http://localhost:5195';
+const API_BASE = 'https://localhost:7142';
 
 export default function Home() {
   const [posts, setPosts] = useState([]);
@@ -35,9 +35,9 @@ export default function Home() {
       <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
         {posts.map(p => (
           <li key={p.id} style={{ border: '1px solid #ddd', borderRadius: 8, padding: 12, marginBottom: 12 }}>
-            <div style={{ fontSize: 14, color: '#666' }}>{p.user?.userName || p.userId}</div>
+            <div style={{ fontSize: 14, color: '#666' }}>{p.userName}</div>
             <div style={{ fontSize: 16, marginTop: 6, whiteSpace: 'pre-wrap' }}>{p.text}</div>
-            {/* Якщо є дата створення в BaseEntity (наприклад, createdAt), можна показати тут */}
+            <div style={{ fontSize: 12, marginTop: 5 }}>{new Date(p.createdAt).toLocaleString()}</div>
           </li>
         ))}
       </ul>

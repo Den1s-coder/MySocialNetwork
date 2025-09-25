@@ -38,12 +38,17 @@ namespace SocialNetwork.Infrastructure.Repos
         {
             return await _context.Posts
                 .AsNoTracking()
+                .Include(p => p.Comments)
+                .Include(p => p.User)
                 .ToListAsync();
         }
 
         public async Task<Post?> GetByIdAsync(Guid id)
         {
-            return await _context.Posts.FirstOrDefaultAsync(p => p.Id == id);
+            return await _context.Posts
+                .Include(p => p.User)
+                .Include(p => p.Comments)
+                .FirstOrDefaultAsync(p => p.Id == id);
         }
 
         public async Task UpdateAsync(Post updatedPost)

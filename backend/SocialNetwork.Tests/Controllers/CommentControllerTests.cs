@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
 using SocialNetwork.API.Controllers;
+using SocialNetwork.Application.DTO;
 using SocialNetwork.Application.Interfaces;
 using SocialNetwork.Domain.Entities;
 
@@ -28,10 +29,10 @@ public class CommentControllerTests
         // Arrange
         var postId = Guid.NewGuid();
 
-        var expectedComments = new List<Comment>
+        var expectedComments = new List<CommentDto>
         {
-            new Comment { PostId = postId, AuthorId = Guid.NewGuid(), Text = "Test Comment 1" },
-            new Comment { PostId = postId, AuthorId = Guid.NewGuid(), Text = "Test Comment 2" }
+            new CommentDto { Id = postId, UserName = "Test name 1", Text = "Test Comment 1" },
+            new CommentDto { Id = postId, UserName = "Test name 2", Text = "Test Comment 2" }
         };
 
         _commentServiceMock.Setup(service => service
@@ -44,8 +45,13 @@ public class CommentControllerTests
         // Assert
 
         var okResult = Assert.IsType<OkObjectResult>(result);
-        var returnedComments = Assert.IsType<List<Comment>>(okResult.Value);
+        var returnedComments = Assert.IsType<List<CommentDto>>(okResult.Value);
         Assert.Equal(expectedComments.Count, returnedComments.Count);
+        for (int i = 0; i < expectedComments.Count; i++)
+        {
+            Assert.Equal(expectedComments[i].UserName, returnedComments[i].UserName);
+            Assert.Equal(expectedComments[i].Text, returnedComments[i].Text);
+        }
     }
 
 
