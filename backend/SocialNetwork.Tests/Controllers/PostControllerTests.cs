@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
 using SocialNetwork.API.Controllers;
+using SocialNetwork.Application.DTO;
 using SocialNetwork.Application.Interfaces;
 using SocialNetwork.Domain.Entities;
 
@@ -28,9 +29,9 @@ namespace SocialNetwork.Tests.Controllers
             var postId = Guid.NewGuid();
             var userId = Guid.NewGuid();
 
-            var expectedPost = new Post
+            var expectedPost = new PostDto
             {
-                Id = postId, UserId = userId, Text = "Test Post" , IsBanned = false, Comments = new List<Comment>()
+                Id = postId, UserName= "",Text = "Test Post" , IsBanned = false, Comments = new List<CommentDto>()
             };
 
             _postServiceMock.Setup(service => service
@@ -42,9 +43,9 @@ namespace SocialNetwork.Tests.Controllers
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnedPost = Assert.IsType<Post>(okResult.Value);
+            var returnedPost = Assert.IsType<PostDto>(okResult.Value);
             Assert.Equal(expectedPost.Id, returnedPost.Id);
-            Assert.Equal(expectedPost.UserId, returnedPost.UserId);
+            Assert.Equal(expectedPost.UserName, returnedPost.UserName);
         }
     }
 }
