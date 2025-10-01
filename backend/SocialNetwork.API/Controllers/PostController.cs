@@ -41,6 +41,16 @@ namespace SocialNetwork.API.Controllers
         }
 
         [Authorize]
+        [Route("profile")]
+        [HttpGet]
+        public async Task<IActionResult> GetMyPosts()
+        {
+            var UserIdClaim = Guid.Parse(User.Claims.First(c => c.Type == ClaimTypes.Sid).Value);
+            var posts = await _postService.GetPostsByUserIdAsync(UserIdClaim);
+            return Ok(posts);
+        }
+
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreatePostDto createPostDto)
         {

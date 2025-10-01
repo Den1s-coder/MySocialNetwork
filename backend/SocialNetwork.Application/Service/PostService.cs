@@ -10,12 +10,12 @@ namespace SocialNetwork.Application.Service
 {
     public class PostService : IPostService
     {
-        private readonly IGenerycRepository<Post> _postRepository;
+        private readonly IPostRepository _postRepository;
         private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
         private readonly ILogger<PostService> _logger;
 
-        public PostService(IGenerycRepository<Post> postRepository,
+        public PostService(IPostRepository postRepository,
             IUserRepository userRepository, 
             IMapper mapper,
             ILogger<PostService> logger) 
@@ -68,8 +68,6 @@ namespace SocialNetwork.Application.Service
             return _mapper.Map<PostDto?>(post);
         }
 
-        //TODO: Implement these methods
-
         public Task<IEnumerable<PostDto>> GetPostsByDateRangeAsync(DateTime startDate, DateTime endDate)//TODO
         {
             throw new NotImplementedException();
@@ -80,9 +78,11 @@ namespace SocialNetwork.Application.Service
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<PostDto>> GetPostsByUserIdAsync(Guid userId) //TODO
+        public async Task<IEnumerable<PostDto>> GetPostsByUserIdAsync(Guid userId) 
         {
-            throw new NotImplementedException();
+            var posts = await _postRepository.GetPostsByUserIdAsync(userId);
+
+            return _mapper.Map<IEnumerable<PostDto>>(posts);
         }
     }
 }
