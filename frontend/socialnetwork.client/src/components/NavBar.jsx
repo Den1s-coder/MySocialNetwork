@@ -44,7 +44,10 @@ export default function NavBar() {
                 </div>
                 <div style={{ display: 'flex', gap: 12 }}>
                     {authed ? (
-                        <button onClick={logout}>Вийти</button>
+                        <>
+                            <Link to="/profile">Профіль</Link>
+                            <button onClick={logout}>Вийти</button>
+                        </>
                     ) : (
                         <>
                             <Link to="/login">Увійти</Link>
