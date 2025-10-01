@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SocialNetwork.Infrastructure.Repos
 {
-    public class PostRepository : IGenerycRepository<Post>
+    public class PostRepository : IPostRepository
     {
         private SocialDbContext _context;
 
@@ -49,6 +49,26 @@ namespace SocialNetwork.Infrastructure.Repos
                 .Include(p => p.User)
                 .Include(p => p.Comments)
                 .FirstOrDefaultAsync(p => p.Id == id);
+        }
+
+        public Task<IEnumerable<Post>> GetPostsByDateRangeAsync(DateTime startDate, DateTime endDate) //TODO
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<Post>> GetPostsByTagAsync(string tag) //TODO
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<IEnumerable<Post>> GetPostsByUserIdAsync(Guid userId)
+        {
+            return await _context.Posts
+                .AsNoTracking()
+                .Where(p => p.UserId == userId)
+                .Include(p => p.Comments)
+                .Include(p => p.User)
+                .ToListAsync();
         }
 
         public async Task UpdateAsync(Post updatedPost)
