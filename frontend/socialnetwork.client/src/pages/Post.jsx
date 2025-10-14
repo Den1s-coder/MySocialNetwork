@@ -7,12 +7,12 @@ export default function Post() {
     const { id } = useParams();
     const [post, setPost] = useState(null);
     const [comments, setComments] = useState([]);
-    const [status, setStatus] = useState('loading'); // loading | ready | error
+    const [status, setStatus] = useState('loading'); 
     const [error, setError] = useState(null);
 
     const authed = useMemo(() => Boolean(localStorage.getItem('token')), []);
     const [commentText, setCommentText] = useState('');
-    const [sendStatus, setSendStatus] = useState('idle'); // idle | sending | error
+    const [sendStatus, setSendStatus] = useState('idle'); 
 
     useEffect(() => {
         let cancelled = false;
@@ -25,7 +25,6 @@ export default function Post() {
                 if (!resPost.ok) throw new Error(`HTTP ${resPost.status}`);
                 const postDto = await resPost.json();
 
-                // Якщо пост заблоковано, не тягнемо коментарі — просто покажемо банер.
                 if (postDto?.isBanned) {
                     if (!cancelled) {
                         setPost(postDto);
@@ -92,7 +91,6 @@ export default function Post() {
     if (status === 'error') return <div style={{ maxWidth: 700, margin: '24px auto', padding: '0 12px', color: 'crimson' }}>Помилка: {error}</div>;
     if (!post) return null;
 
-    // Якщо пост заблоковано — приховуємо контент і не показуємо коментарі/форму
     if (post.isBanned) {
         return (
             <div style={{ maxWidth: 700, margin: '24px auto', padding: '0 12px', display: 'grid', gap: 16 }}>
