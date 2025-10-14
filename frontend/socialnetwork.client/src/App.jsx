@@ -5,6 +5,7 @@ import Register from './pages/Register.jsx'
 import Profile from './pages/Profile.jsx'
 import NewPost from './pages/NewPost.jsx'
 import Post from './pages/Post.jsx'
+import Chat from './pages/Chat.jsx'
 import { BrowserRouter, Routes, Route, Link, Navigate } from 'react-router-dom';
 import NavBar from './components/NavBar.jsx';
 
@@ -22,6 +23,7 @@ function App() {
                     <Route path="/profile" element={<Profile />} />
                     <Route path="/post/new" element={<NewPost />} />
                     <Route path="/post/:id" element={<Post />} />
+                    <Route path="/chat/:chatId" element={<Chat />} />
                   </Routes>
               </div>
           </BrowserRouter>
