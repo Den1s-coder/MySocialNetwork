@@ -23,9 +23,18 @@ namespace SocialNetwork.Infrastructure.Repos
 
         public async Task CreateAsync(Message message)
         {
-            _context.Messages.Add(message);
-            await _context.SaveChangesAsync();
-            _logger.LogInformation("Message created with ID: " + message.Id);
+            try
+            {
+                _logger.LogInformation("MessageRepository.CreateAsync: Creating message {MessageId}", message.Id);
+                _context.Messages.Add(message);
+                await _context.SaveChangesAsync();
+                _logger.LogInformation("MessageRepository.CreateAsync: Message {MessageId} created successfully", message.Id);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "MessageRepository.CreateAsync: Error creating message {MessageId}", message.Id);
+                throw;
+            }
         }
 
         public async Task DeleteAsync(Guid id)
