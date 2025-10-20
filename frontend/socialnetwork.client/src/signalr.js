@@ -8,8 +8,9 @@ export function getChatConnection({ baseUrl, getToken }) {
 	connection = new signalR.HubConnectionBuilder()
 		.withUrl(`${baseUrl}/chatHub`, {
 			accessTokenFactory: () => getToken?.() ?? '',
-			skipNegotiation: false,
-			transport: signalR.HttpTransportType.WebSockets
+			skipNegotiation: true,
+			transport: signalR.HttpTransportType.WebSockets,
+			withCredentials: true
 		})
 		.withAutomaticReconnect({
 			nextRetryDelayInMilliseconds: ctx => {
