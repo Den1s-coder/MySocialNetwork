@@ -19,11 +19,17 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSignalR();
 builder.Services.AddControllers();
 
-builder.Services.AddAutoMapper(typeof(CommentProfile), typeof(PostProfile), typeof(UserProfile));
+builder.Services.AddAutoMapper(typeof(CommentProfile),
+    typeof(PostProfile),
+    typeof(UserProfile),
+    typeof(ChatProfile),
+    typeof(MessageProfile));
 
 builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 builder.Services.AddScoped<IPostRepository, PostRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IChatRepository, ChatRepository>();
+builder.Services.AddScoped<IMessageRepository, MessageRepository>();
 
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("JwtOptions"));
 builder.Services.AddScoped<IJwtProvider, JwtProvider>();
@@ -32,6 +38,8 @@ builder.Services.AddScoped<ICommentService, CommentService>();
 builder.Services.AddScoped<IPostService, PostService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IChatService, ChatService>();
+builder.Services.AddScoped<IMessageService, MessageService>();
 
 builder.Services.AddCors(options =>
 {
