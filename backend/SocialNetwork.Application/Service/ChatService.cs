@@ -1,4 +1,6 @@
-﻿using SocialNetwork.Application.Interfaces;
+﻿using AutoMapper;
+using SocialNetwork.Application.DTO;
+using SocialNetwork.Application.Interfaces;
 using SocialNetwork.Domain.Entities;
 using SocialNetwork.Domain.Enums;
 using SocialNetwork.Domain.Interfaces;
@@ -13,10 +15,12 @@ namespace SocialNetwork.Application.Service
     public class ChatService : IChatService
     {
         private readonly IChatRepository _chatRepository;
+        private readonly IMapper _mapper;
 
-        public ChatService(IChatRepository chatRepository)
+        public ChatService(IChatRepository chatRepository, IMapper mapper)
         {
             _chatRepository = chatRepository;
+            _mapper = mapper;
         }
 
         public async Task AddUserToChatAsync(Guid chatId, Guid userId)
@@ -59,7 +63,7 @@ namespace SocialNetwork.Application.Service
             userChat.Role = (ChatRole)newRole;
         }
 
-        public async Task<Chat> CreateChannelChatAsync(string title, Guid ownerId)
+        public async Task<ChatDto> CreateChannelChatAsync(string title, Guid ownerId)
         {
             var chat = new Chat
             {
@@ -81,10 +85,10 @@ namespace SocialNetwork.Application.Service
 
             await _chatRepository.CreateAsync(chat);
 
-            return chat;
+            return _mapper.Map<ChatDto>(chat);
         }
 
-        public async Task<Chat> CreateGroupChatAsync(string title, Guid ownerId)
+        public async Task<ChatDto> CreateGroupChatAsync(string title, Guid ownerId)
         {
             var chat = new Chat
             {
@@ -106,11 +110,15 @@ namespace SocialNetwork.Application.Service
 
             await _chatRepository.CreateAsync(chat);
 
-            return chat;
+            return _mapper.Map<ChatDto>(chat);
         }
 
-        public async Task<Chat> CreatePrivateChatAsync(Guid userId1, Guid userId2)
+        public async Task<ChatDto> CreatePrivateChatAsync(Guid userId1, Guid userId2)
         {
+            var existing = await _chatRepository.GetChatBetweenUsersAsync(userId1, userId2);
+            if (existing != null)
+                return _mapper.Map<ChatDto>(existing);
+
             var chat = new Chat
             {
                 Id = Guid.NewGuid(),
@@ -140,7 +148,7 @@ namespace SocialNetwork.Application.Service
 
             await _chatRepository.CreateAsync(chat);
 
-            return chat;
+            return _mapper.Map<ChatDto>(chat);
         }
 
         public async Task RemoveUserFromChatAsync(Guid chatId, Guid userId)
@@ -161,6 +169,12 @@ namespace SocialNetwork.Application.Service
             chat.UserChats.Remove(userChat);
 
             await _chatRepository.UpdateAsync(chat);
+        }
+
+        public async Task<IEnumerable<ChatDto>> GetChatsByUserIdAsync(Guid userId)
+        {
+            var chats = await _chatRepository.GetChatsByUserIdAsync(userId);
+            return _mapper.Map<IEnumerable<ChatDto>>(chats);
         }
     }
 }

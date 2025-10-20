@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SocialNetwork.Domain.Entities;
 
 namespace SocialNetwork.Application.Interfaces
 {
     public interface IMessageService
     {
-
+        public Task<IEnumerable<Message>> GetMessageByChatIdAsync(Guid chatid);
     }
 }
