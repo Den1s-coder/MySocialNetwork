@@ -1,20 +1,12 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useAuth } from '../hooks/useAuth';
 
 export default function NavBar() {
-    const [authed, setAuthed] = useState(false);
     const navigate = useNavigate();
+    const { isAuthenticated, logout } = useAuth();
 
-    useEffect(() => {
-        const sync = () => setAuthed(Boolean(localStorage.getItem('token')));
-        sync();
-        window.addEventListener('storage', sync);
-        return () => window.removeEventListener('storage', sync);
-    }, []);
-
-    const logout = () => {
-        localStorage.removeItem('token');
-        setAuthed(false);
+    const handleLogout = () => {
+        logout();
         navigate('/');
     };
 
@@ -40,13 +32,14 @@ export default function NavBar() {
             <nav style={barStyle}>
                 <div style={{ display: 'flex', gap: 12 }}>
                     <Link to="/">Головна</Link>
-                    {authed && <Link to="/post/new">Створити пост</Link>}
+                    {isAuthenticated && <Link to="/post/new">Створити пост</Link>}
+                    {isAuthenticated && <Link to="/chats">Чати</Link>}
                 </div>
                 <div style={{ display: 'flex', gap: 12 }}>
-                    {authed ? (
+                    {isAuthenticated ? (
                         <>
                             <Link to="/profile">Профіль</Link>
-                            <button onClick={logout}>Вийти</button>
+                            <button onClick={handleLogout}>Вийти</button>
                         </>
                     ) : (
                         <>
