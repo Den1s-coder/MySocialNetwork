@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SocialNetwork.Domain.Entities;
+using SocialNetwork.Domain.Enums;
 using SocialNetwork.Domain.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -57,6 +58,16 @@ namespace SocialNetwork.Infrastructure.Repos
                 .FirstOrDefaultAsync(c => c.Id == id);
         }
 
+        public async Task<Chat?> GetChatBetweenUsersAsync(Guid userId1, Guid userId2)
+        {
+            return await _context.Chats
+                .Include(c => c.UserChats)
+                .Where(c => c.Type == ChatType.Private)
+                .FirstOrDefaultAsync(c =>
+                    c.UserChats.Any(uc => uc.UserId == userId1) &&
+                    c.UserChats.Any(uc => uc.UserId == userId2));
+        }
+
         public async Task<IEnumerable<Chat>> GetChatsByUserIdAsync(Guid userId)
         {
             return await _context.Chats
@@ -72,6 +83,8 @@ namespace SocialNetwork.Infrastructure.Repos
                 .AsNoTracking()
                 .FirstOrDefaultAsync(c => c.Id == chatId);
         }
+
+
 
         public async Task UpdateAsync(Chat chat)
         {

@@ -1,4 +1,5 @@
-﻿using SocialNetwork.Domain.Entities;
+﻿using SocialNetwork.Application.DTO;
+using SocialNetwork.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,11 +10,12 @@ namespace SocialNetwork.Application.Interfaces
 {
     public interface IChatService
     {
-        public Task<Chat> CreatePrivateChatAsync(Guid userId1, Guid userId2);
-        public Task<Chat> CreateGroupChatAsync(string title, Guid ownerId);
-        public Task<Chat> CreateChannelChatAsync(string title, Guid ownerId);
+        public Task<ChatDto> CreatePrivateChatAsync(Guid userId1, Guid userId2);
+        public Task<ChatDto> CreateGroupChatAsync(string title, Guid ownerId);
+        public Task<ChatDto> CreateChannelChatAsync(string title, Guid ownerId);
         public Task AddUserToChatAsync(Guid chatId, Guid userId);
         public Task RemoveUserFromChatAsync(Guid chatId, Guid userId);
         public Task ChangeUserRoleInChatAsync(Guid chatId, Guid userId, int newRole);
+        public Task<IEnumerable<ChatDto>> GetChatsByUserIdAsync(Guid userId);
     }
 }

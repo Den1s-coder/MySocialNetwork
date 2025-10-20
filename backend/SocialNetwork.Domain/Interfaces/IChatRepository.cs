@@ -11,5 +11,6 @@ namespace SocialNetwork.Domain.Interfaces
     {
         public Task<IEnumerable<Chat>> GetChatsByUserIdAsync(Guid userId);
         public Task<Chat?> GetChatWithMessagesAsync(Guid chatId);
+        public Task<Chat?> GetChatBetweenUsersAsync(Guid userId1, Guid userId2);
     }
 }
