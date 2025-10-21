@@ -9,12 +9,9 @@ const API_BASE = 'https://localhost:7142';
 export default function Chat() {
     const { chatId } = useParams();
     const navigate = useNavigate();
-    const { token, isAuthenticated } = useAuth();
+    const { token, isAuthenticated, currentUserId, currentUserName } = useAuth();
     const [messages, setMessages] = useState([]);
     const [loading, setLoading] = useState(true);
-
-    console.log('Chat component - chatId from useParams:', chatId);
-    console.log('Chat component - chatId type:', typeof chatId);
 
     if (!chatId) {
         return <div>Chat ID not found in URL</div>;
@@ -43,7 +40,9 @@ export default function Chat() {
                 });
                 if (!res.ok) throw new Error(`HTTP ${res.status}`);
                 const data = await res.json();
-                setMessages(data);
+
+                const sortedMessages = data.sort((a, b) => new Date(a.sentAt) - new Date(b.sentAt));
+                setMessages(sortedMessages);
                 setLoading(false);
             } catch (e) {
                 console.error('Помилка завантаження повідомлень:', e);
@@ -54,7 +53,10 @@ export default function Chat() {
     }, [chatId, token]);
 
     const onMessage = useCallback((msg) => {
-        setMessages(prev => [...prev, msg]);
+        setMessages(prev => {
+            const updatedMessages = [...prev, msg];
+            return updatedMessages.sort((a, b) => new Date(a.sentAt) - new Date(b.sentAt));
+        });
     }, []);
 
     const getToken = () => token;
@@ -88,16 +90,6 @@ export default function Chat() {
             </div>
 
             <div style={{
-                marginBottom: 16,
-                padding: 8,
-                background: connected ? '#d4edda' : '#f8d7da',
-                borderRadius: 4,
-                fontSize: 14
-            }}>
-                Статус: {connected ? 'Підключено' : 'Відключено'}
-            </div>
-
-            <div style={{
                 height: 400,
                 border: '1px solid #ddd',
                 borderRadius: 8,
@@ -109,22 +101,41 @@ export default function Chat() {
                 {messages.length === 0 ? (
                     <p style={{ color: '#666', textAlign: 'center' }}>Повідомлень поки немає</p>
                 ) : (
-                    messages.map(m => (
-                        <div key={m.id ?? `${m.chatId}-${m.sentAt}-${m.senderId}`} style={{ marginBottom: 12 }}>
-                            <div style={{ fontSize: 12, color: '#666', marginBottom: 4 }}>
-                                {m.senderId} • {new Date(m.sentAt).toLocaleString()}
+                    messages.map(m => {
+                        const isCurrentUser = m.senderId === currentUserId;
+
+                        return (
+                            <div
+                                key={m.id ?? `${m.chatId}-${m.sentAt}-${m.senderId}`}
+                                style={{
+                                    marginBottom: 12,
+                                    display: 'flex',
+                                    justifyContent: isCurrentUser ? 'flex-end' : 'flex-start'
+                                }}
+                            >
+                                <div style={{ maxWidth: '70%' }}>
+                                    <div style={{
+                                        fontSize: 12,
+                                        color: '#666',
+                                        marginBottom: 4,
+                                        textAlign: isCurrentUser ? 'right' : 'left'
+                                    }}>
+                                        {isCurrentUser ? currentUserName : m.senderName || m.senderId} • {new Date(m.sentAt).toLocaleString()}
+                                    </div>
+                                    <div style={{
+                                        background: isCurrentUser ? '#007bff' : '#e9ecef',
+                                        color: isCurrentUser ? 'white' : 'black',
+                                        padding: 8,
+                                        borderRadius: 8,
+                                        display: 'inline-block',
+                                        wordWrap: 'break-word'
+                                    }}>
+                                        {m.content}
+                                    </div>
+                                </div>
                             </div>
-                            <div style={{
-                                background: '#e9ecef',
-                                padding: 8,
-                                borderRadius: 8,
-                                display: 'inline-block',
-                                maxWidth: '70%'
-                            }}>
-                                {m.content}
-                            </div>
-                        </div>
-                    ))
+                        );
+                    })
                 )}
             </div>
 
