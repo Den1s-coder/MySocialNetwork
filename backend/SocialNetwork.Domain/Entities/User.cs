@@ -11,6 +11,7 @@ namespace SocialNetwork.Domain.Entities
         public string Name { get; set; }
         public string Email { get; set; }
         public string PasswordHash { get; set; }
+        public string? ProfilePictureUrl { get; set; }
         public List<Post> UserPosts { get; set; }
         public List<Comment> UserComments { get; set; }
         public bool IsBanned { get; set; } = false;
