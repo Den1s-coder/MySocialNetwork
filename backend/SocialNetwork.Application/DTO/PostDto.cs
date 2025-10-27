@@ -10,6 +10,7 @@ namespace SocialNetwork.Application.DTO
     {
         public Guid Id { get; set; }
         public string Text { get; set; }
+        public string? ImageUrl { get; set; }
         public string UserName { get; set; }
         public List<CommentDto> Comments { get; set; }
         public DateTime CreatedAt { get; set; }
