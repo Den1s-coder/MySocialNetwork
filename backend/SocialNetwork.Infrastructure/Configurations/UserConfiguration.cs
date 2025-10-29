@@ -32,6 +32,10 @@ namespace SocialNetwork.Infrastructure.Configurations
             builder.Property(u => u.PasswordHash)
                 .IsRequired();
 
+            builder.Property(u => u.ProfilePictureUrl)
+                .HasMaxLength(500)
+                .IsRequired(false);
+
             builder.Property(u => u.CreatedAt)
                 .IsRequired();
 
