@@ -18,6 +18,7 @@ namespace SocialNetwork.Infrastructure
         public DbSet<Message> Messages { get; set; }
         public DbSet<Chat> Chats { get; set; }
         public DbSet<UserChat> UserChats { get; set; }
+        public DbSet<Friendship> Friendships { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -27,6 +28,7 @@ namespace SocialNetwork.Infrastructure
             modelBuilder.ApplyConfiguration(new MessageConfiguration());
             modelBuilder.ApplyConfiguration(new ChatConfiguration());
             modelBuilder.ApplyConfiguration(new UserChatConfiguration());
+            modelBuilder.ApplyConfiguration(new FriendshipConfiguration());
         }
     }
 }

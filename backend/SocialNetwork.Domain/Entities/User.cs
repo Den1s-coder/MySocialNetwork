@@ -19,6 +19,9 @@ namespace SocialNetwork.Domain.Entities
         public List<UserChat>? UserChats { get; set; } = new List<UserChat>();
         public List<Message>? Messages { get; set; } = new List<Message>();
 
+        public List<Friendship>? RequestedFriendship { get; set; } = new List<Friendship>();
+        public List<Friendship>? ReceivedFriendship { get; set; } = new List<Friendship>();
+
         public User() { } // for EF migrations
 
         public User( string name, string email, string passwordHash) 
