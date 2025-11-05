@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SocialNetwork.Infrastructure;
 
@@ -11,9 +12,11 @@ using SocialNetwork.Infrastructure;
 namespace SocialNetwork.Infrastructure.Migrations
 {
     [DbContext(typeof(SocialDbContext))]
-    partial class SocialDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251105102733_FriendshipUpdate")]
+    partial class FriendshipUpdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -100,9 +103,19 @@ namespace SocialNetwork.Infrastructure.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("UserId1")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AddresseeId");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("UserId1");
 
                     b.HasIndex("RequesterId", "AddresseeId")
                         .IsUnique();
@@ -262,16 +275,24 @@ namespace SocialNetwork.Infrastructure.Migrations
             modelBuilder.Entity("SocialNetwork.Domain.Entities.Friendship", b =>
                 {
                     b.HasOne("SocialNetwork.Domain.Entities.User", "Addressee")
-                        .WithMany("ReceivedFriendship")
+                        .WithMany()
                         .HasForeignKey("AddresseeId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("SocialNetwork.Domain.Entities.User", "Requester")
-                        .WithMany("RequestedFriendship")
+                        .WithMany()
                         .HasForeignKey("RequesterId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
+
+                    b.HasOne("SocialNetwork.Domain.Entities.User", null)
+                        .WithMany("ReceivedFriendship")
+                        .HasForeignKey("UserId");
+
+                    b.HasOne("SocialNetwork.Domain.Entities.User", null)
+                        .WithMany("RequestedFriendship")
+                        .HasForeignKey("UserId1");
 
                     b.Navigation("Addressee");
 
