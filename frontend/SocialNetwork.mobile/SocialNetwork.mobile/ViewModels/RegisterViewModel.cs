@@ -1,4 +1,4 @@
-﻿using SocialNetwork.mobile.Views;
+using SocialNetwork.mobile.Views;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -6,9 +6,10 @@ using Xamarin.Forms;
 
 namespace SocialNetwork.mobile.ViewModels
 {
-    public class LoginViewModel : BaseViewModel
+    public class RegisterViewModel : BaseViewModel
     {
         private string username;
+        private string email;
         private string password;
 
         public string Username
@@ -17,26 +18,32 @@ namespace SocialNetwork.mobile.ViewModels
             set => SetProperty(ref username, value);
         }
 
+        public string Email
+        {
+            get => email;
+            set => SetProperty(ref email, value);
+        }
+
         public string Password
         {
             get => password;
             set => SetProperty(ref password, value);
         }
 
-        public Command LoginCommand { get; }
         public Command RegisterCommand { get; }
+        public Command CancelCommand { get; }
 
-        public LoginViewModel()
+        public RegisterViewModel()
         {
-            LoginCommand = new Command(OnLoginClicked);
             RegisterCommand = new Command(OnRegisterClicked);
+            CancelCommand = new Command(OnCancelClicked);
         }
 
-        private async void OnLoginClicked(object obj)
+        private async void OnRegisterClicked(object obj)
         {
-            if (string.IsNullOrWhiteSpace(Username) || string.IsNullOrWhiteSpace(Password))
+            if (string.IsNullOrWhiteSpace(Username) || string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(Password))
             {
-                await Application.Current.MainPage.DisplayAlert("Error", "Please enter username and password", "OK");
+                await Application.Current.MainPage.DisplayAlert("Error", "Please fill all fields", "OK");
                 return;
             }
 
@@ -49,20 +56,19 @@ namespace SocialNetwork.mobile.ViewModels
                     return;
                 }
 
-                await auth.LoginAsync(Username, Password);
-
+                await auth.RegisterAsync(Username, Email, Password);
+                await Application.Current.MainPage.DisplayAlert("Success", "Account created", "OK");
                 await Shell.Current.GoToAsync("//PostsPage");
             }
             catch (Exception ex)
             {
-                await Application.Current.MainPage.DisplayAlert("Login failed", ex.Message, "OK");
+                await Application.Current.MainPage.DisplayAlert("Registration failed", ex.Message, "OK");
             }
         }
 
-        private async void OnRegisterClicked(object obj)
+        private async void OnCancelClicked(object obj)
         {
-            // Navigate to register page
-            await Shell.Current.GoToAsync(nameof(RegisterPage));
+            await Shell.Current.GoToAsync("//LoginPage");
         }
     }
 }
