@@ -1,12 +1,10 @@
-﻿using SocialNetwork.mobile.ViewModels;
-using SocialNetwork.mobile.Views;
+﻿using SocialNetwork.mobile.Views;
 using System;
-using System.Collections.Generic;
 using Xamarin.Forms;
 
 namespace SocialNetwork.mobile
 {
-    public partial class AppShell : Xamarin.Forms.Shell
+    public partial class AppShell : Shell
     {
         public AppShell()
         {
