@@ -40,9 +40,23 @@ namespace SocialNetwork.mobile.ViewModels
                 return;
             }
 
-            // TODO: perform real authentication here (call API, validate token, store credentials)
-            // For now accept any non-empty credentials and navigate to main posts page
-            await Shell.Current.GoToAsync("//ItemsPage");
+            try
+            {
+                var auth = DependencyService.Get<Services.IAuthService>();
+                if (auth == null)
+                {
+                    await Application.Current.MainPage.DisplayAlert("Error", "Auth service not available", "OK");
+                    return;
+                }
+
+                await auth.LoginAsync(Username, Password);
+
+                await Shell.Current.GoToAsync("//PostsPage");
+            }
+            catch (Exception ex)
+            {
+                await Application.Current.MainPage.DisplayAlert("Login failed", ex.Message, "OK");
+            }
         }
 
         private async void OnRegisterClicked(object obj)

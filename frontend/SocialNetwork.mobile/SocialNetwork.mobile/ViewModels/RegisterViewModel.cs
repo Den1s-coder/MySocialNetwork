@@ -47,9 +47,23 @@ namespace SocialNetwork.mobile.ViewModels
                 return;
             }
 
-            // TODO: call registration API and handle errors. For now show success and navigate to main page.
-            await Application.Current.MainPage.DisplayAlert("Success", "Account created", "OK");
-            await Shell.Current.GoToAsync("//ItemsPage");
+            try
+            {
+                var auth = DependencyService.Get<Services.IAuthService>();
+                if (auth == null)
+                {
+                    await Application.Current.MainPage.DisplayAlert("Error", "Auth service not available", "OK");
+                    return;
+                }
+
+                await auth.RegisterAsync(Username, Email, Password);
+                await Application.Current.MainPage.DisplayAlert("Success", "Account created", "OK");
+                await Shell.Current.GoToAsync("//PostsPage");
+            }
+            catch (Exception ex)
+            {
+                await Application.Current.MainPage.DisplayAlert("Registration failed", ex.Message, "OK");
+            }
         }
 
         private async void OnCancelClicked(object obj)
