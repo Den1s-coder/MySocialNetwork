@@ -166,7 +166,6 @@ namespace SocialNetwork.mobile.Services
             }
         }
 
-        // Auth methods
         public async Task<string> LoginAsync(string username, string password)
         {
             var dto = new { Username = username, Password = password };
@@ -180,21 +179,18 @@ namespace SocialNetwork.mobile.Services
                 string token = null;
                 try
                 {
-                    // try deserialize plain string
                     token = JsonConvert.DeserializeObject<string>(respStr);
                 }
                 catch
                 {
                     try
                     {
-                        // try object with token property
                         var obj = JObject.Parse(respStr);
                         if (obj["token"] != null)
                             token = obj["token"].ToString();
                     }
                     catch
                     {
-                        // fallback to raw string without surrounding quotes
                         token = respStr?.Trim('"');
                     }
                 }

@@ -13,7 +13,6 @@ namespace SocialNetwork.mobile
         {
             InitializeComponent();
 
-            // Use ApiDataStore by default (backend-backed). Keep MockDataStore available if needed.
             DependencyService.Register<ApiDataStore>();
 
             MainPage = new AppShell();
