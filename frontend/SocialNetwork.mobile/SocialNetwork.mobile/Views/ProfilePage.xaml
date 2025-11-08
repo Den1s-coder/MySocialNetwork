@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:SocialNetwork.mobile.ViewModels"
+             xmlns:model="clr-namespace:SocialNetwork.mobile.Models"
+             x:Class="SocialNetwork.mobile.Views.ProfilePage"
+             Title="Profile">
+
+    <ContentPage.Content>
+        <StackLayout Padding="20" Spacing="12">
+            <!-- User info -->
+            <Image Source="{Binding AvatarUrl}" HeightRequest="120" WidthRequest="120" HorizontalOptions="Center" />
+            <Label Text="{Binding UserName}" FontSize="22" FontAttributes="Bold" HorizontalOptions="Center" />
+            <Label Text="{Binding Bio}" FontSize="14" HorizontalOptions="Center" />
+
+            <BoxView HeightRequest="1" Color="#EEE" Margin="0,8" />
+            <Label Text="My posts" FontAttributes="Bold" />
+
+            <!-- Posts list -->
+            <CollectionView ItemsSource="{Binding Posts}" SelectionMode="Single" SelectedItem="{Binding SelectedPost, Mode=TwoWay}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <StackLayout Padding="10">
+                            <Label Text="{Binding UserName}" FontAttributes="Bold" />
+                            <Label Text="{Binding Text}" />
+                            <Label Text="{Binding CreatedAt}" FontSize="12" TextColor="Gray" />
+                        </StackLayout>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>
