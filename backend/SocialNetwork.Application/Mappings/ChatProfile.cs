@@ -22,6 +22,7 @@ namespace SocialNetwork.Application.Mappings
                 .ForMember(dest => dest.JoinedAt, opt => opt.MapFrom(src => src.JoinedAt))
                 .ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.Role))
                 .ForMember(dest => dest.Rights, opt => opt.MapFrom(src => src.Rights))
+                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User != null ? src.User.Name : string.Empty))
                 .ReverseMap();
         }
     }

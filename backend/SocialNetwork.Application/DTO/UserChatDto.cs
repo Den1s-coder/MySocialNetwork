@@ -9,5 +9,6 @@ namespace SocialNetwork.Application.DTO
         public DateTime JoinedAt { get; set; }
         public ChatRole Role { get; set; }
         public ChatRights Rights { get; set; }
+        public string UserName { get; set; }
     }
 }

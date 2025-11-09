@@ -1,18 +1,18 @@
-﻿using SocialNetwork.mobile.Models;
+﻿using Newtonsoft.Json;
+using SocialNetwork.mobile.DTO;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using Xamarin.Essentials;
 using Xamarin.Forms;
-using SocialNetwork.mobile.DTO;
 
 namespace SocialNetwork.mobile.ViewModels
 {
-    public class ProfileViewModel : BaseViewModel
+    public class ProfileViewModel: BaseViewModel
     {
         private const string TokenKey = "auth_token";
         private readonly HttpClient _client;
@@ -143,3 +143,4 @@ namespace SocialNetwork.mobile.ViewModels
 
     }
 }
+

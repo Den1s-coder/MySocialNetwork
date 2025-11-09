@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:SocialNetwork.mobile.ViewModels"
+             xmlns:conv="clr-namespace:SocialNetwork.mobile.Converters"
+             x:Class="SocialNetwork.mobile.Views.ChatsPage"
+             Title="Chats">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <conv:InverseBooleanConverter x:Key="InverseBool" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <ContentPage.Content>
+        <StackLayout Padding="10">
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
+            <Label Text="{Binding ChatsCount, StringFormat='Chats: {0}'}" />
+            <Label Text="No chats" IsVisible="{Binding HasChats, Converter={StaticResource InverseBool}}" TextColor="Gray" />
+
+            <CollectionView ItemsSource="{Binding Chats}" SelectionMode="Single" SelectedItem="{Binding SelectedChat, Mode=TwoWay}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame Padding="8" Margin="0,0,0,8" HasShadow="False" BackgroundColor="White">
+                            <StackLayout>
+                                <Label Text="{Binding DisplayTitle}" FontAttributes="Bold" TextColor="Black" />
+                                <Label Text="{Binding Type}" FontSize="12" TextColor="DarkGray" />
+                            </StackLayout>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

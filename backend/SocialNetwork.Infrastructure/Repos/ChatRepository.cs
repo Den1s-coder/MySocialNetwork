@@ -62,6 +62,7 @@ namespace SocialNetwork.Infrastructure.Repos
         {
             return await _context.Chats
                 .Include(c => c.UserChats)
+                    .ThenInclude(uc => uc.User)
                 .Where(c => c.Type == ChatType.Private)
                 .FirstOrDefaultAsync(c =>
                     c.UserChats.Any(uc => uc.UserId == userId1) &&
@@ -71,6 +72,8 @@ namespace SocialNetwork.Infrastructure.Repos
         public async Task<IEnumerable<Chat>> GetChatsByUserIdAsync(Guid userId)
         {
             return await _context.Chats
+                .Include(c => c.UserChats)
+                    .ThenInclude(uc => uc.User)
                 .Where(c => c.UserChats.Any(p => p.UserId == userId))
                 .AsNoTracking()
                 .ToListAsync();
