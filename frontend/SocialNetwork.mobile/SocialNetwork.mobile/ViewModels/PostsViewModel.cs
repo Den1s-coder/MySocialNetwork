@@ -26,10 +26,8 @@ namespace SocialNetwork.mobile.ViewModels
 
         async Task ExecuteLoadPostsCommand()
         {
-            Debug.WriteLine("ExecuteLoadPostsCommand start");
             if (IsBusy)
             {
-                Debug.WriteLine("ExecuteLoadPostsCommand: IsBusy, returning");
                 return;
             }
 
@@ -39,9 +37,9 @@ namespace SocialNetwork.mobile.ViewModels
             {
                 Posts.Clear();
                 var api = DependencyService.Get<Services.ApiDataStore>();
-                Debug.WriteLine($"Api service resolved: {api != null}");
+
                 var posts = await api.GetPostsAsync();
-                Debug.WriteLine($"GetPostsAsync returned {posts?.ToString() ?? "null"}");
+ 
                 if (posts != null)
                 {
                     int count = 0;
@@ -50,7 +48,6 @@ namespace SocialNetwork.mobile.ViewModels
                         Posts.Add(post);
                         count++;
                     }
-                    Debug.WriteLine($"Added {count} posts to collection");
                 }
             }
             catch (Exception ex)

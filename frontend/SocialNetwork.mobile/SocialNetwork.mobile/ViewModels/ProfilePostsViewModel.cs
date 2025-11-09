@@ -9,7 +9,7 @@ using Xamarin.Forms;
 
 namespace SocialNetwork.mobile.ViewModels
 {
-    public class ProfilePostsViewModel: BaseViewModel
+    public class ProfilePostsViewModel : BaseViewModel
     {
         public ObservableCollection<Post> Posts { get; } = new ObservableCollection<Post>();
         public Command LoadMyPostsCommand { get; }

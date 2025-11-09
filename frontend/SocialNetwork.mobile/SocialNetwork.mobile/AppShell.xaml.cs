@@ -11,7 +11,6 @@ namespace SocialNetwork.mobile
         public AppShell()
         {
             InitializeComponent();
-
             Routing.RegisterRoute(nameof(RegisterPage), typeof(RegisterPage));
             Routing.RegisterRoute(nameof(PostsPage), typeof(PostsPage));
             Routing.RegisterRoute(nameof(PostDetailPage), typeof(PostDetailPage));
