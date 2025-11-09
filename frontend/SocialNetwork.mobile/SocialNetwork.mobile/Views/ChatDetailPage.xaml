@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="SocialNetwork.mobile.Views.ChatDetailPage"
+             Title="Chat">
+    <StackLayout Padding="10">
+        <CollectionView ItemsSource="{Binding Messages}" SelectionMode="None">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <StackLayout Padding="8">
+                        <Label Text="{Binding SenderName}" FontAttributes="Bold" />
+                        <Label Text="{Binding Content}" />
+                        <Label Text="{Binding SentAt}" FontSize="12" TextColor="Gray" />
+                    </StackLayout>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <StackLayout Orientation="Horizontal">
+            <Entry Text="{Binding NewMessage}" HorizontalOptions="FillAndExpand" />
+            <Button Text="Send" Command="{Binding SendCommand}" />
+        </StackLayout>
+    </StackLayout>
+</ContentPage>

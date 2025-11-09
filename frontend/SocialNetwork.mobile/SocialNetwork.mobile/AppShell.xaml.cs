@@ -15,6 +15,9 @@ namespace SocialNetwork.mobile
             Routing.RegisterRoute(nameof(RegisterPage), typeof(RegisterPage));
             Routing.RegisterRoute(nameof(PostsPage), typeof(PostsPage));
             Routing.RegisterRoute(nameof(PostDetailPage), typeof(PostDetailPage));
+            Routing.RegisterRoute(nameof(ProfilePage), typeof(ProfilePage));
+            Routing.RegisterRoute(nameof(ChatsPage), typeof(ChatsPage));
+            Routing.RegisterRoute(nameof(ChatDetailPage), typeof(ChatDetailPage));
         }
 
         private async void OnMenuItemClicked(object sender, EventArgs e)

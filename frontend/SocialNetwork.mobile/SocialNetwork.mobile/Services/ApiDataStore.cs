@@ -102,7 +102,7 @@ namespace SocialNetwork.mobile.Services
         public async Task<IEnumerable<Post>> GetPostsAsync(bool forceRefresh = false)
         {
             await SetAuthHeader();
-            var url = "/api/post"; 
+            var url = "/api/post";
             try
             {
                 var resp = await _client.GetAsync(url);
@@ -166,7 +166,6 @@ namespace SocialNetwork.mobile.Services
             }
         }
 
-        // Auth methods
         public async Task<string> LoginAsync(string username, string password)
         {
             var dto = new { Username = username, Password = password };
@@ -180,21 +179,18 @@ namespace SocialNetwork.mobile.Services
                 string token = null;
                 try
                 {
-                    // try deserialize plain string
                     token = JsonConvert.DeserializeObject<string>(respStr);
                 }
                 catch
                 {
                     try
                     {
-                        // try object with token property
                         var obj = JObject.Parse(respStr);
                         if (obj["token"] != null)
                             token = obj["token"].ToString();
                     }
                     catch
                     {
-                        // fallback to raw string without surrounding quotes
                         token = respStr?.Trim('"');
                     }
                 }
@@ -276,6 +272,44 @@ namespace SocialNetwork.mobile.Services
                 }).ToList() ?? new List<Comment>()
             };
             return post;
+        }
+
+        // Get posts of current authenticated user
+        public async Task<IEnumerable<Post>> GetMyPostsAsync()
+        {
+            await SetAuthHeader();
+            var url = "/api/post/profile"; // controller route for user's posts
+            try
+            {
+                Debug.WriteLine($"GetMyPostsAsync calling {_client.BaseAddress}{url}");
+                var resp = await _client.GetAsync(url);
+                Debug.WriteLine($"GetMyPostsAsync response status: {resp.StatusCode}");
+                if (!resp.IsSuccessStatusCode)
+                {
+                    var body = await resp.Content.ReadAsStringAsync();
+                    Debug.WriteLine($"GetMyPostsAsync returned non-success: {resp.StatusCode}, body: {body}");
+                    return new List<Post>();
+                }
+
+                var json = await resp.Content.ReadAsStringAsync();
+                Debug.WriteLine($"GetMyPostsAsync response body length: {json?.Length}");
+                var posts = JsonConvert.DeserializeObject<List<PostDto>>(json);
+                var result = new List<Post>();
+                if (posts != null)
+                {
+                    foreach (var p in posts)
+                    {
+                        result.Add(MapPostDto(p));
+                    }
+                }
+                Debug.WriteLine($"GetMyPostsAsync parsed {result.Count} posts");
+                return result;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"GetMyPostsAsync failed: {ex}");
+                return new List<Post>();
+            }
         }
     }
 }
