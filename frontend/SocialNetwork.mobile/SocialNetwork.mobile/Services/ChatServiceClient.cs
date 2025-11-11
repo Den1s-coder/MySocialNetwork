@@ -54,7 +54,7 @@ namespace SocialNetwork.mobile.Services
                 }
 
                 var chats = JsonConvert.DeserializeObject<List<ChatDto>>(body);
-                // Try to build display title: if Title empty and UserChats available, use participant names except current user
+
                 var myUserIdStr = await SecureStorage.GetAsync("user_id");
                 Guid myUserId;
                 Guid.TryParse(myUserIdStr, out myUserId);
@@ -81,7 +81,6 @@ namespace SocialNetwork.mobile.Services
 
                         chat.ParticipantNames = names;
 
-                        // Determine whether chat is private. Accept "Private" or numeric 0 as private.
                         bool isPrivate = false;
                         if (!string.IsNullOrWhiteSpace(chat.Type))
                         {
@@ -89,15 +88,13 @@ namespace SocialNetwork.mobile.Services
                                 isPrivate = true;
                             else
                             {
-                                // try parse numeric
                                 if (int.TryParse(chat.Type, out var tval) && tval == 0)
                                     isPrivate = true;
                             }
                         }
 
                         if (isPrivate)
-                        {
-                            // For private chats prefer showing the other participant's name(s)
+                        {                            
                             var others = names.Where(n => n != myUserId.ToString()).ToList();
                             chat.DisplayTitle = others.Any() ? string.Join(", ", others) : (names.FirstOrDefault() ?? "Chat");
                         }

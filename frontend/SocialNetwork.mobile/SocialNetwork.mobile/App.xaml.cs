@@ -14,6 +14,8 @@ namespace SocialNetwork.mobile
             InitializeComponent();
 
             DependencyService.Register<ApiDataStore>();
+            DependencyService.Register<AuthService>();
+            DependencyService.Register<PostService>();
 
             MainPage = new AppShell();
         }

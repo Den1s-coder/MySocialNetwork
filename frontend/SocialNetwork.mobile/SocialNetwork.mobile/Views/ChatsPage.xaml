@@ -8,7 +8,6 @@
 
     <ContentPage.Resources>
         <ResourceDictionary>
-            <conv:InverseBooleanConverter x:Key="InverseBool" />
         </ResourceDictionary>
     </ContentPage.Resources>
 
