@@ -88,7 +88,6 @@ namespace SocialNetwork.mobile.ViewModels
                 if (ok)
                 {
                     NewCommentText = string.Empty;
-                    // reload comments
                     var post = await api.GetPostAsync(PostId);
                     Comments.Clear();
                     foreach (var c in post.Comments)

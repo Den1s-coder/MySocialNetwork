@@ -61,7 +61,6 @@ namespace SocialNetwork.mobile.ViewModels
 
         private async void OnRegisterClicked(object obj)
         {
-            // Navigate to register page
             await Shell.Current.GoToAsync(nameof(RegisterPage));
         }
     }

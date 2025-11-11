@@ -25,7 +25,6 @@ namespace SocialNetwork.mobile.Views
             base.OnAppearing();
             _viewModel.OnAppearing();
 
-            // Ensure posts are loaded when the page appears
             if (_viewModel.LoadPostsCommand?.CanExecute(null) ?? false)
             {
                 _viewModel.LoadPostsCommand.Execute(null);

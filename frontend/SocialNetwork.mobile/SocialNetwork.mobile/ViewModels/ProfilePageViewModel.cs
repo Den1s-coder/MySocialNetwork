@@ -10,7 +10,7 @@ using Xamarin.Forms;
 
 namespace SocialNetwork.mobile.ViewModels
 {
-    public class ProfilePageViewModel: BaseViewModel
+    public class ProfilePageViewModel : BaseViewModel
     {
         public ObservableCollection<Post> Posts { get; } = new ObservableCollection<Post>();
 
