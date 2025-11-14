@@ -5,7 +5,7 @@ const API_BASE = 'https://localhost:7142';
 
 export default function Profile() {
     const [posts, setPosts] = useState([]);
-    const [status, setStatus] = useState('idle'); // idle | loading | error
+    const [status, setStatus] = useState('idle'); 
     const [error, setError] = useState(null);
 
     useEffect(() => {

@@ -39,7 +39,6 @@ namespace SocialNetwork.mobile.ViewModels
         public ProfileViewModel()
         {
             Title = "Profile";
-            // DEV: reuse same base address as ApiDataStore; do not change without reason
             var handler = new HttpClientHandler();
             handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true;
             _client = new HttpClient(handler) { BaseAddress = new Uri("https://10.0.2.2:7142") };
@@ -59,6 +58,7 @@ namespace SocialNetwork.mobile.ViewModels
                 _client.DefaultRequestHeaders.Authorization = null;
         }
 
+        // Существующий метод, который показывает сообщения об ошибке (оставляем для ручного открытия страницы профиля)
         public async Task LoadProfileAsync()
         {
             if (IsBusy) return;
@@ -66,7 +66,6 @@ namespace SocialNetwork.mobile.ViewModels
             try
             {
                 await SetAuthHeaderAsync();
-                // TODO: если ваш бекенд использует другой маршрут -> измените URL
                 var resp = await _client.GetAsync("/api/user/profile");
                 if (!resp.IsSuccessStatusCode)
                 {
@@ -91,6 +90,43 @@ namespace SocialNetwork.mobile.ViewModels
             {
                 Debug.WriteLine($"LoadProfileAsync failed: {ex}");
                 await Application.Current.MainPage.DisplayAlert("Error", ex.Message, "OK");
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
+        // Новый метод: тихая загрузка профиля без DisplayAlert — возвращает true при успехе
+        public async Task<bool> TryLoadProfileAsync()
+        {
+            if (IsBusy) return false;
+            IsBusy = true;
+            try
+            {
+                await SetAuthHeaderAsync();
+                var resp = await _client.GetAsync("/api/user/profile");
+                if (!resp.IsSuccessStatusCode)
+                {
+                    Debug.WriteLine($"TryLoadProfileAsync non-success: {resp.StatusCode}");
+                    return false;
+                }
+
+                var json = await resp.Content.ReadAsStringAsync();
+                var dto = JsonConvert.DeserializeObject<UserProfileDto>(json);
+                if (dto == null) return false;
+
+                Id = dto.Id.ToString();
+                UserName = dto.UserName;
+                Email = dto.Email;
+                Bio = dto.Bio;
+                AvatarUrl = dto.AvatarUrl;
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"TryLoadProfileAsync failed: {ex}");
+                return false;
             }
             finally
             {

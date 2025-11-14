@@ -72,7 +72,6 @@ namespace SocialNetwork.mobile.ViewModels
 
                 if (chats != null)
                 {
-                    // Ensure UI updates happen on main thread
                     Device.BeginInvokeOnMainThread(() =>
                     {
                         foreach (var c in chats)
@@ -101,7 +100,6 @@ namespace SocialNetwork.mobile.ViewModels
 
             try
             {
-                // Navigate to ChatDetailPage with chat id using registered route name
                 await Shell.Current.GoToAsync($"{nameof(ChatDetailPage)}?ChatId={chat.Id}");
             }
             catch (Exception ex)

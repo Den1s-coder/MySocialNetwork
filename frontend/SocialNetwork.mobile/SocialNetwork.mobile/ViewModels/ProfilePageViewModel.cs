@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Forms;
@@ -54,37 +55,36 @@ namespace SocialNetwork.mobile.ViewModels
             try
             {
                 Posts.Clear();
-                var api = DependencyService.Get<Services.ApiDataStore>();
-                var posts = await api.GetMyPostsAsync();
-                if (posts != null)
-                {
-                    foreach (var p in posts)
-                        Posts.Add(p);
 
-                    // derive username and avatar from first post if available
-                    var first = posts.GetEnumerator();
-                    if (Posts.Count > 0)
-                    {
-                        UserName = Posts[0].UserName;
-                        // AvatarUrl and Bio are not provided by posts; leave them empty or load profile endpoint if available
-                    }
-                }
-
-                // If no posts or profile fields still empty, try to load profile details
-                if (string.IsNullOrWhiteSpace(UserName))
+                // 1) Попытаться тихо загрузить профиль — чтобы всегда иметь UserName, даже если постов нет
+                try
                 {
-                    try
+                    var profileVm = new ProfileViewModel();
+                    var profileOk = await profileVm.TryLoadProfileAsync();
+                    if (profileOk)
                     {
-                        var profileVm = new ProfileViewModel();
-                        await profileVm.LoadProfileAsync();
                         UserName = profileVm.UserName;
                         AvatarUrl = profileVm.AvatarUrl;
                         Bio = profileVm.Bio;
                     }
-                    catch (Exception ex)
-                    {
-                        Debug.WriteLine($"Profile fallback load failed: {ex}");
-                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"Profile quick load failed: {ex}");
+                }
+
+                // 2) Загрузить посты
+                var api = DependencyService.Get<Services.ApiDataStore>();
+                var posts = await api.GetMyPostsAsync() ?? Enumerable.Empty<Post>();
+
+                foreach (var p in posts)
+                    Posts.Add(p);
+
+                // 3) Если профиль не заполнился, взять имя из первого поста (если есть)
+                var firstPost = Posts.FirstOrDefault();
+                if (string.IsNullOrWhiteSpace(UserName) && firstPost != null)
+                {
+                    UserName = firstPost.UserName;
                 }
             }
             catch (Exception ex)
@@ -102,8 +102,10 @@ namespace SocialNetwork.mobile.ViewModels
             get => _selectedPost;
             set
             {
-                _selectedPost = value;
-                OnPostSelected(value);
+                if (SetProperty(ref _selectedPost, value) && value != null)
+                {
+                    OnPostSelected(value);
+                }
             }
         }
 
@@ -112,7 +114,7 @@ namespace SocialNetwork.mobile.ViewModels
             if (post == null) return;
 
             if (post.IsBanned)
-                return; // don't navigate to banned posts
+                return; 
 
             await Shell.Current.GoToAsync($"{nameof(PostDetailPage)}?{nameof(PostDetailViewModel.PostId)}={post.Id}");
         }
