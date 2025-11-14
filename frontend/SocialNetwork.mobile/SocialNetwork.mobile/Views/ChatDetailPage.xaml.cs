@@ -25,7 +25,6 @@ namespace SocialNetwork.mobile.Views
         protected override async void OnDisappearing()
         {
             base.OnDisappearing();
-            // TODO: stop connection
         }
     }
 }

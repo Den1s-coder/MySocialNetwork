@@ -42,7 +42,7 @@ namespace SocialNetwork.mobile.ViewModels
             try
             {
                 await _connection.StartAsync();
-                // join group
+
                 var userIdStr = await SecureStorage.GetAsync("user_id");
                 if (!string.IsNullOrWhiteSpace(userIdStr) && !string.IsNullOrWhiteSpace(ChatId))
                 {
