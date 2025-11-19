@@ -31,8 +31,6 @@ namespace SocialNetwork.API.Hubs
         {
             try
             {
-                _logger.LogInformation("JoinChat: User {UserId} trying to join chat {ChatId}", userId, chatId);
-
                 var userChat = await _context.UserChats
                     .FirstOrDefaultAsync(uc => uc.ChatId == chatId && uc.UserId == userId);
 
@@ -41,18 +39,15 @@ namespace SocialNetwork.API.Hubs
                     _logger.LogWarning("JoinChat: User {UserId} is not a member of chat {ChatId}", userId, chatId);
 
                     var chatExists = await _context.Chats.AnyAsync(c => c.Id == chatId);
-                    _logger.LogInformation("JoinChat: Chat {ChatId} exists: {Exists}", chatId, chatExists);
 
                     var userChats = await _context.UserChats
                         .Where(uc => uc.UserId == userId)
                         .Select(uc => uc.ChatId)
                         .ToListAsync();
-                    _logger.LogInformation("JoinChat: User {UserId} is member of chats: {ChatIds}", userId, string.Join(", ", userChats));
 
                     throw new HubException("User is not a member of this chat");
                 }
 
-                _logger.LogInformation("JoinChat: User {UserId} is member of chat {ChatId}, adding to group", userId, chatId);
                 await Groups.AddToGroupAsync(Context.ConnectionId, chatId.ToString());
                 _logger.LogInformation("JoinChat: User {UserId} successfully added to group {ChatId}", userId, chatId);
             }
@@ -75,7 +70,6 @@ namespace SocialNetwork.API.Hubs
 
                 if (userChat == null)
                 {
-                    _logger.LogWarning("SendMessage: User {UserId} not member of chat {ChatId}", userId, chatId);
                     throw new HubException("User not member of chat");
                 }
 
@@ -90,12 +84,9 @@ namespace SocialNetwork.API.Hubs
 
                 await _messageRepository.CreateAsync(message);
 
-                // Конвертувати в DTO перед відправкою
                 var messageDto = _mapper.Map<MessageDto>(message);
 
                 await Clients.Group(chatId.ToString()).SendAsync("ReceiveMessage", messageDto);
-
-                _logger.LogInformation("SendMessage: Message {MessageId} sent successfully", message.Id);
             }
             catch (Exception ex)
             {
