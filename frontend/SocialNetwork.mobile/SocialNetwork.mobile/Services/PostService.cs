@@ -144,9 +144,7 @@ namespace SocialNetwork.mobile.Services
             var url = "/api/post/profile";
             try
             {
-                Debug.WriteLine($"GetMyPostsAsync calling {_client.BaseAddress}{url}");
                 var resp = await _client.GetAsync(url);
-                Debug.WriteLine($"GetMyPostsAsync response status: {resp.StatusCode}");
                 if (!resp.IsSuccessStatusCode)
                 {
                     var body = await resp.Content.ReadAsStringAsync();
@@ -155,7 +153,6 @@ namespace SocialNetwork.mobile.Services
                 }
 
                 var json = await resp.Content.ReadAsStringAsync();
-                Debug.WriteLine($"GetMyPostsAsync response body length: {json?.Length}");
                 var posts = JsonConvert.DeserializeObject<List<PostDto>>(json);
                 var result = new List<Post>();
                 if (posts != null)
