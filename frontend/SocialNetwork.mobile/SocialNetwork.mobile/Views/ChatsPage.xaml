@@ -8,6 +8,7 @@
 
     <ContentPage.Resources>
         <ResourceDictionary>
+            <conv:InverseBoolConverter x:Key="InverseBool" />
         </ResourceDictionary>
     </ContentPage.Resources>
 
