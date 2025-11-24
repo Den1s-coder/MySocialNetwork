@@ -1,3 +1,4 @@
+using Azure.Storage.Blobs;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using SocialNetwork.API.Extensions;
@@ -11,6 +12,7 @@ using SocialNetwork.Domain.Interfaces;
 using SocialNetwork.Infrastructure;
 using SocialNetwork.Infrastructure.Repos;
 using SocialNetwork.Infrastructure.Security;
+using SocialNetwork.Infrastructure.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,6 +42,13 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IChatService, ChatService>();
 builder.Services.AddScoped<IMessageService, MessageService>();
+
+var storageConnection = builder.Configuration.GetValue<string>("AzureStorage:ConnectionString");
+var storageContainer = builder.Configuration.GetValue<string>("AzureStorage:ContainerName");
+
+builder.Services.AddSingleton(sp => new BlobServiceClient(storageConnection));
+builder.Services.AddScoped<ICloudStorageService>(sp =>
+    new AzureBlobStorageService(sp.GetRequiredService<BlobServiceClient>(), storageContainer));
 
 builder.Services.AddCors(options =>
 {
