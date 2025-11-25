@@ -11,10 +11,17 @@ namespace SocialNetwork.mobile.ViewModels
     public class PostsViewModel : BaseViewModel
     {
         private Post _selectedPost;
+        private string _newPostText;
 
         public ObservableCollection<Post> Posts { get; }
         public Command LoadPostsCommand { get; }
         public Command<Post> PostTapped { get; }
+        public Command CreatePostCommand { get; }
+
+        public string NewPostText { 
+            get => _newPostText; 
+            set => SetProperty(ref _newPostText, value); 
+        }
 
         public PostsViewModel()
         {
@@ -22,6 +29,7 @@ namespace SocialNetwork.mobile.ViewModels
             Posts = new ObservableCollection<Post>();
             LoadPostsCommand = new Command(async () => await ExecuteLoadPostsCommand());
             PostTapped = new Command<Post>(OnPostSelected);
+            CreatePostCommand = new Command(async () => await OnCreatePost());
         }
 
         async Task ExecuteLoadPostsCommand()
@@ -82,6 +90,36 @@ namespace SocialNetwork.mobile.ViewModels
                 return;
 
             await Shell.Current.GoToAsync($"{nameof(PostDetailPage)}?{nameof(PostDetailViewModel.PostId)}={post.Id}");
+        }
+
+        private async Task OnCreatePost()
+        {
+            if (string.IsNullOrWhiteSpace(NewPostText))
+            {
+                await Application.Current.MainPage.DisplayAlert("Error", "Post text cannot be empty.", "OK");
+                return;
+            }
+
+            try
+            {
+                var api = DependencyService.Get<Services.ApiDataStore>();
+                var item = new Item { Text = NewPostText };
+                var success = await api.AddItemAsync(item);
+                if (success)
+                {
+                    NewPostText = string.Empty;
+                    await ExecuteLoadPostsCommand();
+                }
+                else
+                {
+                    await Application.Current.MainPage.DisplayAlert("Error", "Failed to create post.", "OK");
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"OnCreatePost exception: {ex}");
+                await Application.Current.MainPage.DisplayAlert("Error", "An error occurred while creating the post.", "OK");
+            }
         }
     }
 }
