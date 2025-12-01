@@ -36,8 +36,6 @@ namespace SocialNetwork.API.Hubs
 
                 if (userChat == null)
                 {
-                    _logger.LogWarning("JoinChat: User {UserId} is not a member of chat {ChatId}", userId, chatId);
-
                     var chatExists = await _context.Chats.AnyAsync(c => c.Id == chatId);
 
                     var userChats = await _context.UserChats
@@ -63,7 +61,6 @@ namespace SocialNetwork.API.Hubs
             try
             {
                 var userId = Guid.Parse(Context.User.Claims.First(c => c.Type == ClaimTypes.Sid).Value);
-                _logger.LogInformation("SendMessage: User {UserId} sending to chat {ChatId}", userId, chatId);
 
                 var userChat = await _context.UserChats
                     .FirstOrDefaultAsync(uc => uc.ChatId == chatId && uc.UserId == userId);
