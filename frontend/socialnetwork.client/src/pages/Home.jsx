@@ -36,13 +36,14 @@ export default function Home() {
             <h2 className="title">Головна</h2>
             <ul className="post-list">
                 {posts.map(p => {
+                    const timeStr = new Date(p.createdAt).toLocaleString();
                     const CardInner = (
                         <>
                             <div className="post-card__meta">{p.userName}</div>
                             <div className="post-card__text">
                                 {p.isBanned ? '(Заблоковано адміністрацією)' : p.text}
                             </div>
-                            <div className="post-card__time">{new Date(p.createdAt).toLocaleString()}</div>
+                            <div className="post-card__time">{timeStr}</div>
                         </>
                     );
 

@@ -23,11 +23,19 @@
                 </CollectionView.EmptyView>
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <StackLayout Padding="10">
-                            <Label Text="{Binding UserName}" FontAttributes="Bold" />
-                            <Label Text="{Binding Text}" />
-                            <Label Text="{Binding CreatedAt}" FontSize="12" TextColor="Gray" />
-                        </StackLayout>
+                        <Frame Padding="10"
+                               Margin="6,4"
+                               HasShadow="False"
+                               CornerRadius="8"
+                               BackgroundColor="White"
+                               BorderColor="#DDDDDD"
+                               x:DataType="model:Post">
+                            <StackLayout >
+                                <Label Text="{Binding UserName}" FontAttributes="Bold" />
+                                <Label Text="{Binding Text}" />
+                                <Label Text="{Binding CreatedAt}" FontSize="12" TextColor="Gray" HorizontalOptions="End" />
+                            </StackLayout>
+                        </Frame>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
