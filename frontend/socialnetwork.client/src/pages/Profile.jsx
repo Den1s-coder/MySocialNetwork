@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import './Profile.css';
 
 const API_BASE = 'https://localhost:7142';
 
@@ -37,28 +38,29 @@ export default function Profile() {
     if (!posts.length) return <p>Пости відсутні.</p>;
 
     return (
-        <div style={{ maxWidth: 640, margin: '24px auto', padding: '0 12px' }}>
-            <h2>Профіль користувача</h2>
-            <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+        <div className="container">
+            <h2 className="title">Профіль користувача</h2>
+            <ul className="post-list">
                 {posts.map(p => {
+                    const timeStr = new Date(p.createdAt).toLocaleString();
                     const CardInner = (
                         <>
-                            <div style={{ fontSize: 14, color: '#666' }}>{p.userName}</div>
-                            <div style={{ fontSize: 16, marginTop: 6, whiteSpace: 'pre-wrap' }}>
+                            <div className="post-card__meta">{p.userName}</div>
+                            <div className="post-card__text">
                                 {p.isBanned ? '(Заблоковано адміністрацією)' : p.text}
                             </div>
-                            <div style={{ fontSize: 12, marginTop: 5 }}>{new Date(p.createdAt).toLocaleString()}</div>
+                            <div className="post-card__time">{timeStr}</div>
                         </>
                     );
 
                     return (
-                        <li key={p.id} style={{ border: '1px solid #ddd', borderRadius: 8, padding: 0, marginBottom: 12 }}>
+                        <li key={p.id} className="post-card">
                             {p.isBanned ? (
-                                <div style={{ display: 'block', padding: 12, color: '#666', textDecoration: 'none', cursor: 'default', opacity: 0.8 }}>
+                                <div className="post-card--banned">
                                     {CardInner}
                                 </div>
                             ) : (
-                                <Link to={`/post/${p.id}`} style={{ display: 'block', padding: 12, color: 'inherit', textDecoration: 'none' }}>
+                                <Link to={`/post/${p.id}`} className="post-card__link">
                                     {CardInner}
                                 </Link>
                             )}
