@@ -27,7 +27,7 @@ namespace SocialNetwork.API.Controllers
             var filename = $"{Guid.NewGuid()}{extension}";
 
             using var stream = file.OpenReadStream();
-            var fileUrl = await _storage.UploadFileAsync(stream, file.FileName, file.ContentType);
+            var fileUrl = await _storage.UploadFileAsync(stream, filename, file.ContentType);
             return Ok(new { filename, fileUrl });
         }
     }

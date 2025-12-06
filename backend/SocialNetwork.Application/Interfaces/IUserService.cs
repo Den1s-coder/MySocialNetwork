@@ -15,5 +15,6 @@ namespace SocialNetwork.Application.Interfaces
         public Task BanUser(Guid id);
         public Task<UserDto> GetUserByEmailAsync(string email);
         public Task<UserDto> GetUserByNameAsync(string name);
+        public Task UpdateProfileAsync(UserDto updatedUserDto);
     }
 }
