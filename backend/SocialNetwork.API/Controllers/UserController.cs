@@ -1,6 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
+using SocialNetwork.Application.DTO;
 using SocialNetwork.Application.Interfaces;
+using System.Security.Claims;
 
 namespace SocialNetwork.API.Controllers
 {
@@ -53,6 +57,39 @@ namespace SocialNetwork.API.Controllers
             if (userDto == null) return NotFound();
             
             return Ok(userDto);
+        }
+
+        [Authorize]
+        [HttpGet("profile")]
+        public async Task<IActionResult> GetProfile()
+        {
+            var sid = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Sid)?.Value;
+            if (string.IsNullOrEmpty(sid) || !Guid.TryParse(sid, out var userId))
+            {
+                _logger.LogWarning("GetProfile: missing or invalid Sid claim");
+                return Unauthorized();
+            }
+
+            var userDto = await _userService.GetByIdAsync(userId);
+            if (userDto == null)
+            {
+                _logger.LogWarning("GetProfile: user not found {UserId}", userId);
+                return NotFound();
+            }
+
+            return Ok(userDto);
+        }
+
+        [Authorize]
+        [HttpPut("profile")]
+        public async Task<IActionResult> UpdateProfile([FromBody] UserDto updatedUserDto)
+        {
+            var UserIdClaim = Guid.Parse(User.Claims.First(c => c.Type == ClaimTypes.Sid).Value);
+            
+            updatedUserDto.Id = UserIdClaim;
+
+            await _userService.UpdateProfileAsync(updatedUserDto);
+            return Ok();
         }
     }
 }
