@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SocialNetwork.mobile.DTO;
 using System;
 using System.Collections.Generic;
@@ -28,6 +29,7 @@ namespace SocialNetwork.mobile.ViewModels
         public Command SaveProfileCommand { get; }
         public Command EditCommand { get; }
         public Command LogoutCommand { get; }
+        public Command UploadAvatarCommand { get; }
 
         public string Id { get => id; set => SetProperty(ref id, value); }
         public string UserName { get => userName; set => SetProperty(ref userName, value); }
@@ -47,6 +49,7 @@ namespace SocialNetwork.mobile.ViewModels
             SaveProfileCommand = new Command(async () => await SaveProfileAsync());
             EditCommand = new Command(() => IsEditing = !IsEditing);
             LogoutCommand = new Command(async () => await LogoutAsync());
+            UploadAvatarCommand = new Command(async () => await UploadAvatarAsync());
         }
 
         private async Task SetAuthHeaderAsync()
@@ -58,7 +61,6 @@ namespace SocialNetwork.mobile.ViewModels
                 _client.DefaultRequestHeaders.Authorization = null;
         }
 
-        // Существующий метод, который показывает сообщения об ошибке (оставляем для ручного открытия страницы профиля)
         public async Task LoadProfileAsync()
         {
             if (IsBusy) return;
@@ -80,10 +82,10 @@ namespace SocialNetwork.mobile.ViewModels
                 if (dto != null)
                 {
                     Id = dto.Id.ToString();
-                    UserName = dto.UserName;
+                    UserName = dto.Name;
                     Email = dto.Email;
                     Bio = dto.Bio;
-                    AvatarUrl = dto.AvatarUrl;
+                    AvatarUrl = dto.ProfilePictureUrl;
                 }
             }
             catch (Exception ex)
@@ -97,7 +99,6 @@ namespace SocialNetwork.mobile.ViewModels
             }
         }
 
-        // Новый метод: тихая загрузка профиля без DisplayAlert — возвращает true при успехе
         public async Task<bool> TryLoadProfileAsync()
         {
             if (IsBusy) return false;
@@ -117,10 +118,10 @@ namespace SocialNetwork.mobile.ViewModels
                 if (dto == null) return false;
 
                 Id = dto.Id.ToString();
-                UserName = dto.UserName;
+                UserName = dto.Name;
                 Email = dto.Email;
                 Bio = dto.Bio;
-                AvatarUrl = dto.AvatarUrl;
+                AvatarUrl = dto.ProfilePictureUrl;
                 return true;
             }
             catch (Exception ex)
@@ -141,7 +142,7 @@ namespace SocialNetwork.mobile.ViewModels
             try
             {
                 await SetAuthHeaderAsync();
-                var dto = new { UserName = UserName, Email = Email, Bio = Bio, AvatarUrl = AvatarUrl };
+                var dto = new { Name = UserName, Email = Email, Bio = Bio, ProfilePictureUrl = AvatarUrl };
                 var json = JsonConvert.SerializeObject(dto);
 
                 var resp = await _client.PutAsync("/api/user/profile", new StringContent(json, Encoding.UTF8, "application/json"));
@@ -177,6 +178,48 @@ namespace SocialNetwork.mobile.ViewModels
             await Shell.Current.GoToAsync("//LoginPage");
         }
 
+        public async Task UploadAvatarAsync()
+        {
+            try
+            {
+                var result = await MediaPicker.PickPhotoAsync(new MediaPickerOptions { Title = "Select avatar" });
+                if (result == null) return;
+
+                using (var stream = await result.OpenReadAsync())
+                {
+                    var content = new MultipartFormDataContent();
+                    var streamContent = new StreamContent(stream);
+                    streamContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("image/jpeg");
+                    content.Add(streamContent, "file", result.FileName);
+
+                    await SetAuthHeaderAsync();
+                    var resp = await _client.PostAsync("/api/File/upload", content);
+                    if (!resp.IsSuccessStatusCode)
+                    {
+                        var err = await resp.Content.ReadAsStringAsync();
+                        Debug.WriteLine($"UploadAvatarAsync failed: {resp.StatusCode} body: {err}");
+                        await Application.Current.MainPage.DisplayAlert("Error", "Upload failed", "OK");
+                        return;
+                    }
+
+                    var json = await resp.Content.ReadAsStringAsync();
+
+                    var j = JObject.Parse(json);
+                    string fileUrl = j["fileUrl"]?.ToString();
+
+                    if (!string.IsNullOrWhiteSpace(fileUrl))
+                    {
+                        AvatarUrl = fileUrl;
+                        await SaveProfileAsync();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"UploadAvatarAsync exception: {ex}");
+                await Application.Current.MainPage.DisplayAlert("Error", ex.Message, "OK");
+            }
+        }
     }
 }
 

@@ -9,6 +9,7 @@
     <ContentPage.Content>
         <StackLayout Padding="20" Spacing="12">
             <Image Source="{Binding AvatarUrl}" HeightRequest="120" WidthRequest="120" HorizontalOptions="Center" />
+            <Button Text="Change avatar" Command="{Binding UploadAvatarCommand}" HorizontalOptions="Center" />            
             <Label Text="{Binding UserName}" FontSize="22" FontAttributes="Bold" HorizontalOptions="Center" />
             <Label Text="{Binding Bio}" FontSize="14" HorizontalOptions="Center" />
 
