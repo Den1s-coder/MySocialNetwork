@@ -48,7 +48,7 @@ var storageContainer = builder.Configuration.GetValue<string>("AzureStorage:Cont
 
 builder.Services.AddSingleton(sp => new BlobServiceClient(storageConnection));
 builder.Services.AddScoped<ICloudStorageService>(sp =>
-    new AzureBlobStorageService(sp.GetRequiredService<BlobServiceClient>(), storageContainer));
+    new AzureBlobStorageService(sp.GetRequiredService<BlobServiceClient>(), storageContainer, storageConnection));
 
 builder.Services.AddCors(options =>
 {
