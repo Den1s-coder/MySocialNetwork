@@ -1,12 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 using SocialNetwork.Application.DTO;
 using SocialNetwork.Application.Interfaces;
-using SocialNetwork.Application.Service;
-using SocialNetwork.Domain.Entities;
-using SocialNetwork.Domain.Interfaces;
 using System.Security.Claims;
 
 namespace SocialNetwork.API.Controllers
@@ -28,7 +23,6 @@ namespace SocialNetwork.API.Controllers
         public async Task<IActionResult> GetAllPosts()
         {
             var posts = await _postService.GetAllAsync();
-
             return Ok(posts);
         }
 
@@ -36,17 +30,25 @@ namespace SocialNetwork.API.Controllers
         public async Task<IActionResult> GetById(Guid postId)
         {
             var post = await _postService.GetByIdAsync(postId);
-
             return Ok(post);
         }
 
         [Authorize]
-        [Route("profile")]
-        [HttpGet]
+        [HttpGet("me")]
         public async Task<IActionResult> GetMyPosts()
         {
-            var UserIdClaim = Guid.Parse(User.Claims.First(c => c.Type == ClaimTypes.Sid).Value);
-            var posts = await _postService.GetPostsByUserIdAsync(UserIdClaim);
+            var sid = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Sid)?.Value;
+            if (!Guid.TryParse(sid, out var userId))
+                return Unauthorized();
+
+            var posts = await _postService.GetPostsByUserIdAsync(userId);
+            return Ok(posts);
+        }
+
+        [HttpGet("user/{userId:guid}")]
+        public async Task<IActionResult> GetPostsByUserId(Guid userId)
+        {
+            var posts = await _postService.GetPostsByUserIdAsync(userId);
             return Ok(posts);
         }
 
@@ -60,20 +62,12 @@ namespace SocialNetwork.API.Controllers
                 return BadRequest(ModelState);
             }
 
-            var UserIdClaim = Guid.Parse(User.Claims.First(c => c.Type == ClaimTypes.Sid).Value);
+            var sid = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Sid)?.Value;
+            if (!Guid.TryParse(sid, out var userId))
+                return Unauthorized();
 
-            createPostDto.UserId = UserIdClaim;
-
+            createPostDto.UserId = userId;
             await _postService.CreateAsync(createPostDto);
-
-            return Ok();
-        }
-
-        [Authorize]
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] string value)//TODO: Realise Update post and aa DTO for Update
-        {
-
             return Ok();
         }
 
@@ -82,7 +76,6 @@ namespace SocialNetwork.API.Controllers
         public async Task<IActionResult> BanPost(Guid postId)
         {
             await _postService.BanPost(postId);
-
             return Ok();
         }
     }

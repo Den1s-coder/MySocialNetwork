@@ -57,5 +57,20 @@ namespace SocialNetwork.Application.Service
 
             return _mapper.Map<UserDto?>(user);
         }
+
+        public async Task UpdateProfileAsync(UserDto updatedUserDto)
+        {
+            var existingUser = await _userRepository.GetByIdAsync(updatedUserDto.Id);
+
+            if (existingUser == null)
+            {
+                throw new ArgumentException("User not found");
+            }
+
+            existingUser.Name = updatedUserDto.Name;
+            existingUser.Email = updatedUserDto.Email;
+            existingUser.ProfilePictureUrl = updatedUserDto.ProfilePictureUrl;
+            await _userRepository.UpdateAsync(existingUser);
+        }
     }
 }
