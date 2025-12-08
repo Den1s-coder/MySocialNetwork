@@ -1,23 +1,59 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:selectors="clr-namespace:SocialNetwork.mobile.Selectors"
              x:Class="SocialNetwork.mobile.Views.ChatDetailPage"
              Title="Chat">
-    <StackLayout Padding="10">
-        <CollectionView ItemsSource="{Binding Messages}" SelectionMode="None">
-            <CollectionView.ItemTemplate>
-                <DataTemplate>
-                    <StackLayout Padding="8">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <DataTemplate x:Key="LeftTemplate">
+                <Grid Padding="6">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackLayout Grid.Column="0" Padding="2">
                         <Label Text="{Binding SenderName}" FontAttributes="Bold" />
-                        <Label Text="{Binding Content}" />
-                        <Label Text="{Binding SentAt}" FontSize="12" TextColor="Gray" />
+                        <Frame BackgroundColor="#e9ecef" CornerRadius="8" HasShadow="False" Padding="8">
+                            <Label Text="{Binding Content}" LineBreakMode="WordWrap" TextColor="Black" />
+                        </Frame>
+                        <Label Text="{Binding SentAt, StringFormat='{0:G}'}" FontSize="12" TextColor="Gray" />
                     </StackLayout>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
+                </Grid>
+            </DataTemplate>
 
-        <StackLayout Orientation="Horizontal">
-            <Entry Text="{Binding NewMessage}" HorizontalOptions="FillAndExpand" />
+            <DataTemplate x:Key="RightTemplate">
+                <Grid Padding="6">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackLayout Grid.Column="1" Padding="2" HorizontalOptions="End">
+                        <Label Text="{Binding SenderName}" FontAttributes="Bold" HorizontalTextAlignment="End" />
+                        <Frame BackgroundColor="#007bff" CornerRadius="8" HasShadow="False" Padding="8">
+                            <Label Text="{Binding Content}" LineBreakMode="WordWrap" TextColor="White" />
+                        </Frame>
+                        <Label Text="{Binding SentAt, StringFormat='{0:G}'}" FontSize="12" TextColor="Gray" HorizontalTextAlignment="End" />
+                    </StackLayout>
+                </Grid>
+            </DataTemplate>
+
+            <selectors:MessageTemplateSelector x:Key="MessageTemplateSelector"
+                                              LeftTemplate="{StaticResource LeftTemplate}"
+                                              RightTemplate="{StaticResource RightTemplate}" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <StackLayout Padding="10">
+        <ListView x:Name="MessagesView"
+                  ItemsSource="{Binding Messages}"
+                  ItemTemplateSelector="{StaticResource MessageTemplateSelector}"
+                  HasUnevenRows="True"
+                  SeparatorVisibility="None"
+                  CachingStrategy="RecycleElement" />
+
+        <StackLayout Orientation="Horizontal" Margin="0,8,0,0">
+            <Entry Text="{Binding NewMessage}" HorizontalOptions="FillAndExpand" Placeholder="Введіть повідомлення..." />
             <Button Text="Send" Command="{Binding SendCommand}" />
         </StackLayout>
     </StackLayout>
