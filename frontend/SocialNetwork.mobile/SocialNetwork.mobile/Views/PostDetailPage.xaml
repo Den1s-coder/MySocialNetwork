@@ -2,26 +2,43 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="SocialNetwork.mobile.Views.PostDetailPage"
+             x:Name="postDetailPage"
              Title="Post">
-    <StackLayout Padding="15" Spacing="10">
-        <Label Text="{Binding UserName}" FontAttributes="Bold" />
-        <Label Text="{Binding Text}" FontSize="16" />
-        <Label Text="Comments" FontAttributes="Bold" Margin="0,10,0,0" />
-        <CollectionView ItemsSource="{Binding Comments}" SelectionMode="None">
-            <CollectionView.ItemTemplate>
-                <DataTemplate>
-                    <StackLayout Padding="8">
-                        <Label Text="{Binding UserName}" FontAttributes="Bold" FontSize="12" />
-                        <Label Text="{Binding Text}" FontSize="14" />
-                        <Label Text="{Binding CreatedAt}" FontSize="10" TextColor="Gray" />
-                    </StackLayout>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
+	<StackLayout Padding="15" Spacing="10">
 
-        <StackLayout Orientation="Horizontal" Margin="0,10,0,0">
-            <Entry Placeholder="Write a comment..." Text="{Binding NewCommentText}" HorizontalOptions="FillAndExpand"/>
-            <Button Text="Add" Command="{Binding AddCommentCommand}" />
-        </StackLayout>
-    </StackLayout>
+		<Label Text="{Binding UserName}" FontAttributes="Bold" TextColor="Blue">
+			<Label.GestureRecognizers>
+				<TapGestureRecognizer
+                    Command="{Binding NavigateToProfileCommand}"
+                    CommandParameter="{Binding UserId}" />
+			</Label.GestureRecognizers>
+		</Label>
+
+		<Label Text="{Binding Text}" FontSize="16" />
+		<Label Text="Comments" FontAttributes="Bold" Margin="0,10,0,0" />
+
+		<CollectionView ItemsSource="{Binding Comments}" SelectionMode="None">
+			<CollectionView.ItemTemplate>
+				<DataTemplate>
+					<StackLayout Padding="8">
+						<Label Text="{Binding UserName}" FontAttributes="Bold" FontSize="12" TextColor="Blue">
+							<Label.GestureRecognizers>
+								<TapGestureRecognizer
+                                    Command="{Binding Source={x:Reference postDetailPage}, Path=BindingContext.NavigateToProfileCommand}"
+                                    CommandParameter="{Binding UserId}" />
+							</Label.GestureRecognizers>
+						</Label>
+
+						<Label Text="{Binding Text}" FontSize="14" />
+						<Label Text="{Binding CreatedAt}" FontSize="10" TextColor="Gray" />
+					</StackLayout>
+				</DataTemplate>
+			</CollectionView.ItemTemplate>
+		</CollectionView>
+
+		<StackLayout Orientation="Horizontal" Margin="0,10,0,0">
+			<Entry Placeholder="Write a comment..." Text="{Binding NewCommentText}" HorizontalOptions="FillAndExpand"/>
+			<Button Text="Add" Command="{Binding AddCommentCommand}" />
+		</StackLayout>
+	</StackLayout>
 </ContentPage>

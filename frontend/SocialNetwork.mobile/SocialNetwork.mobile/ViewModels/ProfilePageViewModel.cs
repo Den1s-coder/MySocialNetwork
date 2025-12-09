@@ -20,6 +20,8 @@ namespace SocialNetwork.mobile.ViewModels
         private string bio;
         private Post _selectedPost;
 
+        private readonly ProfileViewModel _profileVm;
+
         public string UserName
         {
             get => userName;
@@ -40,12 +42,32 @@ namespace SocialNetwork.mobile.ViewModels
 
         public Command LoadCommand { get; }
         public Command<Post> PostTapped { get; }
+        public Command UploadAvatarCommand { get; }
 
         public ProfilePageViewModel()
         {
             Title = "Profile";
+
+            _profileVm = new ProfileViewModel();
+
             LoadCommand = new Command(async () => await ExecuteLoadCommand());
             PostTapped = new Command<Post>(OnPostSelected);
+
+            UploadAvatarCommand = new Command(async () =>
+            {
+                try
+                {
+                    await _profileVm.UploadAvatarAsync();
+
+                    AvatarUrl = _profileVm.AvatarUrl;
+                    UserName = _profileVm.UserName;
+                    Bio = _profileVm.Bio;
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"UploadAvatarCommand failed: {ex}");
+                }
+            });
         }
 
         private async Task ExecuteLoadCommand()
@@ -56,16 +78,14 @@ namespace SocialNetwork.mobile.ViewModels
             {
                 Posts.Clear();
 
-                // 1) Попытаться тихо загрузить профиль — чтобы всегда иметь UserName, даже если постов нет
                 try
                 {
-                    var profileVm = new ProfileViewModel();
-                    var profileOk = await profileVm.TryLoadProfileAsync();
+                    var profileOk = await _profileVm.TryLoadProfileAsync();
                     if (profileOk)
                     {
-                        UserName = profileVm.UserName;
-                        AvatarUrl = profileVm.AvatarUrl;
-                        Bio = profileVm.Bio;
+                        UserName = _profileVm.UserName;
+                        AvatarUrl = _profileVm.AvatarUrl;
+                        Bio = _profileVm.Bio;
                     }
                 }
                 catch (Exception ex)
@@ -73,14 +93,12 @@ namespace SocialNetwork.mobile.ViewModels
                     Debug.WriteLine($"Profile quick load failed: {ex}");
                 }
 
-                // 2) Загрузить посты
                 var api = DependencyService.Get<Services.ApiDataStore>();
                 var posts = await api.GetMyPostsAsync() ?? Enumerable.Empty<Post>();
 
                 foreach (var p in posts)
                     Posts.Add(p);
 
-                // 3) Если профиль не заполнился, взять имя из первого поста (если есть)
                 var firstPost = Posts.FirstOrDefault();
                 if (string.IsNullOrWhiteSpace(UserName) && firstPost != null)
                 {
@@ -114,10 +132,9 @@ namespace SocialNetwork.mobile.ViewModels
             if (post == null) return;
 
             if (post.IsBanned)
-                return; 
+                return;
 
             await Shell.Current.GoToAsync($"{nameof(PostDetailPage)}?{nameof(PostDetailViewModel.PostId)}={post.Id}");
         }
     }
 }
-
