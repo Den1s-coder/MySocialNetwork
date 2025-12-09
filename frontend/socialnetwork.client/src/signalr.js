@@ -1,11 +1,7 @@
 import * as signalR from '@microsoft/signalr';
 
-let connection;
-
-export function getChatConnection({ baseUrl, getToken }) {
-	if (connection) return connection;
-
-	connection = new signalR.HubConnectionBuilder()
+export function createChatConnection({ baseUrl, getToken }) {
+	return new signalR.HubConnectionBuilder()
 		.withUrl(`${baseUrl}/chatHub`, {
 			accessTokenFactory: () => getToken?.() ?? '',
 			skipNegotiation: true,
@@ -20,6 +16,4 @@ export function getChatConnection({ baseUrl, getToken }) {
 		})
 		.configureLogging(signalR.LogLevel.Information)
 		.build();
-
-	return connection;
 }
