@@ -145,7 +145,6 @@ export default function Chat() {
                     onChange={e => setText(e.target.value)}
                     placeholder="Введіть повідомлення..."
                     style={{ flex: 1, padding: 8, border: '1px solid #ddd', borderRadius: 4 }}
-                    disabled={!connected}
                 />
                 <button
                     type="submit"
