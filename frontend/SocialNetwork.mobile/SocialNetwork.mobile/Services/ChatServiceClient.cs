@@ -147,6 +147,20 @@ namespace SocialNetwork.mobile.Services
                 .WithUrl(new Uri(new Uri(_baseUrl), "/chatHub"), options =>
                 {
                     options.AccessTokenProvider = getToken;
+
+                    options.HttpMessageHandlerFactory = (messageHandler) =>
+                    {
+                        if (messageHandler is HttpClientHandler clientHandler)
+                        {
+                            clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
+                            return clientHandler;
+                        }
+
+                        return new HttpClientHandler
+                        {
+                            ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true
+                        };
+                    };
                 })
                 .WithAutomaticReconnect()
                 .Build();

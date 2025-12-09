@@ -2,59 +2,77 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:selectors="clr-namespace:SocialNetwork.mobile.Selectors"
+             xmlns:dto="clr-namespace:SocialNetwork.mobile.DTO"
              x:Class="SocialNetwork.mobile.Views.ChatDetailPage"
              Title="Chat">
+
     <ContentPage.Resources>
         <ResourceDictionary>
+
             <DataTemplate x:Key="LeftTemplate">
-                <Grid Padding="6">
+                <Grid Padding="10,5,60,5" x:DataType="dto:MessageDto">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <StackLayout Grid.Column="0" Padding="2">
-                        <Label Text="{Binding SenderName}" FontAttributes="Bold" />
-                        <Frame BackgroundColor="#e9ecef" CornerRadius="8" HasShadow="False" Padding="8">
-                            <Label Text="{Binding Content}" LineBreakMode="WordWrap" TextColor="Black" />
-                        </Frame>
-                        <Label Text="{Binding SentAt, StringFormat='{0:G}'}" FontSize="12" TextColor="Gray" />
+
+                    <StackLayout Grid.Column="0" VerticalOptions="End">
+                        <Label Text="{Binding SenderName}" FontSize="10" TextColor="Gray" LineBreakMode="TailTruncation" WidthRequest="50"/>
                     </StackLayout>
+
+                    <Frame Grid.Column="1" 
+                           HorizontalOptions="Start" 
+                           BackgroundColor="#e9ecef" 
+                           CornerRadius="15" 
+                           HasShadow="False" 
+                           Padding="12">
+                        <StackLayout Spacing="2">
+                            <Label Text="{Binding Content}" LineBreakMode="WordWrap" TextColor="Black" FontSize="16" />
+                            <Label Text="{Binding SentAt, StringFormat='{0:HH:mm}'}" FontSize="10" TextColor="Gray" HorizontalOptions="End" />
+                        </StackLayout>
+                    </Frame>
                 </Grid>
             </DataTemplate>
 
             <DataTemplate x:Key="RightTemplate">
-                <Grid Padding="6">
+                <Grid Padding="60,5,10,5" x:DataType="dto:MessageDto">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
-                    <StackLayout Grid.Column="1" Padding="2" HorizontalOptions="End">
-                        <Label Text="{Binding SenderName}" FontAttributes="Bold" HorizontalTextAlignment="End" />
-                        <Frame BackgroundColor="#007bff" CornerRadius="8" HasShadow="False" Padding="8">
-                            <Label Text="{Binding Content}" LineBreakMode="WordWrap" TextColor="White" />
-                        </Frame>
-                        <Label Text="{Binding SentAt, StringFormat='{0:G}'}" FontSize="12" TextColor="Gray" HorizontalTextAlignment="End" />
-                    </StackLayout>
+
+                    <Frame Grid.Column="0" BackgroundColor="#007bff" CornerRadius="15" HasShadow="False" Padding="12" HorizontalOptions="End">
+                        <StackLayout Spacing="2">
+                            <Label Text="{Binding Content}" LineBreakMode="WordWrap" TextColor="White" FontSize="16" />
+                            <Label Text="{Binding SentAt, StringFormat='{0:HH:mm}'}" FontSize="10" TextColor="#E0E0E0" HorizontalOptions="End" />
+                        </StackLayout>
+                    </Frame>
                 </Grid>
             </DataTemplate>
 
             <selectors:MessageTemplateSelector x:Key="MessageTemplateSelector"
-                                              LeftTemplate="{StaticResource LeftTemplate}"
-                                              RightTemplate="{StaticResource RightTemplate}" />
+                                               LeftTemplate="{StaticResource LeftTemplate}"
+                                               RightTemplate="{StaticResource RightTemplate}" />
         </ResourceDictionary>
     </ContentPage.Resources>
 
-    <StackLayout Padding="10">
-        <ListView x:Name="MessagesView"
-                  ItemsSource="{Binding Messages}"
-                  ItemTemplateSelector="{StaticResource MessageTemplateSelector}"
-                  HasUnevenRows="True"
-                  SeparatorVisibility="None"
-                  CachingStrategy="RecycleElement" />
+    <Grid RowDefinitions="*, Auto" RowSpacing="0" BackgroundColor="White">
 
-        <StackLayout Orientation="Horizontal" Margin="0,8,0,0">
-            <Entry Text="{Binding NewMessage}" HorizontalOptions="FillAndExpand" Placeholder="Введіть повідомлення..." />
-            <Button Text="Send" Command="{Binding SendCommand}" />
-        </StackLayout>
-    </StackLayout>
+        <CollectionView x:Name="MessagesList"
+                        Grid.Row="0"
+                        ItemsSource="{Binding Messages}"
+                        ItemTemplate="{StaticResource MessageTemplateSelector}"
+                        ItemsUpdatingScrollMode="KeepLastItemInView"
+                        SelectionMode="None"
+                        VerticalOptions="FillAndExpand">
+        </CollectionView>
+
+        <Grid Grid.Row="1" ColumnDefinitions="*, Auto" Padding="10" BackgroundColor="#F0F0F0">
+            <Frame Grid.Column="0" Padding="10,0" CornerRadius="20" BackgroundColor="White" HasShadow="False" BorderColor="#DDD">
+                <Entry Text="{Binding NewMessage}" Placeholder="Введіть повідомлення..." BackgroundColor="Transparent" />
+            </Frame>
+            <Button Grid.Column="1" Text="Send" Command="{Binding SendCommand}" Margin="10,0,0,0" CornerRadius="20" HeightRequest="40" />
+        </Grid>
+
+    </Grid>
 </ContentPage>
