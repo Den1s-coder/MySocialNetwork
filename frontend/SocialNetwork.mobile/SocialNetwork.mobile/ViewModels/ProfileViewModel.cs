@@ -86,6 +86,16 @@ namespace SocialNetwork.mobile.ViewModels
                     Email = dto.Email;
                     Bio = dto.Bio;
                     AvatarUrl = dto.ProfilePictureUrl;
+
+                    try
+                    {
+                        await SecureStorage.SetAsync("user_id", Id);
+                        Debug.WriteLine($"LoadProfileAsync: saved user_id={Id}");
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine($"LoadProfileAsync: failed to save user_id: {ex}");
+                    }
                 }
             }
             catch (Exception ex)
@@ -122,6 +132,17 @@ namespace SocialNetwork.mobile.ViewModels
                 Email = dto.Email;
                 Bio = dto.Bio;
                 AvatarUrl = dto.ProfilePictureUrl;
+
+                try
+                {
+                    await SecureStorage.SetAsync("user_id", Id);
+                    Debug.WriteLine($"TryLoadProfileAsync: saved user_id={Id}");
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"TryLoadProfileAsync: failed to save user_id: {ex}");
+                }
+
                 return true;
             }
             catch (Exception ex)
@@ -173,6 +194,7 @@ namespace SocialNetwork.mobile.ViewModels
             try
             {
                 await SecureStorage.SetAsync(TokenKey, string.Empty);
+                await SecureStorage.SetAsync("user_id", string.Empty);
             }
             catch { }
             await Shell.Current.GoToAsync("//LoginPage");
@@ -182,6 +204,35 @@ namespace SocialNetwork.mobile.ViewModels
         {
             try
             {
+                PermissionStatus status = PermissionStatus.Unknown;
+                try
+                {
+                    status = await Permissions.CheckStatusAsync<Permissions.StorageRead>();
+                }
+                catch (Exception pe)
+                {
+                    Debug.WriteLine($"Permissions API check failed: {pe}");
+                }
+
+                if (status != PermissionStatus.Granted)
+                {
+                    try
+                    {
+                        status = await Permissions.RequestAsync<Permissions.StorageRead>();
+                    }
+                    catch (Exception preq)
+                    {
+                        Debug.WriteLine($"Permissions request failed: {preq}");
+                        status = PermissionStatus.Denied;
+                    }
+                }
+
+                if (status != PermissionStatus.Granted)
+                {
+                    await Application.Current.MainPage.DisplayAlert("Permission required", "Grant permission to access photos to change avatar.", "OK");
+                    return;
+                }
+
                 var result = await MediaPicker.PickPhotoAsync(new MediaPickerOptions { Title = "Select avatar" });
                 if (result == null) return;
 
@@ -213,6 +264,11 @@ namespace SocialNetwork.mobile.ViewModels
                         await SaveProfileAsync();
                     }
                 }
+            }
+            catch (PermissionException pex)
+            {
+                Debug.WriteLine($"PermissionException: {pex}");
+                await Application.Current.MainPage.DisplayAlert("Permission denied", "Storage permission required", "OK");
             }
             catch (Exception ex)
             {
