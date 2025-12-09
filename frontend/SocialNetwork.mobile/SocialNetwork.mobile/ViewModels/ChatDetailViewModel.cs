@@ -1,6 +1,7 @@
 using SocialNetwork.mobile.DTO;
 using SocialNetwork.mobile.Services;
 using System;
+using MvvmHelpers;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Threading.Tasks;
@@ -14,7 +15,7 @@ namespace SocialNetwork.mobile.ViewModels
     [QueryProperty(nameof(ChatId), nameof(ChatId))]
     public class ChatDetailViewModel : BaseViewModel
     {
-        public ObservableCollection<MessageDto> Messages { get; } = new ObservableCollection<MessageDto>();
+        public ObservableRangeCollection<MessageDto> Messages { get; } = new ObservableRangeCollection<MessageDto>();
         public string ChatId { get; set; }
         public Command SendCommand { get; }
         private string newMessage;

@@ -47,7 +47,11 @@ namespace SocialNetwork.mobile.Views
             {
                 Device.BeginInvokeOnMainThread(() =>
                 {
-                    MessagesView?.ScrollTo(_vm.Messages[_vm.Messages.Count - 1], ScrollToPosition.End, false);
+                    MessagesList.ScrollTo(
+                        item: _vm.Messages[_vm.Messages.Count - 1], 
+                        position: ScrollToPosition.End,            
+                        animate: false                             
+                    );
                 });
             }
         }

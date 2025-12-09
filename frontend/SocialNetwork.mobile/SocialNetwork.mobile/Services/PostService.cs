@@ -141,7 +141,7 @@ namespace SocialNetwork.mobile.Services
         public async Task<IEnumerable<Post>> GetMyPostsAsync()
         {
             await SetAuthHeader();
-            var url = "/api/post/profile";
+            var url = "/api/post/me";
             try
             {
                 var resp = await _client.GetAsync(url);
