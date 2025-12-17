@@ -38,7 +38,15 @@ namespace SocialNetwork.Infrastructure.Repos
                 .FirstOrDefaultAsync(f => f.Id == id, cancellationToken);
         }
 
-        public async Task<IEnumerable<Friendship>> GetUserFriendshipsAsync(Guid userId, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<Friendship>> GetUserFriendshipsAsync(Guid userId)
+        {
+            return await _context.Friendships
+                .AsNoTracking()
+                .Where(f => f.RequesterId == userId || f.AddresseeId == userId)
+                .ToListAsync();
+        }
+
+        public Task UpdateAsync(Friendship T) //TODO
         {
             return await _context.Friendships
                 .AsNoTracking()
