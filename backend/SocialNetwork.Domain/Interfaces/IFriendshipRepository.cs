@@ -10,5 +10,6 @@ namespace SocialNetwork.Domain.Interfaces
     public interface IFriendshipRepository: IGenerycRepository<Friendship>
     {
         Task<bool> AreFriendsAsync(Guid userId1, Guid userId2);
+        Task<IEnumerable<Friendship>> GetUserFriendshipsAsync(Guid userId);
     }
 }
