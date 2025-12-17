@@ -38,6 +38,14 @@ namespace SocialNetwork.Infrastructure.Repos
                 .FirstOrDefaultAsync(f => f.Id == id);
         }
 
+        public async Task<IEnumerable<Friendship>> GetUserFriendshipsAsync(Guid userId)
+        {
+            return await _context.Friendships
+                .AsNoTracking()
+                .Where(f => f.RequesterId == userId || f.AddresseeId == userId)
+                .ToListAsync();
+        }
+
         public Task UpdateAsync(Friendship T) //TODO
         {
             throw new NotImplementedException();

@@ -13,6 +13,7 @@ namespace SocialNetwork.Domain.Entities
         public User Requester { get; set; }
         public Guid AddresseeId { get; set; }
         public User Addressee { get; set; }
+        public DateTime CreatedAt { get; set; }
         public FriendshipStatus Status { get; set; }
 
     }

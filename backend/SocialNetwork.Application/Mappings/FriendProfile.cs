@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using SocialNetwork.Application.DTO;
+using SocialNetwork.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +13,12 @@ namespace SocialNetwork.Application.Mappings
     {
         public FriendProfile()
         {
-            //TODO
+            CreateMap<Friendship, FriendRequestDto>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.RequesterId, opt => opt.MapFrom(src => src.RequesterId))
+                .ForMember(dest => dest.ReceiverId, opt => opt.MapFrom(src => src.AddresseeId))
+                .ForMember(dest => dest.RequestedAt, opt => opt.MapFrom(src => src.CreatedAt))
+                .ReverseMap();
         }
     }
 }
