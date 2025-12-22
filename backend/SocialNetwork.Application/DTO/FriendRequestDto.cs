@@ -8,10 +8,9 @@ namespace SocialNetwork.Application.DTO
 {
     public record FriendRequestDto
     {
-        public Guid Id { get; init; }
+        public Guid Id { get; init; } = Guid.NewGuid();
         public Guid RequesterId { get; init; }
         public Guid ReceiverId { get; init; }
-        public string RequesterUsername { get; init; }
         public DateTime RequestedAt { get; init; }
     }
 }
