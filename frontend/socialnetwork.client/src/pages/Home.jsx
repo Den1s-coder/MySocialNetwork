@@ -6,7 +6,7 @@ const API_BASE = 'https://localhost:7142';
 
 export default function Home() {
     const [posts, setPosts] = useState([]);
-    const [status, setStatus] = useState('idle'); // idle | loading | error
+    const [status, setStatus] = useState('idle'); 
     const [error, setError] = useState(null);
 
     useEffect(() => {
@@ -37,25 +37,24 @@ export default function Home() {
             <ul className="post-list">
                 {posts.map(p => {
                     const timeStr = new Date(p.createdAt).toLocaleString();
-                    const CardInner = (
-                        <>
-                            <div className="post-card__meta">{p.userName}</div>
-                            <div className="post-card__text">
-                                {p.isBanned ? '(Заблоковано адміністрацією)' : p.text}
-                            </div>
-                            <div className="post-card__time">{timeStr}</div>
-                        </>
-                    );
 
                     return (
                         <li key={p.id} className="post-card">
+                            <div className="post-card__header">
+                                <Link to={`/user/${encodeURIComponent(p.userName)}`} className="post-card__meta">
+                                    {p.userName}
+                                </Link>
+                            </div>
+
                             {p.isBanned ? (
                                 <div className="post-card--banned">
-                                    {CardInner}
+                                    <div className="post-card__text">{'(Заблоковано адміністрацією)'}</div>
+                                    <div className="post-card__time">{timeStr}</div>
                                 </div>
                             ) : (
                                 <Link to={`/post/${p.id}`} className="post-card__link">
-                                    {CardInner}
+                                    <div className="post-card__text">{p.text}</div>
+                                    <div className="post-card__time">{timeStr}</div>
                                 </Link>
                             )}
                         </li>

@@ -32,6 +32,7 @@ builder.Services.AddScoped<IPostRepository, PostRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IChatRepository, ChatRepository>();
 builder.Services.AddScoped<IMessageRepository, MessageRepository>();
+builder.Services.AddScoped<IFriendshipRepository, FriendshipRepository>();
 
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("JwtOptions"));
 builder.Services.AddScoped<IJwtProvider, JwtProvider>();
@@ -42,6 +43,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IChatService, ChatService>();
 builder.Services.AddScoped<IMessageService, MessageService>();
+builder.Services.AddScoped<IFriendService, FriendService>();
 
 var storageConnection = builder.Configuration.GetValue<string>("AzureStorage:ConnectionString");
 var storageContainer = builder.Configuration.GetValue<string>("AzureStorage:ContainerName");
