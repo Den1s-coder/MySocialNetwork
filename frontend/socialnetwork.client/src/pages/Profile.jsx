@@ -1,12 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
-import { FiEdit2, FiUserPlus, FiMessageCircle, FiChevronDown, FiChevronRight } from 'react-icons/fi';
-import { MdBlock } from 'react-icons/md';
 import './Profile.css';
 import { authFetch } from '../hooks/authFetch';
 import RoleBadge from '../components/RoleBadge';
 
-const API_BASE = import.meta.env.VITE_API_BASE || '';
+const API_BASE = 'https://localhost:7142';
 const guidRegex = /^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$/;
 
 export default function Profile() {
@@ -15,15 +13,11 @@ export default function Profile() {
 
   const [profile, setProfile] = useState(null);
   const [posts, setPosts] = useState([]);
-  const [friends, setFriends] = useState([]);
   const [avatarUrl, setAvatarUrl] = useState(null);
   const [status, setStatus] = useState('idle');
   const [error, setError] = useState(null);
   const [isOwner, setIsOwner] = useState(false);
-  const [isEditingProfile, setIsEditingProfile] = useState(false);
-  const [editData, setEditData] = useState({ name: '', bio: '' });
-  const [showFriends, setShowFriends] = useState(false);
-  const accessToken = localStorage.getItem('accessToken');
+  const token = localStorage.getItem('token');
  
   useEffect(() => {
     const load = async () => {
@@ -32,9 +26,9 @@ export default function Profile() {
 
       try {
         let currentUserId = null;
-        if (accessToken) {
-          const meRes = await authFetch(`${API_BASE}/api/User/profile`, {
-            headers: { 'Authorization': `Bearer ${accessToken}` }
+        if (token) {
+          const meRes = await fetch(`${API_BASE}/api/User/profile`, {
+            headers: { 'Authorization': `Bearer ${token}` }
           });
           if (meRes.ok) {
             const me = await meRes.json();
@@ -44,38 +38,37 @@ export default function Profile() {
 
         let profileData = null;
         if (!idOrName) {
-          if (!accessToken) throw new Error('Требуется авторизація');
-          const res = await authFetch(`${API_BASE}/api/User/profile`, {
-            headers: { 'Authorization': `Bearer ${accessToken}` }
+          if (!token) throw new Error('Требуется авторизація');
+          const res = await fetch(`${API_BASE}/api/User/profile`, {
+            headers: { 'Authorization': `Bearer ${token}` }
           });
           if (!res.ok) throw new Error(`Не удалось загрузить профиль (${res.status})`);
           profileData = await res.json();
         } else {
           let res;
           if (guidRegex.test(idOrName)) {
-            res = await authFetch(`${API_BASE}/api/User/users/${idOrName}`, {
-              headers: accessToken ? { 'Authorization': `Bearer ${accessToken}` } : undefined
+            res = await fetch(`${API_BASE}/api/User/users/${idOrName}`, {
+              headers: token ? { 'Authorization': `Bearer ${token}` } : undefined
             });
           } else {
-            res = await authFetch(`${API_BASE}/api/User/users/by-username?username=${encodeURIComponent(idOrName)}`, {
-              headers: accessToken ? { 'Authorization': `Bearer ${accessToken}` } : undefined
+            res = await fetch(`${API_BASE}/api/User/users/by-username?username=${encodeURIComponent(idOrName)}`, {
+              headers: token ? { 'Authorization': `Bearer ${token}` } : undefined
             });
           }
           if (!res.ok) {
             if (res.status === 404) throw new Error('Користувача не знайдено');
-            throw new Error(`Не удалось загрузить профіль (${res.status})`);
+            throw new Error(`Не удалось загрузить профиль (${res.status})`);
           }
           profileData = await res.json();
         }
 
         setProfile(profileData);
         setAvatarUrl(profileData?.profilePictureUrl ?? profileData?.avatarUrl ?? null);
-        setEditData({ name: profileData?.name ?? profileData?.userName ?? '', bio: profileData?.bio ?? '' });
         setIsOwner(Boolean(!idOrName || (profileData?.id && profileData.id === currentUserId)));
 
         if (profileData?.id) {
-          const postsRes = await authFetch(`${API_BASE}/api/Post/user/${profileData.id}`, {
-            headers: accessToken ? { 'Authorization': `Bearer ${accessToken}` } : undefined
+          const postsRes = await fetch(`${API_BASE}/api/Post/user/${profileData.id}`, {
+            headers: token ? { 'Authorization': `Bearer ${token}` } : undefined
           });
           if (postsRes.ok) {
             const postsData = await postsRes.json();
@@ -83,21 +76,8 @@ export default function Profile() {
           } else {
             setPosts([]);
           }
-
-          try {
-            const friendsRes = await authFetch(`${API_BASE}/api/Friend/user/${profileData.id}`, {
-              headers: accessToken ? { 'Authorization': `Bearer ${accessToken}` } : undefined
-            });
-            if (friendsRes.ok) {
-              const friendsData = await friendsRes.json();
-              setFriends(Array.isArray(friendsData) ? friendsData : []);
-            }
-          } catch (e) {
-            console.error('Failed to load friends:', e);
-          }
         } else {
           setPosts([]);
-          setFriends([]);
         }
 
         setStatus('idle');
@@ -108,21 +88,21 @@ export default function Profile() {
     };
 
     load();
-  }, [idOrName, accessToken]);
+  }, [idOrName, token]);
 
   const handleFileChange = async (e) => {
     if (!isOwner) return;
     const file = e.target.files && e.target.files[0];
     if (!file) return;
-    if (!accessToken) { alert('Требуется авторизація'); return; }
+    if (!token) { alert('Требуется авторизація'); return; }
 
     try {
       const fd = new FormData();
       fd.append('file', file);
 
-      const uploadRes = await authFetch(`${API_BASE}/api/File/upload`, {
+      const uploadRes = await fetch(`${API_BASE}/api/File/upload`, {
         method: 'POST',
-        headers: { 'Authorization': `Bearer ${accessToken}` },
+        headers: { 'Authorization': `Bearer ${token}` },
         body: fd
       });
       if (!uploadRes.ok) throw new Error('Upload failed');
@@ -137,11 +117,11 @@ export default function Profile() {
         profilePictureUrl: fileUrl
       };
 
-      const updateRes = await authFetch(`${API_BASE}/api/User/profile`, {
+      const updateRes = await fetch(`${API_BASE}/api/User/profile`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${accessToken}`
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(body)
       });
@@ -155,53 +135,15 @@ export default function Profile() {
     }
   };
 
-  const handleAvatarClick = () => {
-    if (isOwner) {
-      document.querySelector('.avatar-file-input')?.click();
-    }
-  };
-
-  const handleSaveProfile = async () => {
-    if (!isOwner || !accessToken) return;
-
-    try {
-      const body = {
-        id: profile?.id,
-        name: editData.name || profile?.userName,
-        email: profile?.email,
-        profilePictureUrl: avatarUrl,
-        bio: editData.bio
-      };
-
-      const updateRes = await authFetch(`${API_BASE}/api/User/profile`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${accessToken}`
-        },
-        body: JSON.stringify(body)
-      });
-
-      if (!updateRes.ok) throw new Error('Profile update failed');
-      
-      setProfile(prev => prev ? { ...prev, ...body } : prev);
-      setIsEditingProfile(false);
-      alert('Профіль оновлено');
-    } catch (err) {
-      console.error(err);
-      alert(err.message || 'Update error');
-    }
-  };
-
   const sendFriendRequest = async () => {
-    if (!accessToken) { alert('Требуется авторизація'); return; }
+    if (!token) { alert('Требуется авторизація'); return; }
     if (!profile?.id) return;
     try {
-      const res = await authFetch(`${API_BASE}/api/Friend/SendFriendRequest`, {
+      const res = await fetch(`${API_BASE}/api/Friend/SendFriendRequest`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${accessToken}`
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(profile.id) 
       });
@@ -214,12 +156,12 @@ export default function Profile() {
   };
 
   const startPrivateChat = async () => {
-    if (!accessToken) { alert('Требуется авторизація'); return; }
+    if (!token) { alert('Требуется авторизація'); return; }
     if (!profile?.id) return;
     try {
-      const res = await authFetch(`${API_BASE}/api/Chat/private/${profile.id}`, {
+      const res = await fetch(`${API_BASE}/api/Chat/private/${profile.id}`, {
         method: 'POST',
-        headers: { 'Authorization': `Bearer ${accessToken}` }
+        headers: { 'Authorization': `Bearer ${token}` }
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
@@ -231,147 +173,45 @@ export default function Profile() {
     }
   };
 
-  if (status === 'loading') return <div className="loading">Завантаження…</div>;
-  if (status === 'error') return <div className="error">Помилка: {error}</div>;
+  if (status === 'loading') return <p>Завантаження…</p>;
+  if (status === 'error') return <p>Помилка: {error}</p>;
 
   return (
     <div className="container">
       <h2 className="title">{isOwner ? 'Мій профіль' : 'Профіль користувача'}</h2>
 
-      <div className="profile-header">
-        <div className={`profile-avatar ${isOwner ? 'profile-avatar--editable' : ''}`} onClick={handleAvatarClick}>
-          {avatarUrl ? (
-            <img src={avatarUrl} alt="avatar" className="avatar-image" />
-          ) : (
-            <div className="avatar-placeholder">👤</div>
-          )}
+      <div style={{ marginBottom: 12 }}>
+        {avatarUrl ? (
+          <img src={avatarUrl} alt="avatar" style={{ width: 120, height: 120, borderRadius: 8, objectFit: 'cover' }} />
+        ) : (
+          <div style={{ width: 120, height: 120, background: '#eee', borderRadius: 8 }} />
+        )}
 
-          {isOwner && ( 
-            <>
-              <div className="avatar-overlay">
-                <div className="avatar-plus-icon">+</div>
-              </div>
-              <input 
-                type="file" 
-                accept="image/*" 
-                onChange={handleFileChange}
-                className="avatar-file-input"
-                style={{ display: 'none' }}
-              />
-            </>
-          )}
-        </div>
-
-        {profile && (
-          <div className="profile-info">
-            {isEditingProfile ? (
-              <div className="edit-form">
-                <input 
-                  type="text" 
-                  value={editData.name} 
-                  onChange={(e) => setEditData({...editData, name: e.target.value})}
-                  className="edit-input"
-                  placeholder="Ім'я"
-                />
-                <textarea 
-                  value={editData.bio} 
-                  onChange={(e) => setEditData({...editData, bio: e.target.value})}
-                  className="edit-textarea"
-                  placeholder="Про вас"
-                  rows="3"
-                />
-                <div className="edit-actions">
-                  <button onClick={handleSaveProfile} className="edit-save">Зберегти</button>
-                  <button onClick={() => setIsEditingProfile(false)} className="edit-cancel">Скасувати</button>
-                </div>
-              </div>
-            ) : (
-              <>
-                <div className="profile-name-section">
-                  <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                    <div className="profile-name">{profile.name ?? profile.userName}</div>
-                    <RoleBadge role={profile.role} />
-                  </div>
-                  {isOwner && (
-                    <button 
-                      onClick={() => setIsEditingProfile(true)} 
-                      className="profile-edit-btn"
-                      title="Редагувати профіль"
-                    >
-                      <FiEdit2 size={18} />
-                    </button>
-                  )}
-                </div>
-                <div className="profile-email">{profile.email}</div>
-                {profile.bio && <div className="profile-bio">{profile.bio}</div>}
-                {profile.isBanned && (
-                  <div className="profile-banned">
-                    <MdBlock size={16} style={{ marginRight: '4px' }} />
-                    Заблокований
-                  </div>
-                )}
-              </>
-            )}
+        {isOwner && (
+          <div style={{ marginTop: 8 }}>
+            <input type="file" accept="image/*" onChange={handleFileChange} />
           </div>
         )}
       </div>
 
       {profile && (
-        <div className="profile-stats">
-          <div className="stat-item">
-            <div className="stat-number">{posts.length}</div>
-            <div className="stat-label">Пости</div>
-          </div>
-          <div className="stat-item">
-            <div className="stat-number">{friends.length}</div>
-            <div className="stat-label">Друзі</div>
-          </div>
-          <div className="stat-item">
-            <div className="stat-number">0</div>
-            <div className="stat-label">Переглядів</div>
-          </div>
+        <div style={{ marginBottom: 12 }}>
+          <div><strong>{profile.name ?? profile.userName}</strong></div>
+          <div>{profile.email}</div>
+          {profile.isBanned && <div style={{ color: 'red' }}>(Користувач заблокований)</div>}
         </div>
       )}
 
       {!isOwner && profile && (
-        <div className="profile-actions">
-          <button onClick={sendFriendRequest} className="profile-button profile-button--primary">
-            <FiUserPlus size={18} style={{ marginRight: '8px' }} />
-            Додати в друзі
-          </button>
-          <button onClick={startPrivateChat} className="profile-button">
-            <FiMessageCircle size={18} style={{ marginRight: '8px' }} />
-            Написати
-          </button>
+        <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+          <button onClick={sendFriendRequest} style={{ padding: '8px 12px' }}>Відправити заявку в друзі</button>
+          <button onClick={startPrivateChat} style={{ padding: '8px 12px' }}>Почати чат</button>
         </div>
       )}
 
-      {friends.length > 0 && (
-        <div className="friends-section">
-          <h3 onClick={() => setShowFriends(!showFriends)} className="friends-title">
-            {showFriends ? <FiChevronDown size={18} /> : <FiChevronRight size={18} />}
-            Друзі ({friends.length})
-          </h3>
-          {showFriends && (
-            <div className="friends-grid">
-              {friends.slice(0, 6).map(friend => (
-                <Link 
-                  key={friend.id} 
-                  to={`/user/${friend.id}`}
-                  className="friend-card"
-                >
-                  <img src={friend.profilePictureUrl || '👤'} alt={friend.name} className="friend-avatar" />
-                  <div className="friend-name">{friend.name}</div>
-                </Link>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-
-      <h3>Пості</h3>
+      <h3>Пости</h3>
       {posts.length === 0 ? (
-        <div className="posts-empty">Пості відсутні.</div>
+        <p>Пости відсутні.</p>
       ) : (
         <ul className="post-list">
           {posts.map(p => {
@@ -380,14 +220,14 @@ export default function Profile() {
             return (
               <li key={p.id} className="post-card">
                 <div className="post-card__header">
-                  <Link to={`/user/${p.userId}`} className="post-card__meta">
+                  <Link to={`/user/${encodeURIComponent(p.userName)}`} className="post-card__meta">
                     {p.userName}
                   </Link>
                 </div>
 
                 {p.isBanned ? (
                   <div className="post-card--banned">
-                    <div className="post-card__text">Заблоковано адміністрацією</div>
+                    <div className="post-card__text">{'(Заблоковано адміністрацією)'}</div>
                     <div className="post-card__time">{timeStr}</div>
                   </div>
                 ) : (
