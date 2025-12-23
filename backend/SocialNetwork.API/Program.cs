@@ -26,13 +26,22 @@ builder.Services.AddAutoMapper(typeof(CommentProfile),
     typeof(ChatProfile),
     typeof(MessageProfile));
 
-builder.Services.AddMediator();
+builder.Services.AddScoped<ICommentRepository, CommentRepository>();
+builder.Services.AddScoped<IPostRepository, PostRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IChatRepository, ChatRepository>();
+builder.Services.AddScoped<IMessageRepository, MessageRepository>();
+builder.Services.AddScoped<IFriendshipRepository, FriendshipRepository>();
 
 builder.Services.AddInfrastructure(builder.Configuration);
 
-builder.Services.AddApplication();
-
-builder.Services.AddScoped<INotificationPublisher, NotificationPublisher>();
+builder.Services.AddScoped<ICommentService, CommentService>();
+builder.Services.AddScoped<IPostService, PostService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IChatService, ChatService>();
+builder.Services.AddScoped<IMessageService, MessageService>();
+builder.Services.AddScoped<IFriendService, FriendService>();
 
 var storageConnection = builder.Configuration.GetValue<string>("AzureStorage:ConnectionString");
 var containerConfig = builder.Configuration.GetSection("AzureStorage:Containers");
