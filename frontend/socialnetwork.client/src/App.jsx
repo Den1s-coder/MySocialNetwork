@@ -21,6 +21,7 @@ function App() {
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
                     <Route path="/profile" element={<Profile />} />
+                    <Route path="/user/:idOrName" element={<Profile />}></Route>
                     <Route path="/post/new" element={<NewPost />} />
                     <Route path="/post/:id" element={<Post />} />
                     <Route path="/chats" element={<ChatList />} />
