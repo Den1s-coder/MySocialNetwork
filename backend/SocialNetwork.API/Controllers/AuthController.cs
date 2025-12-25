@@ -35,7 +35,7 @@ namespace SocialNetwork.API.Controllers
         {
             _logger.LogInformation("Login endpoint called");
 
-            var responce = await _authService.LoginAsync(loginDto, cancellationToken);
+            var responce = await _authService.LoginAsync(loginDto);
 
             _logger.LogInformation("User Succesfully login");
 
@@ -51,15 +51,6 @@ namespace SocialNetwork.API.Controllers
 
             _logger.LogInformation("Token successfully refreshed");
 
-            return Ok(responce);
-        }
-
-        [HttpPost("google")]
-        public async Task<IActionResult> LoginWithLogin([FromBody] string idToken, CancellationToken cancellationToken = default)
-        {
-            _logger.LogInformation("Google login endpoint called");
-            var responce = await _authService.LoginWithGoogleAsync(idToken, cancellationToken);
-            _logger.LogInformation("User successfully logged in with Google");
             return Ok(responce);
         }
     }
