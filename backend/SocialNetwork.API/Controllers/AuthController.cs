@@ -35,11 +35,23 @@ namespace SocialNetwork.API.Controllers
         {
             _logger.LogInformation("Login endpoint called");
 
-            var token = await _authService.LoginAsync(loginDto);
+            var responce = await _authService.LoginAsync(loginDto);
 
             _logger.LogInformation("User Succesfully login");
 
-            return Ok(token);
+            return Ok(responce);
+        }
+
+        [HttpPost("refresh-token")]
+        public async Task<IActionResult> RefreshToken([FromBody] string refreshToken)
+        {
+            _logger.LogInformation("Refresh token endpoint called");
+
+            var responce = await _authService.LoginWithRefreshTokenAsync(refreshToken);
+
+            _logger.LogInformation("Token successfully refreshed");
+
+            return Ok(responce);
         }
     }
 }
