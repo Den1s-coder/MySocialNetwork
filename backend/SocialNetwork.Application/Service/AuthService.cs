@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Azure.Core;
 using Microsoft.AspNetCore.Identity;
 using SocialNetwork.Application.DTO;
 using SocialNetwork.Application.Interfaces;
@@ -17,15 +18,17 @@ namespace SocialNetwork.Application.Service
         private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
         private readonly IJwtProvider _jwtProvider;
+        private readonly IRefreshTokenRepository _refreshTokenRepository;
 
-        public AuthService(IUserRepository userRepository, IMapper mapper, IJwtProvider jwtProvider)
+        public AuthService(IUserRepository userRepository, IMapper mapper, IJwtProvider jwtProvider, IRefreshTokenRepository refreshTokenRepository)
         {
             _userRepository = userRepository;
             _mapper = mapper;
             _jwtProvider = jwtProvider;
+            _refreshTokenRepository = refreshTokenRepository;
         }
 
-        public async Task<string> LoginAsync(LoginDto loginDto)
+        public async Task<LoginResponce> LoginAsync(LoginDto loginDto)
         {
             var user = await _userRepository.GetByUserNameAsync(loginDto.Username);
 
@@ -37,12 +40,47 @@ namespace SocialNetwork.Application.Service
 
             if (verifyResult == PasswordVerificationResult.Success)
             {
-                return _jwtProvider.Generate(user);
+                var accessToken = _jwtProvider.GenerateAccessToken(user);
+
+                var refreshToken = _jwtProvider.GenerateRefreshToken();
+
+                var refreshTokenEntity = new RefreshToken
+                {
+                    Id = Guid.NewGuid(),
+                    Token = refreshToken,
+                    UserId = user.Id,
+                    ExpiresOn = DateTime.UtcNow.AddDays(7)
+                };
+
+                await _refreshTokenRepository.CreateAsync(refreshTokenEntity);
+
+                return new LoginResponce(accessToken, refreshToken);
             }
             else
             {
                 throw new UnauthorizedAccessException("Invalid password");
             }
+        }
+
+        public async Task<LoginResponce> LoginWithRefreshTokenAsync(string refreshToken)
+        {
+            var existingToken = await _refreshTokenRepository.GetByTokenAsync(refreshToken);
+
+            if (existingToken == null || existingToken.ExpiresOn < DateTime.UtcNow)
+                throw new UnauthorizedAccessException("Invalid or expired refresh token");
+
+            var user = await _userRepository.GetByIdAsync(existingToken.UserId);
+            if (user == null)
+                throw new ArgumentNullException("User not found");
+
+            var newAccessToken = _jwtProvider.GenerateAccessToken(user);
+            var newRefreshToken = _jwtProvider.GenerateRefreshToken();
+
+            existingToken.Token = newRefreshToken;
+            existingToken.ExpiresOn = DateTime.UtcNow.AddDays(7);
+
+            await _refreshTokenRepository.UpdateAsync(existingToken);
+            return new LoginResponce(newAccessToken, newRefreshToken);
         }
 
         public async Task RegisterAsync(RegisterDto userDto)
@@ -59,5 +97,6 @@ namespace SocialNetwork.Application.Service
 
             await _userRepository.CreateAsync(user);
         }
+
     }
 }
