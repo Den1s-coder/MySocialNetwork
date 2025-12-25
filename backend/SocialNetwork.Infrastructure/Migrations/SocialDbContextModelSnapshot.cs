@@ -244,119 +244,6 @@ namespace SocialNetwork.Infrastructure.Migrations
                     b.ToTable("Posts");
                 });
 
-            modelBuilder.Entity("SocialNetwork.Domain.Entities.Posts.PostReaction", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("PostId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ReactionTypeId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ReactionTypeId");
-
-                    b.HasIndex("UserId");
-
-                    b.HasIndex("PostId", "UserId")
-                        .IsUnique();
-
-                    b.ToTable("PostReactions", (string)null);
-                });
-
-            modelBuilder.Entity("SocialNetwork.Domain.Entities.Reactions.ReactionType", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("ImageUrl")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("SortOrder")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Symbol")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ReactionTypes");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000001"),
-                            Code = "like",
-                            CreatedAt = new DateTime(2026, 6, 10, 16, 6, 39, 956, DateTimeKind.Utc).AddTicks(9397),
-                            SortOrder = 10,
-                            Symbol = "👍",
-                            UpdatedAt = new DateTime(2026, 6, 10, 16, 6, 39, 956, DateTimeKind.Utc).AddTicks(9400)
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000002"),
-                            Code = "love",
-                            CreatedAt = new DateTime(2026, 6, 10, 16, 6, 39, 957, DateTimeKind.Utc).AddTicks(363),
-                            SortOrder = 20,
-                            Symbol = "❤️",
-                            UpdatedAt = new DateTime(2026, 6, 10, 16, 6, 39, 957, DateTimeKind.Utc).AddTicks(364)
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000003"),
-                            Code = "laugh",
-                            CreatedAt = new DateTime(2026, 6, 10, 16, 6, 39, 957, DateTimeKind.Utc).AddTicks(371),
-                            SortOrder = 30,
-                            Symbol = "😂",
-                            UpdatedAt = new DateTime(2026, 6, 10, 16, 6, 39, 957, DateTimeKind.Utc).AddTicks(372)
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000004"),
-                            Code = "sad",
-                            CreatedAt = new DateTime(2026, 6, 10, 16, 6, 39, 957, DateTimeKind.Utc).AddTicks(374),
-                            SortOrder = 40,
-                            Symbol = "😢",
-                            UpdatedAt = new DateTime(2026, 6, 10, 16, 6, 39, 957, DateTimeKind.Utc).AddTicks(374)
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000005"),
-                            Code = "angry",
-                            CreatedAt = new DateTime(2026, 6, 10, 16, 6, 39, 957, DateTimeKind.Utc).AddTicks(376),
-                            SortOrder = 50,
-                            Symbol = "😡",
-                            UpdatedAt = new DateTime(2026, 6, 10, 16, 6, 39, 957, DateTimeKind.Utc).AddTicks(376)
-                        });
-                });
-
             modelBuilder.Entity("SocialNetwork.Domain.Entities.RefreshToken", b =>
                 {
                     b.Property<Guid>("Id")
@@ -380,38 +267,7 @@ namespace SocialNetwork.Infrastructure.Migrations
                     b.ToTable("RefreshTokens");
                 });
 
-            modelBuilder.Entity("SocialNetwork.Domain.Entities.Users.Friendship", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("AddresseeId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("RequesterId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AddresseeId");
-
-                    b.HasIndex("RequesterId", "AddresseeId")
-                        .IsUnique();
-
-                    b.ToTable("Friendships");
-                });
-
-            modelBuilder.Entity("SocialNetwork.Domain.Entities.Users.User", b =>
+            modelBuilder.Entity("SocialNetwork.Domain.Entities.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -596,7 +452,18 @@ namespace SocialNetwork.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("SocialNetwork.Domain.Entities.Posts.PostReaction", b =>
+            modelBuilder.Entity("SocialNetwork.Domain.Entities.RefreshToken", b =>
+                {
+                    b.HasOne("SocialNetwork.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("SocialNetwork.Domain.Entities.UserChat", b =>
                 {
                     b.HasOne("SocialNetwork.Domain.Entities.Posts.Post", "Post")
                         .WithMany("Reactions")
