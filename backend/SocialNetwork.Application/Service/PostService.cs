@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
 using Microsoft.Extensions.Logging;
 using SocialNetwork.Application.DTO;
+using SocialNetwork.Application.Events;
 using SocialNetwork.Application.Interfaces;
 using SocialNetwork.Domain.Entities;
 using SocialNetwork.Domain.Interfaces;
 using SocialNetwork.Infrastructure.Repos;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace SocialNetwork.Application.Service
 {
@@ -14,16 +16,19 @@ namespace SocialNetwork.Application.Service
         private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
         private readonly ILogger<PostService> _logger;
+        private readonly IEventDispatcher _eventDispatcher;
 
         public PostService(IPostRepository postRepository,
             IUserRepository userRepository, 
             IMapper mapper,
-            ILogger<PostService> logger) 
+            ILogger<PostService> logger,
+            IEventDispatcher eventDispatcher)
         {
             _postRepository = postRepository;
             _userRepository = userRepository;
             _mapper = mapper;
             _logger = logger;
+            _eventDispatcher = eventDispatcher;
         }
         public async Task BanPost(Guid id)
         {
@@ -42,16 +47,35 @@ namespace SocialNetwork.Application.Service
             if (createPostDto == null)
                 throw new ArgumentNullException("postDTO is null");
 
+            var text = (createPostDto.Text ?? string.Empty).Trim();
+            if (string.IsNullOrWhiteSpace(text)) 
+                throw new ArgumentException("Post content cannot be empty.", nameof(createPostDto.Text));
+            if (text.Length > 5000) 
+                throw new ArgumentException("Post content is too long.", nameof(createPostDto.Text));
+
             var post = _mapper.Map<Post>(createPostDto);
 
             if (post == null)
                 throw new InvalidOperationException("Mapping failed");
 
-            if(await _userRepository.GetByIdAsync(post.UserId) == null)
+            var user = await _userRepository.GetByIdAsync(post.UserId);
+            if (user == null)
                 throw new ArgumentException("User not found");
+
+            if(user.IsBanned)
+                throw new InvalidOperationException("Banned users cannot create posts.");
 
             await _postRepository.CreateAsync(post);
             _logger.LogInformation("Post created successfully. AuthorId: {UserId}", post.UserId);
+
+            var evt = new PostCreatedEvent
+            (
+                post.Id,
+                post.UserId,
+                post.CreatedAt
+            );
+
+            await _eventDispatcher.DispatchAsync(evt);
         }
 
         public async Task<IEnumerable<PostDto>> GetAllAsync()

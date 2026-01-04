@@ -27,6 +27,8 @@ builder.Services.AddAutoMapper(typeof(CommentProfile),
     typeof(ChatProfile),
     typeof(MessageProfile));
 
+builder.Services.AddMediator();
+
 builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 builder.Services.AddScoped<IPostRepository, PostRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();

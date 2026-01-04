@@ -6,7 +6,7 @@ const API_BASE = 'https://localhost:7142';
 
 export default function ChatList() {
     const navigate = useNavigate();
-    const { token, isAuthenticated } = useAuth();
+    const { accessToken, isAuthenticated } = useAuth();
     const [chats, setChats] = useState([]);
     const [users, setUsers] = useState([]);
     const [status, setStatus] = useState('idle');
@@ -20,20 +20,20 @@ export default function ChatList() {
     }, [isAuthenticated, navigate]);
 
     useEffect(() => {
-        if (!token) return;
+        if (!accessToken) return;
 
         const loadData = async () => {
             setStatus('loading');
             try {
                 const chatsRes = await fetch(`${API_BASE}/api/Chat/chats`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
+                    headers: { 'Authorization': `Bearer ${accessToken}` }
                 });
                 if (!chatsRes.ok) throw new Error(`HTTP ${chatsRes.status}`);
                 const chatsData = await chatsRes.json();
                 setChats(chatsData);
 
                 const usersRes = await fetch(`${API_BASE}/api/User/users`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
+                    headers: { 'Authorization': `Bearer ${accessToken}` }
                 });
                 if (!usersRes.ok) throw new Error(`HTTP ${usersRes.status}`);
                 const usersData = await usersRes.json();
@@ -46,13 +46,13 @@ export default function ChatList() {
             }
         };
         loadData();
-    }, [token]);
+    }, [accessToken]);
 
     const createPrivateChat = async (otherUserId) => {
         try {
             const res = await fetch(`${API_BASE}/api/Chat/private/${otherUserId}`, {
                 method: 'POST',
-                headers: { 'Authorization': `Bearer ${token}` }
+                headers: { 'Authorization': `Bearer ${accessToken}` }
             });
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
             const { chatId } = await res.json();
