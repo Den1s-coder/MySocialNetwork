@@ -9,7 +9,7 @@ const API_BASE = 'https://localhost:7142';
 export default function Chat() {
     const { chatId } = useParams();
     const navigate = useNavigate();
-    const { token, isAuthenticated, currentUserId, currentUserName } = useAuth();
+    const { accessToken, isAuthenticated, currentUserId, currentUserName } = useAuth();
     const [messages, setMessages] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -30,13 +30,13 @@ export default function Chat() {
     }, [isAuthenticated, navigate]);
 
     useEffect(() => {
-        if (!token || !chatId) return;
+        if (!accessToken || !chatId) return;
 
         const loadMessages = async () => {
             try {
                 console.log('Loading messages for chatId:', chatId);
                 const res = await fetch(`${API_BASE}/api/Chat/chats/${chatId}/messages`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
+                    headers: { 'Authorization': `Bearer ${accessToken}` }
                 });
                 if (!res.ok) throw new Error(`HTTP ${res.status}`);
                 const data = await res.json();
@@ -50,7 +50,7 @@ export default function Chat() {
             }
         };
         loadMessages();
-    }, [chatId, token]);
+    }, [chatId, accessToken]);
 
     const onMessage = useCallback((msg) => {
         setMessages(prev => {
@@ -59,7 +59,7 @@ export default function Chat() {
         });
     }, []);
 
-    const getToken = () => token;
+    const getToken = () => accessToken;
 
     const { connected, sendMessage, joinChat } = useChatHub({
         baseUrl: BASE_URL,

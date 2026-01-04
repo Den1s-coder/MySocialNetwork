@@ -14,7 +14,7 @@ export default function NewPost() {
         setStatus('loading');
         setError(null);
         try {
-            const token = localStorage.getItem('token');
+            const token = localStorage.getItem('accessToken');
             if (!token) throw new Error('Необхідна авторизація');
 
             const res = await fetch(`${API_BASE}/api/Post`, {
@@ -32,7 +32,7 @@ export default function NewPost() {
             }
 
             setStatus('success');
-            navigate('/profile'); // або на '/', за бажанням
+            navigate('/profile');
         } catch (err) {
             setError(err.message || 'Помилка створення поста');
             setStatus('error');

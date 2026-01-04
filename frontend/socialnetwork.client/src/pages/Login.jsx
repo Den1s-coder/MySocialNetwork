@@ -20,8 +20,12 @@ export default function Login() {
                 body: JSON.stringify({ username: form.username, password: form.password }),
             });
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            const token = await res.text();
-            localStorage.setItem('token', token);
+            const data = await res.json();
+            const access = data.accessToken;
+            const refresh = data.refreshToken;
+
+            localStorage.setItem('accessToken', access);
+            localStorage.setItem('refreshToken', refresh);
             setStatus('success');
         } catch (err) {
             setError(err.message || 'Помилка входу');

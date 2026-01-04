@@ -31,14 +31,14 @@ const getUserIdFromToken = (token) => {
 };
 
 export function useAuth() {
-    const [token, setToken] = useState(localStorage.getItem('token'));
-    const [isAuthenticated, setIsAuthenticated] = useState(Boolean(token));
+    const [accessToken, setToken] = useState(localStorage.getItem('accessToken'));
+    const [isAuthenticated, setIsAuthenticated] = useState(Boolean(accessToken));
     const [currentUserId, setCurrentUserId] = useState(null);
     const [currentUserName, setCurrentUserName] = useState(null);
 
     useEffect(() => {
         const handleStorageChange = () => {
-            const newToken = localStorage.getItem('token');
+            const newToken = localStorage.getItem('accessToken');
             setToken(newToken);
             setIsAuthenticated(Boolean(newToken));
         };
@@ -48,19 +48,20 @@ export function useAuth() {
     }, []);
 
     useEffect(() => {
-        if (token) {
-            const userId = getUserIdFromToken(token);
-            const userName = getUserNameFromToken(token);
+        if (accessToken) {
+            const userId = getUserIdFromToken(accessToken);
+            const userName = getUserNameFromToken(accessToken);
             setCurrentUserId(userId);
             setCurrentUserName(userName);
         } else {
             setCurrentUserId(null);
             setCurrentUserName(null);
         }
-    }, [token]);
+    }, [accessToken]);
 
     const logout = () => {
-        localStorage.removeItem('token');
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
         setToken(null);
         setIsAuthenticated(false);
         setCurrentUserId(null);
@@ -68,7 +69,7 @@ export function useAuth() {
     };
 
     return {
-        token,
+        accessToken,
         isAuthenticated,
         currentUserId,
         currentUserName,
