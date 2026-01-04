@@ -42,7 +42,6 @@ export default function Chat() {
     const { chatId } = useParams();
     const navigate = useNavigate();
     const { accessToken, isAuthenticated, currentUserId, currentUserName } = useAuth();
-
     const [messages, setMessages] = useState([]);
     const [loading, setLoading] = useState(true);
     const [chatTitle, setChatTitle] = useState(null);
@@ -196,6 +195,63 @@ export default function Chat() {
     if (!isValidGuid) {
         return <div>Invalid chat ID: {chatId}</div>;
     }
+
+    useEffect(() => {
+        if (!isAuthenticated) {
+            navigate('/login');
+            return;
+        }
+    }, [isAuthenticated, navigate]);
+
+    useEffect(() => {
+        if (!accessToken || !chatId) return;
+
+        const loadMessages = async () => {
+            try {
+                console.log('Loading messages for chatId:', chatId);
+                const res = await fetch(`${API_BASE}/api/Chat/chats/${chatId}/messages`, {
+                    headers: { 'Authorization': `Bearer ${accessToken}` }
+                });
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const data = await res.json();
+
+                const sortedMessages = data.sort((a, b) => new Date(a.sentAt) - new Date(b.sentAt));
+                setMessages(sortedMessages);
+                setLoading(false);
+            } catch (e) {
+                console.error('Помилка завантаження повідомлень:', e);
+                setLoading(false);
+            }
+        };
+        loadMessages();
+    }, [chatId, accessToken]);
+
+    const onMessage = useCallback((msg) => {
+        setMessages(prev => {
+            const updatedMessages = [...prev, msg];
+            return updatedMessages.sort((a, b) => new Date(a.sentAt) - new Date(b.sentAt));
+        });
+    }, []);
+
+    const getToken = () => accessToken;
+
+    const { connected, sendMessage, joinChat } = useChatHub({
+        baseUrl: BASE_URL,
+        getToken,
+        chatId,
+        onMessage
+    });
+
+    const [text, setText] = useState('');
+
+    const handleSend = async (e) => {
+        e.preventDefault();
+        if (!text.trim() || !connected || !chatId) return;
+
+        console.log('Sending message:', { chatId, content: text.trim() });
+        await sendMessage(chatId, text.trim());
+        setText('');
+    };
 
     if (loading) return <p>Завантаження чату…</p>;
     if (!isAuthenticated) return <p>Авторизуйтесь для доступу до чату</p>;

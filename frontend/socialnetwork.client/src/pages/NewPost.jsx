@@ -66,10 +66,8 @@ export default function NewPost() {
         setStatus('loading');
         setError(null);
         try {
-            let imageUrl = null;
-            if (image) {
-                imageUrl = await uploadImage();
-            }
+            const token = localStorage.getItem('accessToken');
+            if (!token) throw new Error('Необхідна авторизація');
 
             const res = await authFetch(`${API_BASE}/api/Post`, {
                 method: 'POST',
@@ -82,10 +80,7 @@ export default function NewPost() {
             }
 
             setStatus('success');
-            setText('');
-            setImage(null);
-            setImagePreview(null);
-            navigate('/');
+            navigate('/profile');
         } catch (err) {
             setError(err.message || 'Помилка створення поста');
             setStatus('error');

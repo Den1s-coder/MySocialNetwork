@@ -9,7 +9,7 @@ const API_BASE = import.meta.env.VITE_API_BASE || '';
 
 export default function ChatList() {
     const navigate = useNavigate();
-    const { accessToken, isAuthenticated, currentUserId } = useAuth();
+    const { accessToken, isAuthenticated } = useAuth();
     const [chats, setChats] = useState([]);
     const [users, setUsers] = useState([]);
     const [filteredUsers, setFilteredUsers] = useState([]);
@@ -30,14 +30,14 @@ export default function ChatList() {
         const loadData = async () => {
             setStatus('loading');
             try {
-                const chatsRes = await authFetch(`${API_BASE}/api/Chat/chats`, {
+                const chatsRes = await fetch(`${API_BASE}/api/Chat/chats`, {
                     headers: { 'Authorization': `Bearer ${accessToken}` }
                 });
                 if (!chatsRes.ok) throw new Error(`HTTP ${chatsRes.status}`);
                 const chatsData = await chatsRes.json();
                 setChats(chatsData);
 
-                const usersRes = await authFetch(`${API_BASE}/api/User/users`, {
+                const usersRes = await fetch(`${API_BASE}/api/User/users`, {
                     headers: { 'Authorization': `Bearer ${accessToken}` }
                 });
                 if (!usersRes.ok) throw new Error(`HTTP ${usersRes.status}`);
@@ -53,20 +53,6 @@ export default function ChatList() {
         };
         loadData();
     }, [accessToken]);
-
-    const handleSearch = (query) => {
-        setSearchQuery(query);
-        if (!query.trim()) {
-            setFilteredUsers(users);
-        } else {
-            const lowerQuery = query.toLowerCase();
-            const filtered = users.filter(user =>
-                user.name.toLowerCase().includes(lowerQuery) ||
-                user.email.toLowerCase().includes(lowerQuery)
-            );
-            setFilteredUsers(filtered);
-        }
-    };
 
     const createPrivateChat = async (otherUserId) => {
         try {
