@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.Extensions.Logging;
 using SocialNetwork.Application.DTO;
-using SocialNetwork.Application.DTO.Posts;
 using SocialNetwork.Application.Events;
 using SocialNetwork.Application.Interfaces;
 using SocialNetwork.Domain.Entities.Posts;
@@ -18,21 +17,18 @@ namespace SocialNetwork.Application.Service
         private readonly IMapper _mapper;
         private readonly ILogger<PostService> _logger;
         private readonly IEventDispatcher _eventDispatcher;
-        private readonly ICloudStorageService _cloudStorageService; // Додано для зберігання фото
 
         public PostService(IPostRepository postRepository,
             IUserRepository userRepository, 
             IMapper mapper,
             ILogger<PostService> logger,
-            IEventDispatcher eventDispatcher,
-            ICloudStorageService cloudStorageService) // Додано в конструктор
+            IEventDispatcher eventDispatcher)
         {
             _postRepository = postRepository;
             _userRepository = userRepository;
             _mapper = mapper;
             _logger = logger;
             _eventDispatcher = eventDispatcher;
-            _cloudStorageService = cloudStorageService; // Ініціалізація
         }
         public async Task BanPost(Guid id, CancellationToken cancellationToken = default)
         {
@@ -70,7 +66,7 @@ namespace SocialNetwork.Application.Service
                 throw new InvalidOperationException("Banned users cannot create posts.");
 
             await _postRepository.CreateAsync(post);
-            _logger.LogInformation("Post created successfully. AuthorId: {UserId}, ImageUrl: {ImageUrl}", post.UserId, post.ImageUrl);
+            _logger.LogInformation("Post created successfully. AuthorId: {UserId}", post.UserId);
 
             var evt = new PostCreatedEvent
             (
