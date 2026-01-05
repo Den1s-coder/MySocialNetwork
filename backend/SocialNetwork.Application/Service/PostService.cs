@@ -92,37 +92,6 @@ namespace SocialNetwork.Application.Service
             return _mapper.Map<PostDto?>(post);
         }
 
-        public async Task<PaginetedResult<PostDto>> GetPagedAsync(int page, int pageSize, CancellationToken cancellationToken = default)
-        {
-            var (items, total) = await _postRepository.GetPagedAsync(page, pageSize);
-
-            var result = new PaginetedResult<PostDto>
-            {
-                Items = _mapper.Map<IEnumerable<PostDto>>(items),
-                TotalCount = total,
-                Page = page,
-                PageSize = pageSize
-            };
-            return result;
-        }
-
-        public async Task<PaginetedResult<PostDto>> SearchAsync(string query, int page, int pageSize, CancellationToken cancellationToken = default)
-        {
-            if (string.IsNullOrWhiteSpace(query))
-                throw new ArgumentException("Search query cannot be empty", nameof(query));
-
-            var (items, total) = await _postRepository.SearchAsync(query, page, pageSize, cancellationToken);
-
-            var result = new PaginetedResult<PostDto>
-            {
-                Items = _mapper.Map<IEnumerable<PostDto>>(items),
-                TotalCount = total,
-                Page = page,
-                PageSize = pageSize
-            };
-            return result;
-        }
-
         public Task<IEnumerable<PostDto>> GetPostsByDateRangeAsync(DateTime startDate, DateTime endDate, CancellationToken cancellationToken = default)//TODO
         {
             throw new NotImplementedException();

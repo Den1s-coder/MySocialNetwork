@@ -36,8 +36,7 @@ namespace SocialNetwork.API.Controllers
         [HttpGet("chats/{chatId:guid}/messages")]
         public async Task<IActionResult> GetMessages(Guid chatId, CancellationToken cancellationToken = default)
         {
-            var userId = Guid.Parse(User.Claims.First(c => c.Type == ClaimTypes.Sid).Value);
-            var messages = await _messageService.GetMessageByChatIdAsync(chatId, userId, cancellationToken);
+            var messages = await _messageService.GetMessageByChatIdAsync(chatId, cancellationToken);
             return Ok(messages);
         }
 

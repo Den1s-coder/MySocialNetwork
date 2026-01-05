@@ -20,7 +20,7 @@ namespace SocialNetwork.Application.Service
             _logger = logger;
         }
 
-        public async Task<IEnumerable<MessageDto>> GetMessageByChatIdAsync(Guid chatId, Guid userId, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<Message>> GetMessageByChatIdAsync(Guid chatid, CancellationToken cancellationToken = default)
         {
             var messages = await _messageRepository.GetMessagesByChatIdAsync(chatId, cancellationToken);
 

@@ -22,9 +22,9 @@ namespace SocialNetwork.API.Controllers
         }
 
         [HttpGet("{postId:guid}/comments")]
-        public async Task<IActionResult> GetPaged([FromQuery]int pageNumber, [FromQuery]int pageSize ,Guid postId, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> Get(Guid postId, CancellationToken cancellationToken = default)
         {
-            var comments = await _commentService.GetPostCommentsPagedAsync(postId, pageNumber, pageSize, cancellationToken);
+            var comments = await _commentService.GetPostCommentsAsync(postId, cancellationToken);
 
             return Ok(comments);
         }

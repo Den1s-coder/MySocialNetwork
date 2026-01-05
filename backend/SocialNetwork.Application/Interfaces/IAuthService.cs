@@ -9,8 +9,8 @@ namespace SocialNetwork.Application.Interfaces
 {
     public interface IAuthService
     {
-        public Task RegisterAsync(RegisterDto userDto);
-        public Task<LoginResponce> LoginAsync(LoginDto loginDto);
+        public Task RegisterAsync(RegisterDto userDto, CancellationToken cancellationToken = default);
+        public Task<LoginResponce> LoginAsync(LoginDto loginDto, CancellationToken cancellationToken = default);
         public Task<LoginResponce> LoginWithRefreshTokenAsync(string refreshToken);
     }
 }

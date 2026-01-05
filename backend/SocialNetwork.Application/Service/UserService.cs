@@ -24,7 +24,7 @@ namespace SocialNetwork.Application.Service
             _mapper = mapper;
         }
 
-        public async Task BanUserAsync(Guid id, CancellationToken cancellationToken = default)
+        public async Task BanUser(Guid id, CancellationToken cancellationToken = default)
         {
             var user = await _userRepository.GetByIdAsync(id, cancellationToken);
             if (user == null)
@@ -35,7 +35,7 @@ namespace SocialNetwork.Application.Service
             await _userRepository.UpdateAsync(user, cancellationToken);
         }
 
-        public async Task ChangeEmailAsync(Guid userId, ChangeEmailDto changeEmailDto, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<UserDto>> GetAllUsersAsync(CancellationToken cancellationToken = default)
         {
             var user = await _userRepository.GetByIdAsync(userId, cancellationToken);
 
@@ -102,28 +102,28 @@ namespace SocialNetwork.Application.Service
             return _mapper.Map<IEnumerable<UserDto>>(users);
         }
 
-        public async Task<UserDto?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+        public async Task<UserDto> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
             var user = await _userRepository.GetByIdAsync(id, cancellationToken);
 
             return _mapper.Map<UserDto?>(user);
         }
 
-        public async Task<UserDto?> GetByEmailAsync(string email, CancellationToken cancellationToken = default)
+        public async Task<UserDto> GetUserByEmailAsync(string email, CancellationToken cancellationToken = default)
         {
             var user = await _userRepository.GetByEmailAsync(email, cancellationToken);
 
             return _mapper.Map<UserDto?>(user);
         }
 
-        public async Task<UserDto?> GetByUserNameAsync(string userName, CancellationToken cancellationToken = default)
+        public async Task<UserDto> GetUserByNameAsync(string name, CancellationToken cancellationToken = default)
         {
             var user = await _userRepository.GetByUserNameAsync(userName, cancellationToken);
 
             return _mapper.Map<UserDto?>(user);
         }
 
-        public async Task<PaginetedResult<UserDto>> SearchAsync(string query, int page, int pageSize, CancellationToken cancellationToken = default)
+        public async Task UpdateProfileAsync(UserDto updatedUserDto, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(query))
                 throw new ArgumentException("Search query cannot be empty", nameof(query));

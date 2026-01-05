@@ -38,7 +38,7 @@ namespace SocialNetwork.Infrastructure.Repos
                 .FirstOrDefaultAsync(f => f.Id == id, cancellationToken);
         }
 
-        public async Task<IEnumerable<Friendship>> GetUserFriendshipsAsync(Guid userId)
+        public async Task<IEnumerable<Friendship>> GetUserFriendshipsAsync(Guid userId, CancellationToken cancellationToken = default)
         {
             return await _context.Friendships
                 .AsNoTracking()
@@ -46,7 +46,7 @@ namespace SocialNetwork.Infrastructure.Repos
                 .ToListAsync();
         }
 
-        public Task UpdateAsync(Friendship T) //TODO
+        public Task UpdateAsync(Friendship T, CancellationToken cancellationToken = default) //TODO
         {
             return await _context.Friendships
                 .AsNoTracking()
@@ -54,7 +54,7 @@ namespace SocialNetwork.Infrastructure.Repos
                 .ToListAsync(cancellationToken);
         }
 
-        public async Task UpdateAsync(Friendship T, CancellationToken cancellationToken = default)
+        public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
         {
             _context.Friendships.Update(T);
             await _context.SaveChangesAsync(cancellationToken);

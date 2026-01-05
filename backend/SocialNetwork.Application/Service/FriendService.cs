@@ -20,22 +20,22 @@ namespace SocialNetwork.Application.Service
             _mapper = mapper;
         }
 
-        public Task AcceptFriendRequest(Guid requestId)
+        public Task AcceptFriendRequest(Guid requestId, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
 
-        public Task DeclineFriendRequest(Guid requestId)
+        public Task DeclineFriendRequest(Guid requestId, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<Friendship>> GetAllFriends()
+        public Task<IEnumerable<Friendship>> GetAllFriends(CancellationToken cancellationToken = default)
         {
             return  _friendshipRepository.GetAllAsync();
         }
 
-        public async Task<IEnumerable<Friendship>> GetFriendsOfUser(Guid userId)
+        public async Task<IEnumerable<Friendship>> GetFriendsOfUser(Guid userId, CancellationToken cancellationToken = default)
         {
             var friendships =  await _friendshipRepository.GetUserFriendshipsAsync(userId);
             return friendships
@@ -44,7 +44,7 @@ namespace SocialNetwork.Application.Service
 
         }
 
-        public async Task<IEnumerable<FriendRequestDto>> GetPendingFriendRequests(Guid userId)
+        public async Task<IEnumerable<FriendRequestDto>> GetPendingFriendRequests(Guid userId, CancellationToken cancellationToken = default)
         {
             var friendships = await _friendshipRepository.GetUserFriendshipsAsync(userId);
             var pendingRequests = friendships
@@ -67,7 +67,7 @@ namespace SocialNetwork.Application.Service
             // TODO: Logic to remove friendship goes here
         }
 
-        public async Task SendFriendRequest(FriendRequestDto request)
+        public async Task SendFriendRequest(FriendRequestDto request, CancellationToken cancellationToken = default)
         {
             var receiver = await _userRepository.GetByIdAsync(request.ReceiverId);
             if (receiver == null)

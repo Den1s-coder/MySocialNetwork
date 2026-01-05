@@ -30,29 +30,6 @@ namespace SocialNetwork.API.Controllers
             return Ok(posts);
         }
 
-        [HttpGet("posts")]
-        public async Task<IActionResult> GetPostsPaged([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, CancellationToken cancellationToken = default)
-        {
-            var pagedPosts = await _postService.GetPagedAsync(pageNumber, pageSize, cancellationToken);
-            return Ok(pagedPosts);
-        }
-
-        [HttpGet("search")]
-        [ProducesResponseType(typeof(PaginetedResult<PostDto>), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<PaginetedResult<PostDto>>> SearchPosts(
-            [FromQuery] string query,
-            [FromQuery] int pageNumber = 1,
-            [FromQuery] int pageSize = 10,
-            CancellationToken cancellationToken = default)
-        {
-            if (string.IsNullOrWhiteSpace(query))
-                return BadRequest(new { message = "Search query cannot be empty" });
-
-            var result = await _postService.SearchAsync(query, pageNumber, pageSize, cancellationToken);
-            return Ok(result);
-        }
-
         [HttpGet("{postId:guid}")]
         public async Task<IActionResult> GetById(Guid postId, CancellationToken cancellationToken = default)
         {
@@ -95,50 +72,6 @@ namespace SocialNetwork.API.Controllers
 
             createPostDto.UserId = userId;
             await _postService.CreateAsync(createPostDto, cancellationToken);
-            return Ok();
-        }
-
-        [Authorize]
-        [HttpPost("{postId:guid}/image")]
-        public async Task<IActionResult> UploadPostImage(Guid postId, IFormFile image)
-        {
-            if (image == null || image.Length == 0)
-                return BadRequest(new { message = "No image uploaded." });
-
-            var allowedMimeTypes = new[] { "image/jpeg", "image/png", "image/gif", "image/webp" };
-            if (!allowedMimeTypes.Contains(image.ContentType?.ToLower()))
-                return BadRequest(new { message = "Only image files are allowed." });
-
-            if (image.Length > 10 * 1024 * 1024)
-                return BadRequest(new { message = "File size must not exceed 10MB." });
-
-            try
-            {
-                var extension = Path.GetExtension(image.FileName);
-                var filename = $"post_{postId}_{Guid.NewGuid()}{extension}";
-
-                using var stream = image.OpenReadStream();
-                var imageUrl = await _cloudStorageService.UploadFileAsync(stream, filename, image.ContentType);
-
-                _logger.LogInformation("Post image uploaded successfully: {FileName}", filename);
-                return Ok(new { imageUrl });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error uploading post image");
-                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "Error uploading image." });
-            }
-        }
-
-        [Authorize]
-        [HttpPost("{postId:guid}/react")]
-        public async Task<IActionResult> ToggleReaction(Guid postId, [FromQuery] ToggleReactionRequest req, CancellationToken cancellationToken = default)
-        {
-            var sid = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Sid)?.Value;
-            if (!Guid.TryParse(sid, out var userId))
-                return Unauthorized();
-
-            await _postService.ToggleReactionAsync(postId, userId, req.ReactionTypeId, cancellationToken);
             return Ok();
         }
 

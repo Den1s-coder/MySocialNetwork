@@ -36,7 +36,7 @@ namespace SocialNetwork.Infrastructure.Repos
                 .ToListAsync();
         }
 
-        public async Task<(IEnumerable<Comment> Items, int Total)> GetPostCommentsPagedAsync(Guid id,int page,int pageSize, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<Comment>> GetPostCommentsAsync(Guid id, CancellationToken cancellationToken = default)
         {
             var query = _context.Comments
                 .AsNoTracking()

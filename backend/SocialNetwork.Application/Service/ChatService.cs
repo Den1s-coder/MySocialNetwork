@@ -23,7 +23,7 @@ namespace SocialNetwork.Application.Service
             _mapper = mapper;
         }
 
-        public async Task AddUserToChatAsync(Guid chatId, Guid userId, Guid requesterId, CancellationToken cancellationToken = default)
+        public async Task AddUserToChatAsync(Guid chatId, Guid userId, CancellationToken cancellationToken = default)
         {
             var chat = await _chatRepository.GetByIdAsync(chatId, cancellationToken);
             if (chat == null)

@@ -56,14 +56,14 @@ namespace SocialNetwork.Infrastructure.Repos
                 .FirstOrDefaultAsync(u => u.Id == id, cancellationToken);
         }
 
-        public Task<User?> GetByUserNameAsync(string userName, CancellationToken cancellationToken = default)
+        public Task<User?> GetByUserNameAsync(string UserName, CancellationToken cancellationToken = default)
         {
             return _context.Users
                 .AsNoTracking()
                 .FirstOrDefaultAsync(u => u.Name == userName, cancellationToken);
         }
 
-        public async Task<(IEnumerable<User> Items, int Total)> SearchAsync(string query, int page, int pageSize, CancellationToken cancellationToken = default)
+        public async Task UpdateAsync(User updatedUser, CancellationToken cancellationToken = default)
         {
             var lowerQuery = query.ToLower();
             var searchQuery = _context.Users

@@ -10,12 +10,12 @@ namespace SocialNetwork.Application.Interfaces
 {
     public interface IFriendService
     {
-        public Task<IEnumerable<Friendship>> GetAllFriends();
-        public Task<IEnumerable<Friendship>> GetFriendsOfUser(Guid userId);
-        public Task SendFriendRequest(FriendRequestDto request);
-        public Task<IEnumerable<FriendRequestDto>> GetPendingFriendRequests(Guid userId);
-        public Task AcceptFriendRequest(Guid requestId);
-        public Task DeclineFriendRequest(Guid requestId);
+        public Task<IEnumerable<Friendship>> GetAllFriends(CancellationToken cancellationToken = default);
+        public Task<IEnumerable<Friendship>> GetFriendsOfUser(Guid userId, CancellationToken cancellationToken = default);
+        public Task SendFriendRequest(FriendRequestDto request, CancellationToken cancellationToken = default);
+        public Task<IEnumerable<FriendRequestDto>> GetPendingFriendRequests(Guid userId, CancellationToken cancellationToken = default);
+        public Task AcceptFriendRequest(Guid requestId, CancellationToken cancellationToken = default);
+        public Task DeclineFriendRequest(Guid requestId, CancellationToken cancellationToken = default);
         public Task RemoveFriend(Guid userId, Guid friendId);
 
     }

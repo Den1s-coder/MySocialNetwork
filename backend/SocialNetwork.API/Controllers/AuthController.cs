@@ -35,7 +35,7 @@ namespace SocialNetwork.API.Controllers
         {
             _logger.LogInformation("Login endpoint called");
 
-            var responce = await _authService.LoginAsync(loginDto);
+            var responce = await _authService.LoginAsync(loginDto, cancellationToken);
 
             _logger.LogInformation("User Succesfully login");
 
