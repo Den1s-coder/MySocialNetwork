@@ -3,11 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using SocialNetwork.API.Extensions;
 using SocialNetwork.API.Hubs;
 using SocialNetwork.API.Middleware;
-using SocialNetwork.API.Services;
 using SocialNetwork.Application;
-using SocialNetwork.Application.Interfaces;
 using SocialNetwork.Application.Mappings;
-using SocialNetwork.Domain.Enums;
 using SocialNetwork.Domain.Interfaces;
 using SocialNetwork.Infrastructure;
 using SocialNetwork.Infrastructure.Services;
@@ -28,23 +25,9 @@ builder.Services.AddAutoMapper(typeof(CommentProfile),
 
 builder.Services.AddMediator();
 
-builder.Services.AddScoped<ICommentRepository, CommentRepository>();
-builder.Services.AddScoped<IPostRepository, PostRepository>();
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IChatRepository, ChatRepository>();
-builder.Services.AddScoped<IMessageRepository, MessageRepository>();
-builder.Services.AddScoped<IFriendshipRepository, FriendshipRepository>();
-builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
-
 builder.Services.AddInfrastructure(builder.Configuration);
 
-builder.Services.AddScoped<ICommentService, CommentService>();
-builder.Services.AddScoped<IPostService, PostService>();
-builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IChatService, ChatService>();
-builder.Services.AddScoped<IMessageService, MessageService>();
-builder.Services.AddScoped<IFriendService, FriendService>();
+builder.Services.AddApplication();
 
 var storageConnection = builder.Configuration.GetValue<string>("AzureStorage:ConnectionString");
 var containerConfig = builder.Configuration.GetSection("AzureStorage:Containers");

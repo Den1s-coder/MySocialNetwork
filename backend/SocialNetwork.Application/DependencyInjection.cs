@@ -15,8 +15,6 @@ namespace SocialNetwork.Application
             services.AddScoped<IChatService, ChatService>();
             services.AddScoped<IMessageService, MessageService>();
             services.AddScoped<IFriendService, FriendService>();
-            services.AddScoped<INotificationService, NotificationService>();
-
 
             return services;
         }
