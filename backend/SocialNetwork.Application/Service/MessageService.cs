@@ -13,7 +13,7 @@ namespace SocialNetwork.Application.Service
             _messageRepository = messageRepository;
         }
 
-        public async Task<IEnumerable<Message>> GetMessageByChatIdAsync(Guid chatid)
+        public async Task<IEnumerable<Message>> GetMessageByChatIdAsync(Guid chatid, CancellationToken cancellationToken = default)
         {
             return await _messageRepository.GetMessagesByChatIdAsync(chatid);
         }

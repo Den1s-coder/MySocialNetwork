@@ -10,11 +10,11 @@ namespace SocialNetwork.Application.Interfaces
 {
     public interface IUserService
     {
-        public Task<IEnumerable<UserDto>> GetAllUsersAsync();
-        public Task<UserDto> GetByIdAsync(Guid id);
-        public Task BanUser(Guid id);
-        public Task<UserDto> GetUserByEmailAsync(string email);
-        public Task<UserDto> GetUserByNameAsync(string name);
-        public Task UpdateProfileAsync(UserDto updatedUserDto);
+        public Task<IEnumerable<UserDto>> GetAllUsersAsync(CancellationToken cancellationToken = default);
+        public Task<UserDto> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
+        public Task BanUser(Guid id, CancellationToken cancellationToken = default);
+        public Task<UserDto> GetUserByEmailAsync(string email, CancellationToken cancellationToken = default);
+        public Task<UserDto> GetUserByNameAsync(string name, CancellationToken cancellationToken = default);
+        public Task UpdateProfileAsync(UserDto updatedUserDto, CancellationToken cancellationToken = default);
     }
 }

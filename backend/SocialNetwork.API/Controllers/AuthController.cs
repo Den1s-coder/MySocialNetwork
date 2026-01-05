@@ -19,11 +19,11 @@ namespace SocialNetwork.API.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterDto createUserDto)
+        public async Task<IActionResult> Register([FromBody] RegisterDto createUserDto, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("Register endpoint called");
 
-            await _authService.RegisterAsync(createUserDto);
+            await _authService.RegisterAsync(createUserDto, cancellationToken);
 
             _logger.LogInformation("User Succesfully registered");
 
@@ -31,11 +31,11 @@ namespace SocialNetwork.API.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
+        public async Task<IActionResult> Login([FromBody] LoginDto loginDto, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("Login endpoint called");
 
-            var responce = await _authService.LoginAsync(loginDto);
+            var responce = await _authService.LoginAsync(loginDto, cancellationToken);
 
             _logger.LogInformation("User Succesfully login");
 

@@ -22,14 +22,14 @@ namespace SocialNetwork.Infrastructure.Repos
             _logger = logger;
         }
 
-        public async Task CreateAsync(Chat chat)
+        public async Task CreateAsync(Chat chat, CancellationToken cancellationToken = default)
         {
             _context.Chats.Add(chat);
             await _context.SaveChangesAsync();
             _logger.LogInformation("Chat created with ID: " + chat.Id);
         }
 
-        public async Task DeleteAsync(Guid id)
+        public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
         {
             var chat = await _context.Chats.FindAsync(id);
             if (chat != null)
@@ -44,14 +44,14 @@ namespace SocialNetwork.Infrastructure.Repos
             }
         }
 
-        public async Task<IEnumerable<Chat>> GetAllAsync()
+        public async Task<IEnumerable<Chat>> GetAllAsync(CancellationToken cancellationToken = default)
         {
             return await _context.Chats
                 .AsNoTracking()
                 .ToListAsync();
         }
 
-        public async Task<Chat?> GetByIdAsync(Guid id)
+        public async Task<Chat?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
             return await _context.Chats
                 .AsNoTracking()
@@ -87,9 +87,7 @@ namespace SocialNetwork.Infrastructure.Repos
                 .FirstOrDefaultAsync(c => c.Id == chatId);
         }
 
-
-
-        public async Task UpdateAsync(Chat chat)
+        public async Task UpdateAsync(Chat chat, CancellationToken cancellationToken = default)
         {
             _context.Chats.Update(chat);
             await _context.SaveChangesAsync();

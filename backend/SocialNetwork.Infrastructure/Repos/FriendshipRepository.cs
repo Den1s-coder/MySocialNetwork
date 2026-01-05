@@ -18,27 +18,27 @@ namespace SocialNetwork.Infrastructure.Repos
             _context = context;
         }
 
-        public Task CreateAsync(Friendship T)
+        public Task CreateAsync(Friendship T, CancellationToken cancellationToken = default)
         {
             _context.Friendships.Add(T);
             return _context.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<Friendship>> GetAllAsync()
+        public async Task<IEnumerable<Friendship>> GetAllAsync(CancellationToken cancellationToken = default)
         {
             return await _context.Friendships
                 .AsNoTracking()
                 .ToListAsync();
         }
 
-        public async Task<Friendship?> GetByIdAsync(Guid id)
+        public async Task<Friendship?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
             return await _context.Friendships
                 .AsNoTracking()
                 .FirstOrDefaultAsync(f => f.Id == id);
         }
 
-        public async Task<IEnumerable<Friendship>> GetUserFriendshipsAsync(Guid userId)
+        public async Task<IEnumerable<Friendship>> GetUserFriendshipsAsync(Guid userId, CancellationToken cancellationToken = default)
         {
             return await _context.Friendships
                 .AsNoTracking()
@@ -46,12 +46,12 @@ namespace SocialNetwork.Infrastructure.Repos
                 .ToListAsync();
         }
 
-        public Task UpdateAsync(Friendship T) //TODO
+        public Task UpdateAsync(Friendship T, CancellationToken cancellationToken = default) //TODO
         {
             throw new NotImplementedException();
         }
 
-        public async Task DeleteAsync(Guid id)
+        public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
         {
             var existFriendship = await _context.Friendships.FirstOrDefaultAsync(f => f.Id == id);
 
@@ -61,7 +61,7 @@ namespace SocialNetwork.Infrastructure.Repos
             await _context.SaveChangesAsync();
         }
 
-        public Task<bool> AreFriendsAsync(Guid userId1, Guid userId2)
+        public Task<bool> AreFriendsAsync(Guid userId1, Guid userId2, CancellationToken cancellationToken = default)
         {
             return _context.Friendships
                 .AsNoTracking()

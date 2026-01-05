@@ -9,9 +9,9 @@ namespace SocialNetwork.Domain.Interfaces
 {
     public interface IUserRepository : IGenerycRepository<User>
     {
-        public Task<User?> GetByEmailAsync(string Email);
+        public Task<User?> GetByEmailAsync(string Email, CancellationToken cancellationToken = default);
 
-        public Task<User?> GetByUserNameAsync(string UserName);
+        public Task<User?> GetByUserNameAsync(string UserName, CancellationToken cancellationToken = default);
 
     }
 }

@@ -23,7 +23,7 @@ namespace SocialNetwork.Application.Service
             _mapper = mapper;
         }
 
-        public async Task AddUserToChatAsync(Guid chatId, Guid userId)
+        public async Task AddUserToChatAsync(Guid chatId, Guid userId, CancellationToken cancellationToken = default)
         {
             var chat = await _chatRepository.GetByIdAsync(chatId);
             if (chat == null)
@@ -48,7 +48,7 @@ namespace SocialNetwork.Application.Service
             await _chatRepository.UpdateAsync(chat);
         }
 
-        public async Task ChangeUserRoleInChatAsync(Guid chatId, Guid userId, int newRole)
+        public async Task ChangeUserRoleInChatAsync(Guid chatId, Guid userId, int newRole, CancellationToken cancellationToken = default)
         {
             var chat = await _chatRepository.GetByIdAsync(chatId);
 
@@ -63,7 +63,7 @@ namespace SocialNetwork.Application.Service
             userChat.Role = (ChatRole)newRole;
         }
 
-        public async Task<ChatDto> CreateChannelChatAsync(string title, Guid ownerId)
+        public async Task<ChatDto> CreateChannelChatAsync(string title, Guid ownerId, CancellationToken cancellationToken = default)
         {
             var chat = new Chat
             {
@@ -88,7 +88,7 @@ namespace SocialNetwork.Application.Service
             return _mapper.Map<ChatDto>(chat);
         }
 
-        public async Task<ChatDto> CreateGroupChatAsync(string title, Guid ownerId)
+        public async Task<ChatDto> CreateGroupChatAsync(string title, Guid ownerId, CancellationToken cancellationToken = default)
         {
             var chat = new Chat
             {
@@ -113,7 +113,7 @@ namespace SocialNetwork.Application.Service
             return _mapper.Map<ChatDto>(chat);
         }
 
-        public async Task<ChatDto> CreatePrivateChatAsync(Guid userId1, Guid userId2)
+        public async Task<ChatDto> CreatePrivateChatAsync(Guid userId1, Guid userId2, CancellationToken cancellationToken = default)
         {
             var existing = await _chatRepository.GetChatBetweenUsersAsync(userId1, userId2);
             if (existing != null)
@@ -151,7 +151,7 @@ namespace SocialNetwork.Application.Service
             return _mapper.Map<ChatDto>(chat);
         }
 
-        public async Task RemoveUserFromChatAsync(Guid chatId, Guid userId)
+        public async Task RemoveUserFromChatAsync(Guid chatId, Guid userId, CancellationToken cancellationToken = default)
         {
             var chat = await _chatRepository.GetByIdAsync(chatId);
 
@@ -171,7 +171,7 @@ namespace SocialNetwork.Application.Service
             await _chatRepository.UpdateAsync(chat);
         }
 
-        public async Task<IEnumerable<ChatDto>> GetChatsByUserIdAsync(Guid userId)
+        public async Task<IEnumerable<ChatDto>> GetChatsByUserIdAsync(Guid userId, CancellationToken cancellationToken = default)
         {
             var chats = await _chatRepository.GetChatsByUserIdAsync(userId);
             return _mapper.Map<IEnumerable<ChatDto>>(chats);

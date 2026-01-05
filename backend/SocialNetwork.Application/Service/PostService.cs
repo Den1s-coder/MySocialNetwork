@@ -30,7 +30,7 @@ namespace SocialNetwork.Application.Service
             _logger = logger;
             _eventDispatcher = eventDispatcher;
         }
-        public async Task BanPost(Guid id)
+        public async Task BanPost(Guid id, CancellationToken cancellationToken = default)
         {
             var post = await _postRepository.GetByIdAsync(id);
             if(post == null)
@@ -42,7 +42,7 @@ namespace SocialNetwork.Application.Service
             await _postRepository.UpdateAsync(post);
         }
 
-        public async Task CreateAsync(CreatePostDto createPostDto)
+        public async Task CreateAsync(CreatePostDto createPostDto, CancellationToken cancellationToken = default)
         {
             if (createPostDto == null)
                 throw new ArgumentNullException("postDTO is null");
@@ -78,31 +78,31 @@ namespace SocialNetwork.Application.Service
             await _eventDispatcher.DispatchAsync(evt);
         }
 
-        public async Task<IEnumerable<PostDto>> GetAllAsync()
+        public async Task<IEnumerable<PostDto>> GetAllAsync(CancellationToken cancellationToken = default)
         {
             var posts = await _postRepository.GetAllAsync();
 
             return _mapper.Map<IEnumerable<PostDto>>(posts);
         }
 
-        public async Task<PostDto?> GetByIdAsync(Guid id)
+        public async Task<PostDto?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
             var post = await _postRepository.GetByIdAsync(id);
 
             return _mapper.Map<PostDto?>(post);
         }
 
-        public Task<IEnumerable<PostDto>> GetPostsByDateRangeAsync(DateTime startDate, DateTime endDate)//TODO
+        public Task<IEnumerable<PostDto>> GetPostsByDateRangeAsync(DateTime startDate, DateTime endDate, CancellationToken cancellationToken = default)//TODO
         {
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<PostDto>> GetPostsByTagAsync(string tag)//TODO
+        public Task<IEnumerable<PostDto>> GetPostsByTagAsync(string tag, CancellationToken cancellationToken = default)//TODO
         {
             throw new NotImplementedException();
         }
 
-        public async Task<IEnumerable<PostDto>> GetPostsByUserIdAsync(Guid userId) 
+        public async Task<IEnumerable<PostDto>> GetPostsByUserIdAsync(Guid userId, CancellationToken cancellationToken = default) 
         {
             var posts = await _postRepository.GetPostsByUserIdAsync(userId);
 
