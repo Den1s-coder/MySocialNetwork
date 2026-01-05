@@ -9,6 +9,6 @@ namespace SocialNetwork.Domain.Interfaces
 {
     public interface ICommentRepository: IGenerycRepository<Comment>
     {
-        public Task<IEnumerable<Comment>> GetPostCommentsAsync(Guid id);
+        public Task<IEnumerable<Comment>> GetPostCommentsAsync(Guid id, CancellationToken cancellationToken = default);
     }
 }

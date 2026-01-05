@@ -28,7 +28,7 @@ namespace SocialNetwork.Application.Service
             _refreshTokenRepository = refreshTokenRepository;
         }
 
-        public async Task<LoginResponce> LoginAsync(LoginDto loginDto)
+        public async Task<LoginResponce> LoginAsync(LoginDto loginDto, CancellationToken cancellationToken = default)
         {
             var user = await _userRepository.GetByUserNameAsync(loginDto.Username);
 
@@ -83,7 +83,7 @@ namespace SocialNetwork.Application.Service
             return new LoginResponce(newAccessToken, newRefreshToken);
         }
 
-        public async Task RegisterAsync(RegisterDto userDto)
+        public async Task RegisterAsync(RegisterDto userDto, CancellationToken cancellationToken = default)
         {
             if (userDto == null)
                 throw new ArgumentNullException("userDTO is null");

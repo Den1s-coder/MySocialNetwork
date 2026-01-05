@@ -19,7 +19,7 @@ namespace SocialNetwork.Application.Service
             _mapper = mapper;
         }
 
-        public async Task BanUser(Guid id)
+        public async Task BanUser(Guid id, CancellationToken cancellationToken = default)
         {
             var user = await _userRepository.GetByIdAsync(id);
             if (user == null)
@@ -30,35 +30,35 @@ namespace SocialNetwork.Application.Service
             await _userRepository.UpdateAsync(user);
         }
 
-        public async Task<IEnumerable<UserDto>> GetAllUsersAsync()
+        public async Task<IEnumerable<UserDto>> GetAllUsersAsync(CancellationToken cancellationToken = default)
         {
             var users = await _userRepository.GetAllAsync();
             
             return _mapper.Map<IEnumerable<UserDto>>(users);
         }
 
-        public async Task<UserDto> GetByIdAsync(Guid id)
+        public async Task<UserDto> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
             var user = await _userRepository.GetByIdAsync(id);
 
             return _mapper.Map<UserDto?>(user);
         }
 
-        public async Task<UserDto> GetUserByEmailAsync(string email)
+        public async Task<UserDto> GetUserByEmailAsync(string email, CancellationToken cancellationToken = default)
         {
             var user = await _userRepository.GetByEmailAsync(email);
 
             return _mapper.Map<UserDto?>(user);
         }
 
-        public async Task<UserDto> GetUserByNameAsync(string name)
+        public async Task<UserDto> GetUserByNameAsync(string name, CancellationToken cancellationToken = default)
         {
             var user = await _userRepository.GetByUserNameAsync(name);
 
             return _mapper.Map<UserDto?>(user);
         }
 
-        public async Task UpdateProfileAsync(UserDto updatedUserDto)
+        public async Task UpdateProfileAsync(UserDto updatedUserDto, CancellationToken cancellationToken = default)
         {
             var existingUser = await _userRepository.GetByIdAsync(updatedUserDto.Id);
 

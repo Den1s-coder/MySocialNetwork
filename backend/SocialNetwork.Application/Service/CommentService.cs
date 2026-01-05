@@ -36,7 +36,7 @@ namespace SocialNetwork.Application.Service
             _userRepository = userRepository;
         }
 
-        public async Task BanComment(Guid id)
+        public async Task BanComment(Guid id, CancellationToken cancellationToken = default)
         {
             var post = await _commentRepository.GetByIdAsync(id);
             if (post == null)
@@ -45,10 +45,10 @@ namespace SocialNetwork.Application.Service
             }
             post.IsBanned = true;
 
-            await _commentRepository.UpdateAsync(post);
+            await _commentRepository.UpdateAsync(post, cancellationToken);
         }
 
-        public async Task CreateAsync(CreateCommentDto createCommentDto)
+        public async Task CreateAsync(CreateCommentDto createCommentDto, CancellationToken cancellationToken = default)
         {
             if (createCommentDto == null)
                 throw new ArgumentNullException("commentDTO is null");
@@ -64,14 +64,14 @@ namespace SocialNetwork.Application.Service
             if (comment == null)
                 throw new InvalidOperationException("Mapping failed");
 
-            var user = await _userRepository.GetByIdAsync(comment.AuthorId);
+            var user = await _userRepository.GetByIdAsync(comment.AuthorId, cancellationToken);
             if (user == null)
                 throw new ArgumentException("User not found");
 
             if (user.IsBanned)
                 throw new InvalidOperationException("Banned users cannot create comments.");
 
-            await _commentRepository.CreateAsync(comment);
+            await _commentRepository.CreateAsync(comment, cancellationToken);
 
             var evt = new CommentCreatedEvent
             (
@@ -81,29 +81,29 @@ namespace SocialNetwork.Application.Service
                 comment.CreatedAt
             );
 
-            await _eventDispatcher.DispatchAsync(evt);
+            await _eventDispatcher.DispatchAsync(evt, cancellationToken);
         }
 
-        public async Task<IEnumerable<CommentDto>> GetAllAsync()
+        public async Task<IEnumerable<CommentDto>> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            var comments = await _commentRepository.GetAllAsync();
+            var comments = await _commentRepository.GetAllAsync(cancellationToken);
 
             return _mapper.Map<IEnumerable<CommentDto>>(comments);
         }
 
-        public async Task<CommentDto?> GetByIdAsync(Guid id)
+        public async Task<CommentDto?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            var comment = await _commentRepository.GetByIdAsync(id);
+            var comment = await _commentRepository.GetByIdAsync(id, cancellationToken);
 
             return _mapper.Map<CommentDto?>(comment);
         }
 
-        public async Task<IEnumerable<CommentDto>> GetPostCommentsAsync(Guid id)
+        public async Task<IEnumerable<CommentDto>> GetPostCommentsAsync(Guid id, CancellationToken cancellationToken = default)
         {
             if (id == Guid.Empty)
                 throw new ArgumentException("Invalid post ID");
 
-            var comments = await _commentRepository.GetPostCommentsAsync(id);
+            var comments = await _commentRepository.GetPostCommentsAsync(id, cancellationToken);
 
             return _mapper.Map<IEnumerable<CommentDto>>(comments);
         }

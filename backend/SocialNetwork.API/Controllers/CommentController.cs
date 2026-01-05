@@ -21,16 +21,16 @@ namespace SocialNetwork.API.Controllers
         }
 
         [HttpGet("{postId:guid}/comments")]
-        public async Task<IActionResult> Get(Guid postId)
+        public async Task<IActionResult> Get(Guid postId, CancellationToken cancellationToken = default)
         {
-            var comments = await _commentService.GetPostCommentsAsync(postId);
+            var comments = await _commentService.GetPostCommentsAsync(postId, cancellationToken);
 
             return Ok(comments);
         }
 
         [Authorize]
         [HttpPost("CreateComment")]
-        public async Task<IActionResult> Create([FromBody] CreateCommentDto createCommentDto)
+        public async Task<IActionResult> Create([FromBody] CreateCommentDto createCommentDto, CancellationToken cancellationToken = default)
         {
             if (!ModelState.IsValid)
             {
@@ -42,7 +42,7 @@ namespace SocialNetwork.API.Controllers
 
             createCommentDto.UserId = UserIdClaim;
 
-            await _commentService.CreateAsync(createCommentDto);
+            await _commentService.CreateAsync(createCommentDto, cancellationToken);
 
             return Ok();
         }
@@ -50,9 +50,9 @@ namespace SocialNetwork.API.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpDelete("{commentId:guid}")]
-        public async Task<IActionResult> Ban(Guid commentId)
+        public async Task<IActionResult> Ban(Guid commentId, CancellationToken cancellationToken = default)
         {
-            await _commentService.BanComment(commentId);
+            await _commentService.BanComment(commentId, cancellationToken);
 
             return Ok();
         }

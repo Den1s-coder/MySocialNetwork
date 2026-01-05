@@ -18,7 +18,7 @@ namespace SocialNetwork.Infrastructure.Repos
             _context = context;
         }
 
-        public async Task DeleteAsync(Guid id)
+        public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
         {
             var comment = await _context.Comments.FirstOrDefaultAsync(c => c.Id == id);
 
@@ -28,14 +28,14 @@ namespace SocialNetwork.Infrastructure.Repos
             await _context.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<Comment>> GetAllAsync()
+        public async Task<IEnumerable<Comment>> GetAllAsync(CancellationToken cancellationToken = default)
         {
             return await _context.Comments
                 .AsNoTracking()
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Comment>> GetPostCommentsAsync(Guid id)
+        public async Task<IEnumerable<Comment>> GetPostCommentsAsync(Guid id, CancellationToken cancellationToken = default)
         {
             return await _context.Comments
                 .Where(c => c.PostId == id)
@@ -43,12 +43,12 @@ namespace SocialNetwork.Infrastructure.Repos
                 .ToListAsync();
         }
 
-        public async Task<Comment?> GetByIdAsync(Guid id)
+        public async Task<Comment?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
             return await _context.Comments.FirstOrDefaultAsync(c => c.Id == id);
         }
 
-        public async Task UpdateAsync(Comment updatedComment)
+        public async Task UpdateAsync(Comment updatedComment, CancellationToken cancellationToken = default)
         {
             var existingComment = await _context.Comments.FirstOrDefaultAsync(c => c.Id == updatedComment.Id);
 
@@ -60,7 +60,7 @@ namespace SocialNetwork.Infrastructure.Repos
             await _context.SaveChangesAsync();
         }
 
-        public async Task CreateAsync(Comment comment)
+        public async Task CreateAsync(Comment comment, CancellationToken cancellationToken = default)
         {
             _context.Comments.Add(comment);
             await _context.SaveChangesAsync();

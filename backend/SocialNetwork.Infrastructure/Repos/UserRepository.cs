@@ -18,13 +18,13 @@ namespace SocialNetwork.Infrastructure.Repos
             _context = context;
         }
 
-        public async Task CreateAsync(User user)
+        public async Task CreateAsync(User user, CancellationToken cancellationToken = default)
         {
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteAsync(Guid id)
+        public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
 
@@ -35,27 +35,27 @@ namespace SocialNetwork.Infrastructure.Repos
 
         }
 
-        public async Task<IEnumerable<User>> GetAllAsync()
+        public async Task<IEnumerable<User>> GetAllAsync(CancellationToken cancellationToken = default)
         {
             return await _context.Users.AsNoTracking().ToListAsync();
         }
 
-        public Task<User?> GetByEmailAsync(string email)
+        public Task<User?> GetByEmailAsync(string email, CancellationToken cancellationToken = default)
         {
             return _context.Users.FirstOrDefaultAsync(u => u.Email == email);
         }
 
-        public Task<User?> GetByIdAsync(Guid id)
+        public Task<User?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
             return _context.Users.FirstOrDefaultAsync(u => u.Id == id);
         }
 
-        public Task<User?> GetByUserNameAsync(string UserName)
+        public Task<User?> GetByUserNameAsync(string UserName, CancellationToken cancellationToken = default)
         {
             return _context.Users.FirstOrDefaultAsync(u => u.Name == UserName);
         }
 
-        public async Task UpdateAsync(User updatedUser)
+        public async Task UpdateAsync(User updatedUser, CancellationToken cancellationToken = default)
         {
             var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Id == updatedUser.Id);
 
