@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.Extensions.Logging;
 using SocialNetwork.Application.DTO;
-using SocialNetwork.Application.DTO.Comments;
 using SocialNetwork.Application.Events;
 using SocialNetwork.Application.Interfaces;
 using SocialNetwork.Domain.Entities.Comments;
@@ -46,10 +45,10 @@ namespace SocialNetwork.Application.Service
             }
             post.IsBanned = true;
 
-            await _commentRepository.UpdateAsync(post, cancellationToken);
+            await _commentRepository.UpdateAsync(post);
         }
 
-        public async Task CreateAsync(CreateCommentDto createCommentDto, CancellationToken cancellationToken = default)
+        public async Task CreateAsync(CreateCommentDto createCommentDto)
         {
             if (createCommentDto == null)
                 throw new ArgumentNullException("commentDTO is null");
@@ -65,24 +64,24 @@ namespace SocialNetwork.Application.Service
             if (comment == null)
                 throw new InvalidOperationException("Mapping failed");
 
-            var user = await _userRepository.GetByIdAsync(comment.AuthorId, cancellationToken);
+            var user = await _userRepository.GetByIdAsync(comment.AuthorId);
             if (user == null)
                 throw new ArgumentException("User not found");
 
             if (user.IsBanned)
                 throw new InvalidOperationException("Banned users cannot create comments.");
 
-            await _commentRepository.CreateAsync(comment, cancellationToken);
+            await _commentRepository.CreateAsync(comment);
 
             var evt = new CommentCreatedEvent
             (
-                comment.PostId,
                 comment.Id,
                 comment.AuthorId,
+                comment.PostId,
                 comment.CreatedAt
             );
 
-            await _eventDispatcher.DispatchAsync(evt, cancellationToken);
+            await _eventDispatcher.DispatchAsync(evt);
         }
 
         public async Task<IEnumerable<CommentDto>> GetAllAsync(CancellationToken cancellationToken = default)
