@@ -58,7 +58,7 @@ namespace SocialNetwork.Infrastructure.Repos
                 .FirstOrDefaultAsync(c => c.Id == id);
         }
 
-        public async Task<Chat?> GetChatBetweenUsersAsync(Guid userId1, Guid userId2)
+        public async Task<Chat?> GetChatBetweenUsersAsync(Guid userId1, Guid userId2, CancellationToken cancellationToken = default)
         {
             return await _context.Chats
                 .Include(c => c.UserChats)
@@ -69,7 +69,7 @@ namespace SocialNetwork.Infrastructure.Repos
                     c.UserChats.Any(uc => uc.UserId == userId2));
         }
 
-        public async Task<IEnumerable<Chat>> GetChatsByUserIdAsync(Guid userId)
+        public async Task<IEnumerable<Chat>> GetChatsByUserIdAsync(Guid userId, CancellationToken cancellationToken = default)
         {
             return await _context.Chats
                 .Include(c => c.UserChats)
@@ -79,7 +79,7 @@ namespace SocialNetwork.Infrastructure.Repos
                 .ToListAsync();
         }
 
-        public async Task<Chat?> GetChatWithMessagesAsync(Guid chatId)
+        public async Task<Chat?> GetChatWithMessagesAsync(Guid chatId, CancellationToken cancellationToken = default)
         {
             return await _context.Chats
                 .Include(c => c.Messages)

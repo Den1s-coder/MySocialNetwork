@@ -40,7 +40,24 @@ namespace SocialNetwork.Infrastructure.Repos
                 .AsNoTracking()
                 .Include(p => p.Comments)
                 .Include(p => p.User)
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
+        }
+
+        public async Task<(IEnumerable<Post> Items, int Total)> GetPagedAsync(int page, int pageSize, CancellationToken cancellationToken = default)
+        {
+            var query = _context.Posts
+                .AsNoTracking()
+                .Include(p => p.Comments)
+                .Include(p => p.User)
+                .OrderByDescending(p => p.CreatedAt);
+
+            var total = await query.CountAsync(cancellationToken);
+            var items = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync(cancellationToken);
+
+            return (items, total);
         }
 
         public async Task<Post?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)

@@ -26,6 +26,13 @@ namespace SocialNetwork.API.Controllers
             return Ok(posts);
         }
 
+        [HttpGet("posts")]
+        public async Task<IActionResult> GetPostsPaged([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, CancellationToken cancellationToken = default)
+        {
+            var pagedPosts = await _postService.GetPagedAsync(pageNumber, pageSize, cancellationToken);
+            return Ok(pagedPosts);
+        }
+
         [HttpGet("{postId:guid}")]
         public async Task<IActionResult> GetById(Guid postId, CancellationToken cancellationToken = default)
         {
