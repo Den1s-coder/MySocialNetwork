@@ -98,12 +98,12 @@ namespace SocialNetwork.Application.Service
             return _mapper.Map<CommentDto?>(comment);
         }
 
-        public async Task<IEnumerable<CommentDto>> GetPostCommentsAsync(Guid id, CancellationToken cancellationToken = default)
+        public async Task<PaginetedResult<CommentDto>> GetPostCommentsPagedAsync(Guid id,int page, int pageSize, CancellationToken cancellationToken = default)
         {
             if (id == Guid.Empty)
                 throw new ArgumentException("Invalid post ID");
 
-            var comments = await _commentRepository.GetPostCommentsAsync(id, cancellationToken);
+            var (items, total) = await _commentRepository.GetPostCommentsPagedAsync(id, page, pageSize, cancellationToken);
 
             var result = new PaginetedResult<CommentDto>
             {
@@ -114,18 +114,6 @@ namespace SocialNetwork.Application.Service
             };
 
             return result;
-        }
-
-        public async Task ToggleReactionAsync(Guid commentId, Guid userId, Guid reactionType, CancellationToken cancellationToken = default)
-        {
-            var existingComment = await _commentRepository.GetByIdAsync(commentId, cancellationToken);
-            if (existingComment == null)
-            {
-                _logger.LogWarning("Attempted to toggle reaction on non-existent comment with ID: " + commentId);
-                return;
-            }
-                
-            await _commentRepository.ToggleReactionAsync(commentId, userId, reactionType, cancellationToken);
         }
     }
 }
