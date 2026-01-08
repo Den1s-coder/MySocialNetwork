@@ -98,14 +98,22 @@ namespace SocialNetwork.Application.Service
             return _mapper.Map<CommentDto?>(comment);
         }
 
-        public async Task<IEnumerable<CommentDto>> GetPostCommentsAsync(Guid id, CancellationToken cancellationToken = default)
+        public async Task<PaginetedResult<CommentDto>> GetPostCommentsPagedAsync(Guid id,int page, int pageSize, CancellationToken cancellationToken = default)
         {
             if (id == Guid.Empty)
                 throw new ArgumentException("Invalid post ID");
 
-            var comments = await _commentRepository.GetPostCommentsAsync(id, cancellationToken);
+            var (items, total) = await _commentRepository.GetPostCommentsPagedAsync(id, page, pageSize, cancellationToken);
 
-            return _mapper.Map<IEnumerable<CommentDto>>(comments);
+            var result = new PaginetedResult<CommentDto>
+            {
+                Items = _mapper.Map<IEnumerable<CommentDto>>(items),
+                TotalCount = total,
+                Page = page,
+                PageSize = pageSize
+            };
+
+            return result;
         }
     }
 }

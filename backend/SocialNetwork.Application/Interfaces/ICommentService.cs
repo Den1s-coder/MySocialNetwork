@@ -9,7 +9,7 @@ namespace SocialNetwork.Application.Interfaces
         public Task<CommentDto?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
         public Task CreateAsync(CreateCommentDto commentDto, CancellationToken cancellationToken = default);
         public Task BanComment(Guid id, CancellationToken cancellationToken = default);
-        public Task<IEnumerable<CommentDto>> GetPostCommentsAsync(Guid id, CancellationToken cancellationToken = default);
+        public Task<PaginetedResult<CommentDto>> GetPostCommentsPagedAsync(Guid id,int page,int pageSize, CancellationToken cancellationToken = default);
 
     }
 }
