@@ -35,12 +35,21 @@ namespace SocialNetwork.Infrastructure.Repos
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Comment>> GetPostCommentsAsync(Guid id, CancellationToken cancellationToken = default)
+        public async Task<(IEnumerable<Comment> Items, int Total)> GetPostCommentsPagedAsync(Guid id,int page,int pageSize, CancellationToken cancellationToken = default)
         {
-            return await _context.Comments
-                .Where(c => c.PostId == id)
+            var query = _context.Comments
                 .AsNoTracking()
-                .ToListAsync();
+                .Where(c => c.PostId == id)
+                .Include(c => c.Author)
+                .OrderByDescending(c => c.CreatedAt);
+
+            var total = await query.CountAsync(cancellationToken);
+            var items = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync(cancellationToken);
+
+            return (items, total);
         }
 
         public async Task<Comment?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using SocialNetwork.Application.DTO;
 using SocialNetwork.Application.Interfaces;
 using SocialNetwork.Domain.Entities;
@@ -21,9 +22,9 @@ namespace SocialNetwork.API.Controllers
         }
 
         [HttpGet("{postId:guid}/comments")]
-        public async Task<IActionResult> Get(Guid postId, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> GetPaged([FromQuery]int page, [FromQuery]int pageSize ,Guid postId, CancellationToken cancellationToken = default)
         {
-            var comments = await _commentService.GetPostCommentsAsync(postId, cancellationToken);
+            var comments = await _commentService.GetPostCommentsPagedAsync(postId, page, pageSize, cancellationToken);
 
             return Ok(comments);
         }
