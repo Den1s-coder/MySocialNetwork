@@ -6,8 +6,8 @@ import Avatar from '../components/Avatar';
 import ReactionBar from '../components/ReactionBar';
 import EmojiPickerButton from '../components/EmojiPickerButton';
 
-const API_BASE = import.meta.env.VITE_API_BASE || '';
-const COMMENTS_PAGE_SIZE = 10;
+const API_BASE = 'https://localhost:7142';
+const COMMENTS_PAGE_SIZE = 1;
 
 export default function Post() {
     const { id } = useParams();
@@ -67,7 +67,7 @@ export default function Post() {
         const loadComments = async () => {
             setCommentsLoading(true);
             try {
-                const resComments = await authFetch(`${API_BASE}/api/Comment/${id}/comments?pageNumber=${commentsPage}&pageSize=${COMMENTS_PAGE_SIZE}`);
+                const resComments = await fetch(`${API_BASE}/api/Comment/${id}/comments?pageNumber=${commentsPage}&pageSize=${COMMENTS_PAGE_SIZE}`);
                 if (!resComments.ok) throw new Error(`HTTP ${resComments.status}`);
                 const data = await resComments.json();
 
@@ -279,6 +279,15 @@ export default function Post() {
                         ))}
                     </div>
                 )}
+
+                {commentsHasMore && (
+                    <div style={{ textAlign: 'center', marginTop: 12 }}>
+                        <button onClick={loadMoreComments} disabled={commentsLoading}>
+                            {commentsLoading ? 'Завантаження…' : 'Завантажити ще коментарі'}
+                        </button>
+                    </div>
+                )}
+            </section>
 
                 {commentsHasMore && (
                     <div style={{ textAlign: 'center', marginTop: 12 }}>
