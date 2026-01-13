@@ -2,17 +2,22 @@ import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 const API_BASE = 'https://localhost:7142';
+const COMMENTS_PAGE_SIZE = 1;
 
 export default function Post() {
     const { id } = useParams();
     const [post, setPost] = useState(null);
     const [comments, setComments] = useState([]);
-    const [status, setStatus] = useState('loading'); 
+    const [status, setStatus] = useState('loading');
     const [error, setError] = useState(null);
 
     const authed = useMemo(() => Boolean(localStorage.getItem('token')), []);
     const [commentText, setCommentText] = useState('');
-    const [sendStatus, setSendStatus] = useState('idle'); 
+    const [sendStatus, setSendStatus] = useState('idle');
+
+    const [commentsPage, setCommentsPage] = useState(1);
+    const [commentsHasMore, setCommentsHasMore] = useState(false);
+    const [commentsLoading, setCommentsLoading] = useState(false);
 
     useEffect(() => {
         let cancelled = false;
@@ -34,18 +39,10 @@ export default function Post() {
                     return;
                 }
 
-                let comm = Array.isArray(postDto?.comments) ? postDto.comments : null;
-                if (!comm) {
-                    const resComments = await fetch(`${API_BASE}/api/Comment/${id}/comments`);
-                    if (!resComments.ok) throw new Error(`HTTP ${resComments.status}`);
-                    comm = await resComments.json();
-                }
-
                 if (!cancelled) {
                     setPost(postDto);
-                    setComments(Array.isArray(comm) ? comm : []);
-                    setStatus('ready');
                 }
+                setCommentsPage(1);
             } catch (err) {
                 if (!cancelled) {
                     setError(err.message || 'Помилка завантаження');
@@ -57,6 +54,45 @@ export default function Post() {
         load();
         return () => { cancelled = true; };
     }, [id]);
+
+    useEffect(() => {
+        if (!id) return;
+        let cancelled = false;
+
+        const loadComments = async () => {
+            setCommentsLoading(true);
+            try {
+                const resComments = await fetch(`${API_BASE}/api/Comment/${id}/comments?pageNumber=${commentsPage}&pageSize=${COMMENTS_PAGE_SIZE}`);
+                if (!resComments.ok) throw new Error(`HTTP ${resComments.status}`);
+                const data = await resComments.json();
+
+                const items = Array.isArray(data) ? data : data.items ?? data.data ?? [];
+                const total = Array.isArray(data) ? null : (data.totalCount ?? data.total ?? null);
+
+                setComments(prev => commentsPage === 1 ? items : [...prev, ...items]);
+
+                if (total !== null) {
+                    setCommentsHasMore((commentsPage * COMMENTS_PAGE_SIZE) < total);
+                } else {
+                    setCommentsHasMore(items.length === COMMENTS_PAGE_SIZE);
+                }
+
+                setStatus('ready');
+            } catch (e) {
+                console.error('Помилка завантаження коментарів:', e);
+            } finally {
+                if (!cancelled) setCommentsLoading(false);
+            }
+        };
+
+        loadComments();
+        return () => { cancelled = true; };
+    }, [id, commentsPage]);
+
+    const loadMoreComments = () => {
+        if (commentsLoading) return;
+        setCommentsPage(p => p + 1);
+    };
 
     const submitComment = async (e) => {
         e.preventDefault();
@@ -76,11 +112,7 @@ export default function Post() {
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
             setCommentText('');
-            const resComments = await fetch(`${API_BASE}/api/Comment/${id}/comments`);
-            if (resComments.ok) {
-                const data = await resComments.json();
-                setComments(Array.isArray(data) ? data : []);
-            }
+            setCommentsPage(1);
             setSendStatus('idle');
         } catch (err) {
             setSendStatus('error');
@@ -130,6 +162,14 @@ export default function Post() {
                                 </div>
                             </div>
                         ))}
+                    </div>
+                )}
+
+                {commentsHasMore && (
+                    <div style={{ textAlign: 'center', marginTop: 12 }}>
+                        <button onClick={loadMoreComments} disabled={commentsLoading}>
+                            {commentsLoading ? 'Завантаження…' : 'Завантажити ще коментарі'}
+                        </button>
                     </div>
                 )}
             </section>
