@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { authFetch } from '../hooks/authFetch';
 
 const API_BASE = 'https://localhost:7142';
 
@@ -14,7 +15,7 @@ export default function Register() {
         setStatus('loading');
         setError(null);
         try {
-            const res = await fetch(`${API_BASE}/api/Auth/register`, {
+            const res = await authFetch(`${API_BASE}/api/Auth/register`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

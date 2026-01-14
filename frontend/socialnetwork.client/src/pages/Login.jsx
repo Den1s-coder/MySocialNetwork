@@ -26,6 +26,9 @@ export default function Login() {
 
             localStorage.setItem('accessToken', access);
             localStorage.setItem('refreshToken', refresh);
+
+            window.dispatchEvent(new Event('tokens-updated'));
+
             setStatus('success');
         } catch (err) {
             setError(err.message || 'Помилка входу');

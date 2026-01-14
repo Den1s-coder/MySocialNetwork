@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import { authFetch } from '../hooks/authFetch';
 
 const API_BASE = 'https://localhost:7142';
 
@@ -25,14 +26,14 @@ export default function ChatList() {
         const loadData = async () => {
             setStatus('loading');
             try {
-                const chatsRes = await fetch(`${API_BASE}/api/Chat/chats`, {
+                const chatsRes = await authFetch(`${API_BASE}/api/Chat/chats`, {
                     headers: { 'Authorization': `Bearer ${accessToken}` }
                 });
                 if (!chatsRes.ok) throw new Error(`HTTP ${chatsRes.status}`);
                 const chatsData = await chatsRes.json();
                 setChats(chatsData);
 
-                const usersRes = await fetch(`${API_BASE}/api/User/users`, {
+                const usersRes = await authFetch(`${API_BASE}/api/User/users`, {
                     headers: { 'Authorization': `Bearer ${accessToken}` }
                 });
                 if (!usersRes.ok) throw new Error(`HTTP ${usersRes.status}`);
@@ -50,7 +51,7 @@ export default function ChatList() {
 
     const createPrivateChat = async (otherUserId) => {
         try {
-            const res = await fetch(`${API_BASE}/api/Chat/private/${otherUserId}`, {
+            const res = await authFetch(`${API_BASE}/api/Chat/private/${otherUserId}`, {
                 method: 'POST',
                 headers: { 'Authorization': `Bearer ${accessToken}` }
             });

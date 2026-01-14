@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import './Home.css';
+import { authFetch } from '../hooks/authFetch';
 
 const API_BASE = 'https://localhost:7142';
 const PAGE_SIZE = 10;
@@ -18,7 +19,7 @@ export default function Home() {
             setLoadingPage(true);
             setError(null);
             try {
-                const res = await fetch(`${API_BASE}/api/Post/posts?pageNumber=${page}&pageSize=${PAGE_SIZE}`);
+                const res = await authFetch(`${API_BASE}/api/Post/posts?pageNumber=${page}&pageSize=${PAGE_SIZE}`);
                 if (!res.ok) throw new Error(`HTTP ${res.status}`);
                 const data = await res.json();
 
