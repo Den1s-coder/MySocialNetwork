@@ -1,4 +1,4 @@
-const API_BASE = import.meta.env.VITE_API_BASE || '';
+const API_BASE = 'https://localhost:7142';
 
 export async function authFetch(input, init = {}) {
     const url = (typeof input === 'string' && !input.startsWith('http')) ? (input.startsWith('/') ? API_BASE + input : API_BASE + '/' + input) : input;
