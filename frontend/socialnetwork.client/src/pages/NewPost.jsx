@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { authFetch } from '../hooks/authFetch';
 
 const API_BASE = 'https://localhost:7142';
 
@@ -17,7 +18,7 @@ export default function NewPost() {
             const token = localStorage.getItem('accessToken');
             if (!token) throw new Error('Необхідна авторизація');
 
-            const res = await fetch(`${API_BASE}/api/Post`, {
+            const res = await authFetch(`${API_BASE}/api/Post`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useChatHub } from '../hooks/useChatHub';
 import { useAuth } from '../hooks/useAuth';
+import { authFetch } from '../hooks/authFetch';
 
 const BASE_URL = 'https://localhost:7142';
 const API_BASE = 'https://localhost:7142';
@@ -35,7 +36,7 @@ export default function Chat() {
         const loadMessages = async () => {
             try {
                 console.log('Loading messages for chatId:', chatId);
-                const res = await fetch(`${API_BASE}/api/Chat/chats/${chatId}/messages`, {
+                const res = await authFetch(`${API_BASE}/api/Chat/chats/${chatId}/messages`, {
                     headers: { 'Authorization': `Bearer ${accessToken}` }
                 });
                 if (!res.ok) throw new Error(`HTTP ${res.status}`);

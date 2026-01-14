@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import './Profile.css';
+import { authFetch } from '../hooks/authFetch';
 
 const API_BASE = 'https://localhost:7142';
 const guidRegex = /^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$/;
@@ -15,7 +16,7 @@ export default function Profile() {
   const [status, setStatus] = useState('idle');
   const [error, setError] = useState(null);
   const [isOwner, setIsOwner] = useState(false);
-  const token = localStorage.getItem('token');
+  const accessToken = localStorage.getItem('accessToken');
  
   useEffect(() => {
     const load = async () => {
@@ -24,9 +25,9 @@ export default function Profile() {
 
       try {
         let currentUserId = null;
-        if (token) {
-          const meRes = await fetch(`${API_BASE}/api/User/profile`, {
-            headers: { 'Authorization': `Bearer ${token}` }
+          if (accessToken) {
+            const meRes = await authFetch(`${API_BASE}/api/User/profile`, {
+            headers: { 'Authorization': `Bearer ${accessToken}` }
           });
           if (meRes.ok) {
             const me = await meRes.json();
@@ -36,21 +37,21 @@ export default function Profile() {
 
         let profileData = null;
         if (!idOrName) {
-          if (!token) throw new Error('Требуется авторизація');
-          const res = await fetch(`${API_BASE}/api/User/profile`, {
-            headers: { 'Authorization': `Bearer ${token}` }
+            if (!accessToken) throw new Error('Требуется авторизація');
+            const res = await authFetch(`${API_BASE}/api/User/profile`, {
+            headers: { 'Authorization': `Bearer ${accessToken}` }
           });
           if (!res.ok) throw new Error(`Не удалось загрузить профиль (${res.status})`);
           profileData = await res.json();
         } else {
           let res;
-          if (guidRegex.test(idOrName)) {
-            res = await fetch(`${API_BASE}/api/User/users/${idOrName}`, {
-              headers: token ? { 'Authorization': `Bearer ${token}` } : undefined
+            if (guidRegex.test(idOrName)) {
+                res = await authFetch(`${API_BASE}/api/User/users/${idOrName}`, {
+              headers: accessToken ? { 'Authorization': `Bearer ${accessToken}` } : undefined
             });
-          } else {
-            res = await fetch(`${API_BASE}/api/User/users/by-username?username=${encodeURIComponent(idOrName)}`, {
-              headers: token ? { 'Authorization': `Bearer ${token}` } : undefined
+            } else {
+                res = await authFetch(`${API_BASE}/api/User/users/by-username?username=${encodeURIComponent(idOrName)}`, {
+              headers: accessToken ? { 'Authorization': `Bearer ${accessToken}` } : undefined
             });
           }
           if (!res.ok) {
@@ -64,9 +65,9 @@ export default function Profile() {
         setAvatarUrl(profileData?.profilePictureUrl ?? profileData?.avatarUrl ?? null);
         setIsOwner(Boolean(!idOrName || (profileData?.id && profileData.id === currentUserId)));
 
-        if (profileData?.id) {
-          const postsRes = await fetch(`${API_BASE}/api/Post/user/${profileData.id}`, {
-            headers: token ? { 'Authorization': `Bearer ${token}` } : undefined
+          if (profileData?.id) {
+              const postsRes = await authFetch(`${API_BASE}/api/Post/user/${profileData.id}`, {
+            headers: accessToken ? { 'Authorization': `Bearer ${accessToken}` } : undefined
           });
           if (postsRes.ok) {
             const postsData = await postsRes.json();
@@ -86,21 +87,21 @@ export default function Profile() {
     };
 
     load();
-  }, [idOrName, token]);
+  }, [idOrName, accessToken]);
 
   const handleFileChange = async (e) => {
     if (!isOwner) return;
     const file = e.target.files && e.target.files[0];
     if (!file) return;
-    if (!token) { alert('Требуется авторизація'); return; }
+    if (!accessToken) { alert('Требуется авторизація'); return; }
 
     try {
       const fd = new FormData();
       fd.append('file', file);
 
-      const uploadRes = await fetch(`${API_BASE}/api/File/upload`, {
+      const uploadRes = await authFetch(`${API_BASE}/api/File/upload`, {
         method: 'POST',
-        headers: { 'Authorization': `Bearer ${token}` },
+        headers: { 'Authorization': `Bearer ${accessToken}` },
         body: fd
       });
       if (!uploadRes.ok) throw new Error('Upload failed');
@@ -115,11 +116,11 @@ export default function Profile() {
         profilePictureUrl: fileUrl
       };
 
-      const updateRes = await fetch(`${API_BASE}/api/User/profile`, {
+      const updateRes = await authFetch(`${API_BASE}/api/User/profile`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${accessToken}`
         },
         body: JSON.stringify(body)
       });
@@ -134,14 +135,14 @@ export default function Profile() {
   };
 
   const sendFriendRequest = async () => {
-    if (!token) { alert('Требуется авторизація'); return; }
+    if (!accessToken) { alert('Требуется авторизація'); return; }
     if (!profile?.id) return;
-    try {
-      const res = await fetch(`${API_BASE}/api/Friend/SendFriendRequest`, {
+     try {
+      const res = await authFetch(`${API_BASE}/api/Friend/SendFriendRequest`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${accessToken}`
         },
         body: JSON.stringify(profile.id) 
       });
@@ -154,12 +155,12 @@ export default function Profile() {
   };
 
   const startPrivateChat = async () => {
-    if (!token) { alert('Требуется авторизація'); return; }
+    if (!accessToken) { alert('Требуется авторизація'); return; }
     if (!profile?.id) return;
-    try {
-      const res = await fetch(`${API_BASE}/api/Chat/private/${profile.id}`, {
+      try {
+        const res = await authFetch(`${API_BASE}/api/Chat/private/${profile.id}`, {
         method: 'POST',
-        headers: { 'Authorization': `Bearer ${token}` }
+        headers: { 'Authorization': `Bearer ${accessToken}` }
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
