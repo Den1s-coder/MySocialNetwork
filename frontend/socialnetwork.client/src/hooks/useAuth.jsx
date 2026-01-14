@@ -44,7 +44,11 @@ export function useAuth() {
         };
 
         window.addEventListener('storage', handleStorageChange);
-        return () => window.removeEventListener('storage', handleStorageChange);
+        window.addEventListener('tokens-updated', handleStorageChange);
+        return () => {
+            window.removeEventListener('storage', handleStorageChange);
+            window.removeEventListener('tokens-updated', handleStorageChange);
+        };
     }, []);
 
     useEffect(() => {
