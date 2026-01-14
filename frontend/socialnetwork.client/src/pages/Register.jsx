@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { authFetch } from '../hooks/authFetch';
 
 const API_BASE = import.meta.env.VITE_API_BASE || '';

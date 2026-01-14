@@ -1,10 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { FiTrash2 } from 'react-icons/fi';
 import { authFetch } from '../hooks/authFetch';
-import Avatar from '../components/Avatar';
-import ReactionBar from '../components/ReactionBar';
-import EmojiPickerButton from '../components/EmojiPickerButton';
 
 const API_BASE = 'https://localhost:7142';
 const COMMENTS_PAGE_SIZE = 1;
@@ -67,7 +63,7 @@ export default function Post() {
         const loadComments = async () => {
             setCommentsLoading(true);
             try {
-                const resComments = await fetch(`${API_BASE}/api/Comment/${id}/comments?pageNumber=${commentsPage}&pageSize=${COMMENTS_PAGE_SIZE}`);
+                const resComments = await authFetch(`${API_BASE}/api/Comment/${id}/comments?pageNumber=${commentsPage}&pageSize=${COMMENTS_PAGE_SIZE}`);
                 if (!resComments.ok) throw new Error(`HTTP ${resComments.status}`);
                 const data = await resComments.json();
 
