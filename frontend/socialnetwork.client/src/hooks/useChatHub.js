@@ -59,9 +59,7 @@ export function useChatHub({ baseUrl, getToken, onMessage, onMessageUpdated }) {
                     setTimeout(() => {
                         try {
                             start();
-                        } catch {
-                            /* ignore */
-                        }
+                        } catch {}
                     }, 2000);
                 }
             } finally {
@@ -73,23 +71,19 @@ export function useChatHub({ baseUrl, getToken, onMessage, onMessageUpdated }) {
 
         return () => {
             mountedRef.current = false;
-
-            try { connection.off('ReceiveMessage', onReceive); } catch { /* ignore */ }
-            try { connection.off('MessageUpdated', onUpdated); } catch { /* ignore */ }
+            try { connection.off('ReceiveMessage', onReceive); } catch {}
             try {
                 const p = startPromiseRef.current;
                 if (p) {
                     p.finally(() => {
-                        connection.stop().catch(() => { /* ignore */ });
+                        connection.stop().catch(() => {});
                     });
                 } else {
-                    connection.stop().catch(() => { /* ignore */ });
+                    connection.stop().catch(() => {});
                 }
-            } catch {
-                /* ignore */
-            }
+            } catch {}
         };
-    }, [baseUrl, getToken, onMessage, onMessageUpdated]);
+    }, [baseUrl, getToken, onMessage]);
 
     const joinChat = async (_chatId, userId) => {
         try {
