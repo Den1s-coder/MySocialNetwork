@@ -10,5 +10,6 @@ namespace SocialNetwork.Application.DTO
         public ChatRole Role { get; set; }
         public ChatRights Rights { get; set; }
         public string UserName { get; set; }
+        public string? ProfilePictureUrl { get; set; }
     }
 }

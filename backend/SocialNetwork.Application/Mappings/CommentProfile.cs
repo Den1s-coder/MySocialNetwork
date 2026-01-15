@@ -25,6 +25,7 @@ namespace SocialNetwork.Application.Mappings
                 .ForMember(dest => dest.IsBanned, opt => opt.MapFrom(src => src.IsBanned))
                 .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt))
                 .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => src.UpdatedAt))
+                .ForMember(dest => dest.ProfilePictureUrl, opt => opt.MapFrom(src => src.Author.ProfilePictureUrl))
                 .ReverseMap();
         }
     }

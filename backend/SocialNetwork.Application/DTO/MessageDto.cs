@@ -11,6 +11,8 @@ namespace SocialNetwork.Application.DTO
         public Guid Id { get; set; }
         public Guid ChatId { get; set; }
         public Guid SenderId { get; set; }
+        public string SenderName { get; set; }
+        public string? ProfilePictureUrl { get; set; }
         public string Content { get; set; }
         public DateTime SentAt { get; set; }
     }
