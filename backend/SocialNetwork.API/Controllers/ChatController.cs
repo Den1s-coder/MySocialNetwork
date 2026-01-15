@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SocialNetwork.Application.Interfaces;
 using System.Security.Claims;
@@ -13,6 +14,7 @@ namespace SocialNetwork.API.Controllers
         private readonly ILogger<ChatController> _logger;
         private readonly IChatService _chatService;
         private readonly IMessageService _messageService;
+        private readonly IMapper _mapper;
 
         public ChatController(ILogger<ChatController> logger, 
             IMessageService messageService, 
