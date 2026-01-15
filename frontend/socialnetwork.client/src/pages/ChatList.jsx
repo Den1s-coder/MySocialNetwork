@@ -2,12 +2,13 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { authFetch } from '../hooks/authFetch';
+import Avatar from '../components/Avatar';
 
 const API_BASE = import.meta.env.VITE_API_BASE || '';
 
 export default function ChatList() {
     const navigate = useNavigate();
-    const { accessToken, isAuthenticated } = useAuth();
+    const { accessToken, isAuthenticated, currentUserId, currentUserName } = useAuth();
     const [chats, setChats] = useState([]);
     const [users, setUsers] = useState([]);
     const [filteredUsers, setFilteredUsers] = useState([]);
@@ -119,9 +120,9 @@ export default function ChatList() {
         return null;
     };
 
-    if (status === 'loading') return <p className="chatlist-loading">Завантаження…</p>;
-    if (status === 'error') return <p className="chatlist-error">Помилка: {error}</p>;
-    if (!isAuthenticated) return <p className="chatlist-auth">Авторизуйтесь для доступу до чатів</p>;
+    if (status === 'loading') return <p>Завантаження…</p>;
+    if (status === 'error') return <p>Помилка: {error}</p>;
+    if (!isAuthenticated) return <p>Авторизуйтесь для доступу до чатів</p>;
 
     return (
         <div className="chatlist-container">
@@ -134,15 +135,25 @@ export default function ChatList() {
                 ) : (
                     <ul className="chatlist-list">
                         {chats.map(chat => (
-                            <li key={chat.id} className="chatlist-item">
-                                <Link to={`/chat/${chat.id}`} className="chatlist-link">
-                                    <div className="chatlist-item-header">
+                            <li key={chat.id} style={{ marginBottom: 8 }}>
+                                <Link
+                                    to={`/chat/${chat.id}`}
+                                    style={{
+                                        display: 'block',
+                                        padding: 12,
+                                        border: '1px solid #ddd',
+                                        borderRadius: 8,
+                                        textDecoration: 'none',
+                                        color: 'inherit'
+                                    }}
+                                >
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                                         <Avatar url={getChatAvatar(chat)} name={getChatTitle(chat)} />
-                                        <div className="chatlist-item-title">
+                                        <div style={{ fontWeight: 'bold' }}>
                                             {getChatTitle(chat)}
                                         </div>
                                     </div>
-                                    <div className="chatlist-item-type">
+                                    <div style={{ fontSize: 12, color: '#666', marginTop: 6 }}>
                                         Тип: {chat.type === 0 ? 'Приватний' : chat.type === 1 ? 'Група' : 'Канал'}
                                     </div>
 

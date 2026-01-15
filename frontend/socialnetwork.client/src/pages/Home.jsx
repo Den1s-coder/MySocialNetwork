@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import './Home.css';
 import { authFetch } from '../hooks/authFetch';
+import Avatar from '../components/Avatar';
 
 const API_BASE = 'https://localhost:7142';
 const PAGE_SIZE = 10;
@@ -54,18 +55,24 @@ export default function Home() {
     if (status === 'error') return <p>Помилка: {error}</p>;
     if (!posts.length) return <p>Пости відсутні.</p>;
 
+    const pickAvatarUrl = (p) => {
+        return p.authorProfilePictureUrl || p.profilePictureUrl || p.authorAvatarUrl || p.userProfilePictureUrl || null;
+    };
+
     return (
         <div className="container">
             <h2 className="title">Головна</h2>
             <ul className="post-list">
                 {posts.map(p => {
                     const timeStr = new Date(p.createdAt).toLocaleString();
+                    const avatarUrl = pickAvatarUrl(p);
 
                     return (
                         <li key={p.id} className="post-card">
-                            <div className="post-card__header">
-                                <Link to={`/user/${encodeURIComponent(p.userName)}`} className="post-card__meta">
-                                    {p.userName}
+                            <div className="post-card__header" style={{ alignItems: 'center' }}>
+                                <Link to={`/user/${encodeURIComponent(p.userName)}`} className="post-card__meta" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                    <Avatar url={avatarUrl} name={p.userName} />
+                                    <span>{p.userName}</span>
                                 </Link>
                             </div>
 

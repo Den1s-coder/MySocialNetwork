@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useChatHub } from '../hooks/useChatHub';
 import { useAuth } from '../hooks/useAuth';
 import { authFetch } from '../hooks/authFetch';
+import Avatar from '../components/Avatar';
 
 const BASE_URL = import.meta.env.VITE_API_BASE || '';
 const API_BASE = import.meta.env.VITE_API_BASE || '';
@@ -40,21 +41,19 @@ export default function Chat() {
     const [loading, setLoading] = useState(true);
     const [chatTitle, setChatTitle] = useState(null);
     const [chatAvatar, setChatAvatar] = useState(null);
-    const [chatType, setChatType] = useState(null);
-    const [participants, setParticipants] = useState([]);
-    const [showParticipants, setShowParticipants] = useState(false);
-    const [userRole, setUserRole] = useState(null);
-    const [deleting, setDeleting] = useState(false);
-    const [showAddUserModal, setShowAddUserModal] = useState(false);
-    const [uploadingPhoto, setUploadingPhoto] = useState(false);
-    const [selectedPhoto, setSelectedPhoto] = useState(null);
-    const [editingMessageId, setEditingMessageId] = useState(null);
-    const [editText, setEditText] = useState('');
-    const [text, setText] = useState('');
-    const fileInputRef = useRef(null);
 
+    const [participantsMap, setParticipantsMap] = useState({});
     const participantsRef = useRef({});
-    const updateParticipants = (map) => { participantsRef.current = map; };
+    const updateParticipants = (map) => { setParticipantsMap(map); participantsRef.current = map; };
+
+    if (!chatId) {
+        return <div>Chat ID not found in URL</div>;
+    }
+
+    const isValidGuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(chatId);
+    if (!isValidGuid) {
+        return <div>Invalid chat ID: {chatId}</div>;
+    }
 
     useEffect(() => {
         if (!isAuthenticated) {
@@ -79,55 +78,41 @@ export default function Chat() {
                     headers: { 'Authorization': `Bearer ${accessToken}` }
                 });
 
-                let participantsData = {};
+                let participants = {};
                 if (chatsRes.ok) {
                     const chats = await chatsRes.json();
                     const chat = (chats || []).find(c => String(c.id).toLowerCase() === String(chatId).toLowerCase());
                     if (chat) {
                         const ucs = chat.userChats || chat.UserChats || [];
-                        const normalizedParticipants = [];
-
                         (ucs || []).forEach(uc => {
                             const id = (uc.userId || uc.UserId || uc.user?.id || '')?.toString().toLowerCase();
-                            const name = uc.userName || uc.UserName || uc.user?.name || '';
-                            const pic = uc.profilePictureUrl || uc.ProfilePictureUrl || uc.user?.profilePictureUrl || null;
-                            const role = uc.role || uc.Role || 0;
-
-                            if (id) {
-                                participantsData[id] = { userName: name, profilePictureUrl: pic, role };
-                                normalizedParticipants.push({ id, name, pic, role });
-
-                                if (id === String(currentUserId).toLowerCase()) {
-                                    setUserRole(role);
-                                }
-                            }
+                            const name = uc.userName || uc.UserName || uc.user?.name || uc.user?.name || '';
+                            const pic = uc.profilePictureUrl || uc.ProfilePictureUrl || uc.user?.profilePictureUrl || uc.user?.profilePictureUrl || null;
+                            if (id) participants[id] = { userName: name, profilePictureUrl: pic };
                         });
-
-                        setParticipants(normalizedParticipants);
 
                         const title = (() => {
                             const type = chat.type;
                             const isPrivate = type === 0 || String(type).toLowerCase() === 'private';
                             if (isPrivate) {
-                                const other = Object.entries(participantsData).find(([id]) => id !== String(currentUserId).toLowerCase());
-                                if (other) return participantsData[other[0]].userName || null;
+                                const other = Object.entries(participants).find(([id]) => id !== String(currentUserId).toLowerCase());
+                                if (other) return participants[other[0]].userName || null;
                             }
                             return chat.title || null;
                         })();
                         setChatTitle(title);
                         setChatAvatar(chat.avatarUrl || chat.userProfilePictureUrl || chat.profilePictureUrl || null);
-                        setChatType(chat.type);
                     }
                 }
 
-                updateParticipants(participantsData);
+                updateParticipants(participants);
 
                 const mapped = (data || []).map(m => {
                     const sid = (m.senderId || '').toString().toLowerCase();
-                    const p = participantsData[sid];
+                    const p = participants[sid];
                     return {
                         ...m,
-                        senderName: m.senderName || (p && p.userName) || null,
+                        senderName: m.senderName || (p && p.userName) || m.senderName || null,
                         senderProfilePictureUrl: m.senderProfilePictureUrl || (p && p.profilePictureUrl) || null
                     };
                 });
@@ -149,7 +134,7 @@ export default function Chat() {
         const p = participantsRef.current[sid];
         const enriched = {
             ...msg,
-            senderName: msg.senderName || (p && p.userName) || null,
+            senderName: msg.senderName || (p && p.userName) || msg.senderName || null,
             senderProfilePictureUrl: msg.senderProfilePictureUrl || (p && p.profilePictureUrl) || null
         };
 
@@ -159,75 +144,7 @@ export default function Chat() {
         });
     }, []);
 
-    const onMessageUpdated = useCallback((updatedMsg) => {
-        console.log('onMessageUpdated called with:', updatedMsg);
-        setMessages(prev =>
-            prev.map(msg =>
-                msg.id === updatedMsg.id
-                    ? { ...msg, content: updatedMsg.content, editedAt: updatedMsg.editedAt }
-                    : msg
-            )
-        );
-        setEditingMessageId(null);
-        setEditText('');
-    }, []);
-
     const getToken = useCallback(() => accessToken, [accessToken]);
-
-    const { connected, sendMessage, editMessage } = useChatHub({
-        baseUrl: BASE_URL,
-        getToken,
-        onMessage,
-        onMessageUpdated
-    });
-
-    if (!chatId) {
-        return <div>Chat ID not found in URL</div>;
-    }
-
-    const isValidGuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(chatId);
-    if (!isValidGuid) {
-        return <div>Invalid chat ID: {chatId}</div>;
-    }
-
-    useEffect(() => {
-        if (!isAuthenticated) {
-            navigate('/login');
-            return;
-        }
-    }, [isAuthenticated, navigate]);
-
-    useEffect(() => {
-        if (!accessToken || !chatId) return;
-
-        const loadMessages = async () => {
-            try {
-                console.log('Loading messages for chatId:', chatId);
-                const res = await authFetch(`${API_BASE}/api/Chat/chats/${chatId}/messages`, {
-                    headers: { 'Authorization': `Bearer ${accessToken}` }
-                });
-                if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                const data = await res.json();
-
-                const sortedMessages = data.sort((a, b) => new Date(a.sentAt) - new Date(b.sentAt));
-                setMessages(sortedMessages);
-                setLoading(false);
-            } catch (e) {
-                console.error('Помилка завантаження повідомлень:', e);
-                setLoading(false);
-            }
-        };
-        loadMessages();
-    }, [chatId, accessToken]);
-
-    const onMessage = useCallback((msg) => {
-        setMessages(prev => {
-            const updatedMessages = [...prev, msg];
-            return updatedMessages.sort((a, b) => new Date(a.sentAt) - new Date(b.sentAt));
-        });
-    }, []);
-
-    const getToken = () => accessToken;
 
     const { connected, sendMessage, joinChat } = useChatHub({
         baseUrl: BASE_URL,
@@ -241,8 +158,6 @@ export default function Chat() {
     const handleSend = async (e) => {
         e.preventDefault();
         if (!text.trim() || !connected || !chatId) return;
-
-        console.log('Sending message:', { chatId, content: text.trim() });
         await sendMessage(chatId, text.trim());
         setText('');
     };
@@ -376,118 +291,50 @@ export default function Chat() {
     });
 
     return (
-        <>
-            <div className="chat-container">
-                <div className="chat-main">
-                    <div className="chat-header">
-                        <div className="chat-title-wrapper">
-                            <Avatar url={chatAvatar} name={chatTitle} />
-                            <h2>{chatTitle ? `Чат з ${chatTitle}` : `Чат ${chatId}`}</h2>
-                        </div>
-                        <div className="chat-header-buttons">
-                            <button
-                                onClick={() => setShowParticipants(!showParticipants)}
-                                className="chat-btn chat-btn--secondary"
+        <div style={{ maxWidth: 800, margin: '24px auto', padding: '0 12px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <Avatar url={chatAvatar} name={chatTitle} />
+                    <h2 style={{ margin: 0 }}>{chatTitle ? `Чат з ${chatTitle}` : `Чат ${chatId}`}</h2>
+                </div>
+                <button onClick={() => navigate('/chats')}>← До списку чатів</button>
+            </div>
+
+            <div style={{
+                height: 400,
+                border: '1px solid #ddd',
+                borderRadius: 8,
+                padding: 16,
+                overflowY: 'auto',
+                marginBottom: 16,
+                background: '#f9f9f9'
+            }}>
+                {messages.length === 0 ? (
+                    <p style={{ color: '#666', textAlign: 'center' }}>Повідомлень поки немає</p>
+                ) : (
+                    messages.map(m => {
+                        const isCurrentUser = String(m.senderId).toLowerCase() === String(currentUserId).toString().toLowerCase();
+
+                        return (
+                            <div
+                                key={m.id ?? `${m.chatId}-${m.sentAt}-${m.senderId}`}
+                                style={{
+                                    marginBottom: 12,
+                                    display: 'flex',
+                                    justifyContent: isCurrentUser ? 'flex-end' : 'flex-start',
+                                    alignItems: 'flex-end',
+                                    gap: 8
+                                }}
                             >
-                                {showParticipants ? '← Приховати' : '→ Учасники'}
-                            </button>
-                            <button onClick={() => navigate('/chats')} className="chat-btn chat-btn--secondary">
-                                ← До списку чатів
-                            </button>
-                        </div>
-                    </div>
-
-                    <div className="chat-messages">
-                        {messages.length === 0 ? (
-                            <p className="chat-empty">Повідомлень поки немає</p>
-                        ) : (
-                            <>
-                                {sortedDateKeys.map(dateKey => (
-                                    <div key={dateKey}>
-                                        <div className="chat-date-separator">
-                                            <span className="chat-date-label">{formatDate(groupedMessages[dateKey][0].sentAt)}</span>
-                                        </div>
-                                        {groupedMessages[dateKey].map(m => {
-                                            const isCurrentUser = String(m.senderId).toLowerCase() === String(currentUserId).toString().toLowerCase();
-                                            const isEditing = editingMessageId === m.id;
-
-                                            return (
-                                                <div
-                                                    key={m.id ?? `${m.chatId}-${m.sentAt}-${m.senderId}`}
-                                                    className={`chat-message ${isCurrentUser ? 'chat-message--sent' : 'chat-message--received'}`}
-                                                >
-                                                    {!isCurrentUser && <Avatar url={m.senderProfilePictureUrl} name={m.senderName} size={36} />}
-                                                    <div className="chat-message-content">
-                                                        <div className="chat-message-meta">
-                                                            {isCurrentUser ? currentUserName : m.senderName || m.senderId} • {formatTime(m.sentAt)}
-                                                            {m.editedAt && <span className="chat-message-edited"> (відредаговано)</span>}
-                                                        </div>
-                                                        {isEditing ? (
-                                                            <div className="chat-message-edit-form">
-                                                                <input
-                                                                    type="text"
-                                                                    value={editText}
-                                                                    onChange={(e) => setEditText(e.target.value)}
-                                                                    className="chat-message-edit-input"
-                                                                    autoFocus
-                                                                />
-                                                                <button
-                                                                    onClick={handleSaveEdit}
-                                                                    className="chat-btn chat-btn--primary"
-                                                                >
-                                                                    Зберегти
-                                                                </button>
-                                                                <button
-                                                                    onClick={handleCancelEdit}
-                                                                    className="chat-btn chat-btn--secondary"
-                                                                >
-                                                                    Відміна
-                                                                </button>
-                                                            </div>
-                                                        ) : (
-                                                            <>
-                                                                <div className={`chat-message-bubble ${isCurrentUser ? 'chat-message-bubble--sent' : 'chat-message-bubble--received'}`}>
-                                                                    {m.photoUrl && (
-                                                                        <img
-                                                                            src={m.photoUrl}
-                                                                            alt="Chat photo"
-                                                                            className="chat-message-photo"
-                                                                        />
-                                                                    )}
-                                                                    {m.content && <p>{m.content}</p>}
-                                                                </div>
-                                                                {isCurrentUser && (
-                                                                    <button
-                                                                        onClick={() => handleEditMessage(m.id, m.content)}
-                                                                        className="chat-message-action-btn"
-                                                                        title="Редагувати повідомлення"
-                                                                    >
-                                                                        <AiFillEdit size={20} style={{ color: "gray" }} />
-                                                                    </button>
-                                                                )}
-                                                            </>
-                                                        )}
-                                                        <ReactionBar
-                                                            reactions={m.reactions || []}
-                                                            currentUserReactionCode={m.currentUserReactionCode}
-                                                            entityId={m.id}
-                                                            entityType="Message"
-                                                            authed={true}
-                                                            currentUserId={currentUserId}
-                                                            entityAuthorId={m.senderId}
-                                                            onReactionChanged={(updatedReactions, newCode) => {
-                                                                setMessages(messages.map(msg =>
-                                                                    msg.id === m.id
-                                                                        ? { ...msg, reactions: updatedReactions, currentUserReactionCode: newCode }
-                                                                        : msg
-                                                                ));
-                                                            }}
-                                                        />
-                                                    </div>
-                                                    {isCurrentUser && <Avatar url={m.senderProfilePictureUrl} name={m.senderName} size={36} />}
-                                                </div>
-                                            );
-                                        })}
+                                {!isCurrentUser && <Avatar url={m.senderProfilePictureUrl} name={m.senderName} size={36} />}
+                                <div style={{ maxWidth: '70%' }}>
+                                    <div style={{
+                                        fontSize: 12,
+                                        color: '#666',
+                                        marginBottom: 4,
+                                        textAlign: isCurrentUser ? 'right' : 'left'
+                                    }}>
+                                        {isCurrentUser ? currentUserName : m.senderName || m.senderId} • {new Date(m.sentAt).toLocaleString()}
                                     </div>
                                 ))}
                             </>
@@ -553,24 +400,7 @@ export default function Chat() {
                                         </div>
                                     </div>
                                 </div>
-                            ))}
-                        </div>
-
-                        {chatType !== 0 && (userRole === 0 || userRole === 1) && (
-                            <div className="chat-sidebar-actions">
-                                <button
-                                    onClick={() => setShowAddUserModal(true)}
-                                    className="chat-btn chat-btn--primary"
-                                >
-                                    + Додати користувача
-                                </button>
-                                <button
-                                    onClick={handleDeleteChat}
-                                    disabled={deleting}
-                                    className="chat-btn chat-btn--danger"
-                                >
-                                    {deleting ? 'Видалення...' : 'Видалити чат'}
-                                </button>
+                                {isCurrentUser && <Avatar url={m.senderProfilePictureUrl} name={m.senderName} size={36} />}
                             </div>
                         )}
                     </div>

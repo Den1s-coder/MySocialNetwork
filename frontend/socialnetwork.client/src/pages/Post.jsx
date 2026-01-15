@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { authFetch } from '../hooks/authFetch';
+import Avatar from '../components/Avatar';
 
 const API_BASE = 'https://localhost:7142';
 const COMMENTS_PAGE_SIZE = 1;
@@ -247,19 +248,6 @@ export default function Post() {
                                     <div style={{ marginTop: 6, whiteSpace: 'pre-wrap', color: c.isBanned ? '#666' : 'inherit' }}>
                                         {c.isBanned ? '(Заблоковано адміністрацією)' : c.text}
                                     </div>
-
-                                    {!c.isBanned && (
-                                        <ReactionBar
-                                            reactions={c.reactions ?? []}
-                                            currentUserReactionCode={c.currentUserReactionCode ?? null}
-                                            entityId={c.id}
-                                            entityType="Comment"
-                                            authed={authed}
-                                            onReactionChanged={(updatedReactions, newCode) =>
-                                                handleCommentReactionChanged(c.id, updatedReactions, newCode)
-                                            }
-                                        />
-                                    )}
                                 </div>
 
                                 {authed && (
