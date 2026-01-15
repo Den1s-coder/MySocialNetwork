@@ -1,8 +1,7 @@
 ﻿using AutoMapper;
-using Microsoft.Extensions.Logging;
-using SocialNetwork.Application.DTO.Chats;
+using SocialNetwork.Application.DTO;
 using SocialNetwork.Application.Interfaces;
-using SocialNetwork.Domain.Entities.Chats;
+using SocialNetwork.Domain.Entities;
 using SocialNetwork.Domain.Interfaces;
 
 namespace SocialNetwork.Application.Service
@@ -11,48 +10,18 @@ namespace SocialNetwork.Application.Service
     {
         private readonly IMessageRepository _messageRepository;
         private readonly IMapper _mapper;
-        private readonly ILogger<MessageService> _logger;
 
-        public MessageService(IMessageRepository messageRepository, IMapper mapper, ILogger<MessageService> logger)
+        public MessageService(IMessageRepository messageRepository, IMapper mapper)
         {
             _messageRepository = messageRepository;
             _mapper = mapper;
-            _logger = logger;
         }
 
-        public async Task<IEnumerable<Message>> GetMessageByChatIdAsync(Guid chatid, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<MessageDto>> GetMessageByChatIdAsync(Guid chatid, CancellationToken cancellationToken = default)
         {
-            var messages = await _messageRepository.GetMessagesByChatIdAsync(chatId, cancellationToken);
+            var messages = await _messageRepository.GetMessagesByChatIdAsync(chatid);
 
-            var messageDict = messages.ToDictionary(m => m.Id);
-            
-            var messageDtos = _mapper.Map<IEnumerable<MessageDto>>(messages);
-
-            foreach (var dto in messageDtos)
-            {
-                if (messageDict.TryGetValue(dto.Id, out var message))
-                {
-                    var userReaction = message.Reactions.FirstOrDefault(r => r.UserId == userId);
-                    if (userReaction != null)
-                    {
-                        dto.CurrentUserReactionCode = userReaction.ReactionType.Code;
-                    }
-                }
-            }
-
-            return messageDtos;
-        }
-
-        public async Task ToogleReactionAsync(Guid messageId, Guid userId, Guid reactionType, CancellationToken cancellationToken = default)
-        {
-            var existingMessage = await _messageRepository.GetByIdAsync(messageId, cancellationToken);
-            if (existingMessage == null)
-            {
-                _logger.LogWarning("Attempted to toggle reaction for non-existent message with ID: " + messageId);
-                return;
-            }
-
-            await _messageRepository.ToggleReactionAsync(messageId, userId, reactionType, cancellationToken);
+            return _mapper.Map<IEnumerable<Message>, IEnumerable<MessageDto>>(messages);
         }
     }
 }
