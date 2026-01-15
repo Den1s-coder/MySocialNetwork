@@ -11,6 +11,7 @@ namespace SocialNetwork.Application.DTO
         public Guid Id { get; set; }
         public string Text { get; set; }
         public string UserName { get; set; }
+        public string? ProfilePictureUrl { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public bool IsBanned { get; set; }

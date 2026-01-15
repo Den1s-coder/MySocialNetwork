@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { authFetch } from '../hooks/authFetch';
+import Avatar from '../components/Avatar';
 
 const API_BASE = 'https://localhost:7142';
 const COMMENTS_PAGE_SIZE = 1;
@@ -124,12 +125,23 @@ export default function Post() {
     if (status === 'error') return <div style={{ maxWidth: 700, margin: '24px auto', padding: '0 12px', color: 'crimson' }}>Помилка: {error}</div>;
     if (!post) return null;
 
+    const pickPostAvatar = (post) => {
+        return post.authorProfilePictureUrl || post.profilePictureUrl || post.authorAvatarUrl || post.userProfilePictureUrl || null;
+    };
+
+    const pickCommentAvatar = (c) => {
+        return c.profilePictureUrl || c.userProfilePictureUrl || c.authorProfilePictureUrl || null;
+    };
+
     if (post.isBanned) {
         return (
             <div style={{ maxWidth: 700, margin: '24px auto', padding: '0 12px', display: 'grid', gap: 16 }}>
                 <article style={{ padding: 16, border: '1px solid #ddd', borderRadius: 8, opacity: 0.85 }}>
-                    <div style={{ fontSize: 14, color: '#555' }}>
-                        Автор: {post.userName} • {new Date(post.createdAt).toLocaleString()} <span style={{ color: 'crimson' }}>(Заблоковано адміністрацією)</span>
+                    <div style={{ fontSize: 14, color: '#555', display: 'flex', alignItems: 'center', gap: 12 }}>
+                        <Avatar url={pickPostAvatar(post)} name={post.userName} />
+                        <div>
+                          {post.userName} • {new Date(post.createdAt).toLocaleString()} <span style={{ color: 'crimson' }}>(Заблоковано адміністрацією)</span>
+                        </div>
                     </div>
                     <p style={{ marginTop: 8, color: '#666' }}>(Заблоковано адміністрацією)</p>
                 </article>
@@ -140,8 +152,11 @@ export default function Post() {
     return (
         <div style={{ maxWidth: 700, margin: '24px auto', padding: '0 12px', display: 'grid', gap: 16 }}>
             <article style={{ padding: 16, border: '1px solid #ddd', borderRadius: 8 }}>
-                <div style={{ fontSize: 14, color: '#555' }}>
-                    Автор: {post.userName} • {new Date(post.createdAt).toLocaleString()}
+                <div style={{ fontSize: 14, color: '#555', display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <Avatar url={pickPostAvatar(post)} name={post.userName} />
+                    <div>
+                      {post.userName} • {new Date(post.createdAt).toLocaleString()}
+                    </div>
                 </div>
                 <p style={{ whiteSpace: 'pre-wrap', marginTop: 8 }}>{post.text}</p>
             </article>
@@ -153,13 +168,16 @@ export default function Post() {
                 ) : (
                     <div style={{ display: 'grid', gap: 12 }}>
                         {comments.map(c => (
-                            <div key={c.id} style={{ padding: 12, border: '1px solid #eee', borderRadius: 6, opacity: c.isBanned ? 0.85 : 1 }}>
-                                <div style={{ fontSize: 13, color: '#666' }}>
-                                    {c.userName} • {new Date(c.createdAt).toLocaleString()}
-                                    {c.isBanned && <span style={{ color: 'crimson', marginLeft: 8 }}>(Заблоковано адміністрацією)</span>}
-                                </div>
-                                <div style={{ marginTop: 6, whiteSpace: 'pre-wrap', color: c.isBanned ? '#666' : 'inherit' }}>
-                                    {c.isBanned ? '(Заблоковано адміністрацією)' : c.text}
+                            <div key={c.id} style={{ padding: 12, border: '1px solid #eee', borderRadius: 6, opacity: c.isBanned ? 0.85 : 1, display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+                                <Avatar url={pickCommentAvatar(c)} name={c.userName} size={36} />
+                                <div style={{ flex: 1 }}>
+                                    <div style={{ fontSize: 13, color: '#666' }}>
+                                        {c.userName} • {new Date(c.createdAt).toLocaleString()}
+                                        {c.isBanned && <span style={{ color: 'crimson', marginLeft: 8 }}>(Заблоковано адміністрацією)</span>}
+                                    </div>
+                                    <div style={{ marginTop: 6, whiteSpace: 'pre-wrap', color: c.isBanned ? '#666' : 'inherit' }}>
+                                        {c.isBanned ? '(Заблоковано адміністрацією)' : c.text}
+                                    </div>
                                 </div>
                             </div>
                         ))}

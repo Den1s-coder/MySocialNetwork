@@ -1,12 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
+import * as signalR from '@microsoft/signalr';
 import { createChatConnection } from '../signalr';
 
 export function useChatHub({ baseUrl, getToken, chatId, onMessage }) {
     const [connected, setConnected] = useState(false);
     const connRef = useRef(null);
+    const startPromiseRef = useRef(null);
+    const mountedRef = useRef(true);
 
     useEffect(() => {
-        let mounted = true;
+        mountedRef.current = true;
         const connection = createChatConnection({ baseUrl, getToken });
         connRef.current = connection;
 
@@ -19,46 +22,66 @@ export function useChatHub({ baseUrl, getToken, chatId, onMessage }) {
 
         connection.onreconnecting((err) => {
             console.warn('SignalR reconnecting', err);
-            if (mounted) setConnected(false);
+            if (mountedRef.current) setConnected(false);
         });
         connection.onreconnected((id) => {
             console.info('SignalR reconnected', id);
-            if (mounted) setConnected(true);
+            if (mountedRef.current) setConnected(true);
         });
         connection.onclose((err) => {
             console.warn('SignalR closed', err);
-            if (mounted) setConnected(false);
+            if (mountedRef.current) setConnected(false);
         });
 
         const start = async () => {
             try {
-                if (connection.state === 'Connected') {
-                    if (mounted) setConnected(true);
+                if (connection.state === signalR.HubConnectionState.Connected) {
+                    if (mountedRef.current) setConnected(true);
                     return;
                 }
-                await connection.start();
-                if (mounted) setConnected(true);
+
+                startPromiseRef.current = connection.start();
+                await startPromiseRef.current;
+                if (mountedRef.current) setConnected(true);
             } catch (err) {
+                const isAbort = err && (err.name === 'AbortError' || /AbortError/i.test(String(err)));
                 console.error('SignalR start failed:', err);
-                if (mounted) setConnected(false);
-                setTimeout(() => {
-                    if (mounted) start();
-                }, 2000);
+                if (!isAbort) {
+                    if (mountedRef.current) setConnected(false);
+                }
+                if (mountedRef.current) {
+                    setTimeout(() => {
+                        try {
+                            start();
+                        } catch {}
+                    }, 2000);
+                }
+            } finally {
+                startPromiseRef.current = null;
             }
         };
 
         start();
 
         return () => {
-            mounted = false;
+            mountedRef.current = false;
             try { connection.off('ReceiveMessage', onReceive); } catch {}
-            connection.stop().catch(() => {});
+            try {
+                const p = startPromiseRef.current;
+                if (p) {
+                    p.finally(() => {
+                        connection.stop().catch(() => {});
+                    });
+                } else {
+                    connection.stop().catch(() => {});
+                }
+            } catch {}
         };
-    }, [baseUrl, getToken, onMessage, chatId]);
+    }, [baseUrl, getToken, onMessage]);
 
     const joinChat = async (_chatId, userId) => {
         try {
-            if (!connRef.current || connRef.current.state !== 'Connected') return;
+            if (!connRef.current || connRef.current.state !== signalR.HubConnectionState.Connected) return;
             await connRef.current.invoke('JoinChat', _chatId, userId);
         } catch (e) {
             console.error('JoinChat failed', e);
@@ -67,7 +90,7 @@ export function useChatHub({ baseUrl, getToken, chatId, onMessage }) {
 
     const sendMessage = async (_chatId, content) => {
         const conn = connRef.current;
-        if (!conn || conn.state !== 'Connected') {
+        if (!conn || conn.state !== signalR.HubConnectionState.Connected) {
             console.warn('SignalR not connected');
             return;
         }

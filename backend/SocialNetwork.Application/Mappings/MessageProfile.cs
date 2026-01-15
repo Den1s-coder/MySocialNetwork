@@ -15,6 +15,8 @@ namespace SocialNetwork.Application.Mappings
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.ChatId, opt => opt.MapFrom(src => src.ChatId))
                 .ForMember(dest => dest.SenderId, opt => opt.MapFrom(src => src.SenderId))
+                .ForMember(dest => dest.SenderName, opt => opt.MapFrom(src => src.Sender.Name))
+                .ForMember(dest => dest.ProfilePictureUrl, opt => opt.MapFrom(src => src.Sender.ProfilePictureUrl))
                 .ForMember(dest => dest.Content, opt => opt.MapFrom(src => src.Content))
                 .ForMember(dest => dest.SentAt, opt => opt.MapFrom(src => src.SentAt))
                 .ReverseMap();

@@ -1,8 +1,9 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useChatHub } from '../hooks/useChatHub';
 import { useAuth } from '../hooks/useAuth';
 import { authFetch } from '../hooks/authFetch';
+import Avatar from '../components/Avatar';
 
 const BASE_URL = 'https://localhost:7142';
 const API_BASE = 'https://localhost:7142';
@@ -13,6 +14,12 @@ export default function Chat() {
     const { accessToken, isAuthenticated, currentUserId, currentUserName } = useAuth();
     const [messages, setMessages] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [chatTitle, setChatTitle] = useState(null);
+    const [chatAvatar, setChatAvatar] = useState(null);
+
+    const [participantsMap, setParticipantsMap] = useState({});
+    const participantsRef = useRef({});
+    const updateParticipants = (map) => { setParticipantsMap(map); participantsRef.current = map; };
 
     if (!chatId) {
         return <div>Chat ID not found in URL</div>;
@@ -33,34 +40,86 @@ export default function Chat() {
     useEffect(() => {
         if (!accessToken || !chatId) return;
 
-        const loadMessages = async () => {
+        const loadMessagesAndMeta = async () => {
+            setLoading(true);
             try {
-                console.log('Loading messages for chatId:', chatId);
                 const res = await authFetch(`${API_BASE}/api/Chat/chats/${chatId}/messages`, {
                     headers: { 'Authorization': `Bearer ${accessToken}` }
                 });
                 if (!res.ok) throw new Error(`HTTP ${res.status}`);
                 const data = await res.json();
 
-                const sortedMessages = data.sort((a, b) => new Date(a.sentAt) - new Date(b.sentAt));
+                const chatsRes = await authFetch(`${API_BASE}/api/Chat/chats`, {
+                    headers: { 'Authorization': `Bearer ${accessToken}` }
+                });
+
+                let participants = {};
+                if (chatsRes.ok) {
+                    const chats = await chatsRes.json();
+                    const chat = (chats || []).find(c => String(c.id).toLowerCase() === String(chatId).toLowerCase());
+                    if (chat) {
+                        const ucs = chat.userChats || chat.UserChats || [];
+                        (ucs || []).forEach(uc => {
+                            const id = (uc.userId || uc.UserId || uc.user?.id || '')?.toString().toLowerCase();
+                            const name = uc.userName || uc.UserName || uc.user?.name || uc.user?.name || '';
+                            const pic = uc.profilePictureUrl || uc.ProfilePictureUrl || uc.user?.profilePictureUrl || uc.user?.profilePictureUrl || null;
+                            if (id) participants[id] = { userName: name, profilePictureUrl: pic };
+                        });
+
+                        const title = (() => {
+                            const type = chat.type;
+                            const isPrivate = type === 0 || String(type).toLowerCase() === 'private';
+                            if (isPrivate) {
+                                const other = Object.entries(participants).find(([id]) => id !== String(currentUserId).toLowerCase());
+                                if (other) return participants[other[0]].userName || null;
+                            }
+                            return chat.title || null;
+                        })();
+                        setChatTitle(title);
+                        setChatAvatar(chat.avatarUrl || chat.userProfilePictureUrl || chat.profilePictureUrl || null);
+                    }
+                }
+
+                updateParticipants(participants);
+
+                const mapped = (data || []).map(m => {
+                    const sid = (m.senderId || '').toString().toLowerCase();
+                    const p = participants[sid];
+                    return {
+                        ...m,
+                        senderName: m.senderName || (p && p.userName) || m.senderName || null,
+                        senderProfilePictureUrl: m.senderProfilePictureUrl || (p && p.profilePictureUrl) || null
+                    };
+                });
+
+                const sortedMessages = mapped.sort((a, b) => new Date(a.sentAt) - new Date(b.sentAt));
                 setMessages(sortedMessages);
-                setLoading(false);
             } catch (e) {
-                console.error('Помилка завантаження повідомлень:', e);
+                console.error('Помилка завантаження повідомлень або метаданих чату:', e);
+            } finally {
                 setLoading(false);
             }
         };
-        loadMessages();
-    }, [chatId, accessToken]);
+
+        loadMessagesAndMeta();
+    }, [chatId, accessToken, currentUserId]);
 
     const onMessage = useCallback((msg) => {
+        const sid = (msg.senderId || '').toString().toLowerCase();
+        const p = participantsRef.current[sid];
+        const enriched = {
+            ...msg,
+            senderName: msg.senderName || (p && p.userName) || msg.senderName || null,
+            senderProfilePictureUrl: msg.senderProfilePictureUrl || (p && p.profilePictureUrl) || null
+        };
+
         setMessages(prev => {
-            const updatedMessages = [...prev, msg];
+            const updatedMessages = [...prev, enriched];
             return updatedMessages.sort((a, b) => new Date(a.sentAt) - new Date(b.sentAt));
         });
     }, []);
 
-    const getToken = () => accessToken;
+    const getToken = useCallback(() => accessToken, [accessToken]);
 
     const { connected, sendMessage, joinChat } = useChatHub({
         baseUrl: BASE_URL,
@@ -74,8 +133,6 @@ export default function Chat() {
     const handleSend = async (e) => {
         e.preventDefault();
         if (!text.trim() || !connected || !chatId) return;
-
-        console.log('Sending message:', { chatId, content: text.trim() });
         await sendMessage(chatId, text.trim());
         setText('');
     };
@@ -86,7 +143,10 @@ export default function Chat() {
     return (
         <div style={{ maxWidth: 800, margin: '24px auto', padding: '0 12px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                <h2>Чат {chatId}</h2>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <Avatar url={chatAvatar} name={chatTitle} />
+                    <h2 style={{ margin: 0 }}>{chatTitle ? `Чат з ${chatTitle}` : `Чат ${chatId}`}</h2>
+                </div>
                 <button onClick={() => navigate('/chats')}>← До списку чатів</button>
             </div>
 
@@ -103,7 +163,7 @@ export default function Chat() {
                     <p style={{ color: '#666', textAlign: 'center' }}>Повідомлень поки немає</p>
                 ) : (
                     messages.map(m => {
-                        const isCurrentUser = m.senderId === currentUserId;
+                        const isCurrentUser = String(m.senderId).toLowerCase() === String(currentUserId).toString().toLowerCase();
 
                         return (
                             <div
@@ -111,9 +171,12 @@ export default function Chat() {
                                 style={{
                                     marginBottom: 12,
                                     display: 'flex',
-                                    justifyContent: isCurrentUser ? 'flex-end' : 'flex-start'
+                                    justifyContent: isCurrentUser ? 'flex-end' : 'flex-start',
+                                    alignItems: 'flex-end',
+                                    gap: 8
                                 }}
                             >
+                                {!isCurrentUser && <Avatar url={m.senderProfilePictureUrl} name={m.senderName} size={36} />}
                                 <div style={{ maxWidth: '70%' }}>
                                     <div style={{
                                         fontSize: 12,
@@ -134,6 +197,7 @@ export default function Chat() {
                                         {m.content}
                                     </div>
                                 </div>
+                                {isCurrentUser && <Avatar url={m.senderProfilePictureUrl} name={m.senderName} size={36} />}
                             </div>
                         );
                     })

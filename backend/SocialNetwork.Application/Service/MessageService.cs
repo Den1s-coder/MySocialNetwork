@@ -1,4 +1,6 @@
-﻿using SocialNetwork.Application.Interfaces;
+﻿using AutoMapper;
+using SocialNetwork.Application.DTO;
+using SocialNetwork.Application.Interfaces;
 using SocialNetwork.Domain.Entities;
 using SocialNetwork.Domain.Interfaces;
 
@@ -7,15 +9,19 @@ namespace SocialNetwork.Application.Service
     public class MessageService: IMessageService
     {
         private readonly IMessageRepository _messageRepository;
+        private readonly IMapper _mapper;
 
-        public MessageService(IMessageRepository messageRepository)
+        public MessageService(IMessageRepository messageRepository, IMapper mapper)
         {
             _messageRepository = messageRepository;
+            _mapper = mapper;
         }
 
-        public async Task<IEnumerable<Message>> GetMessageByChatIdAsync(Guid chatid, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<MessageDto>> GetMessageByChatIdAsync(Guid chatid, CancellationToken cancellationToken = default)
         {
-            return await _messageRepository.GetMessagesByChatIdAsync(chatid);
+            var messages = await _messageRepository.GetMessagesByChatIdAsync(chatid);
+
+            return _mapper.Map<IEnumerable<Message>, IEnumerable<MessageDto>>(messages);
         }
     }
 }

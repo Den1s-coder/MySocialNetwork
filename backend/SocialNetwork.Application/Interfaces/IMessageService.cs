@@ -1,9 +1,10 @@
-﻿using SocialNetwork.Domain.Entities;
+﻿using SocialNetwork.Application.DTO;
+using SocialNetwork.Domain.Entities;
 
 namespace SocialNetwork.Application.Interfaces
 {
     public interface IMessageService
     {
-        public Task<IEnumerable<Message>> GetMessageByChatIdAsync(Guid chatid, CancellationToken cancellationToken = default);
+        public Task<IEnumerable<MessageDto>> GetMessageByChatIdAsync(Guid chatid, CancellationToken cancellationToken = default);
     }
 }

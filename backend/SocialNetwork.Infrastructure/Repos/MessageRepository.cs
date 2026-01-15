@@ -56,6 +56,7 @@ namespace SocialNetwork.Infrastructure.Repos
         {
             return await _context.Messages
                 .AsNoTracking()
+                .Include(m => m.Sender)
                 .ToListAsync();
         }
 
@@ -70,6 +71,7 @@ namespace SocialNetwork.Infrastructure.Repos
         {
             return await _context.Messages
                 .Where(m => m.ChatId == chatId)
+                .Include(m => m.Sender)
                 .AsNoTracking()
                 .ToListAsync();
         }
@@ -78,6 +80,7 @@ namespace SocialNetwork.Infrastructure.Repos
         {
             return await _context.Messages
                 .Where(m => m.SenderId == senderId)
+                .Include(m => m.Sender)
                 .AsNoTracking()
                 .ToListAsync();
         }
@@ -86,6 +89,7 @@ namespace SocialNetwork.Infrastructure.Repos
         {
             return await _context.Messages
                 .Where(m => m.ChatId == chatId && m.Content.Contains(searchTerm))
+                .Include(m => m.Sender)
                 .AsNoTracking()
                 .ToListAsync();
         }
