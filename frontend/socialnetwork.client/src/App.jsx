@@ -22,7 +22,7 @@ function App() {
       <>
           <BrowserRouter>
               <NavBar />
-              <div style={{ paddingTop: 56 }}>
+              <div style={{ paddingTop: 56, paddingLeft: 200 }}>
                   <Routes>
                     <Route path="/" element={<Home />} />
                     <Route path="/login" element={<Login />} />
