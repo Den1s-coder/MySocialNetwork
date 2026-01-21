@@ -141,3 +141,61 @@
 .menu-button--danger {
   color: #d00;
 }
+
+.nav-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 200px;
+  background: #fff;
+  border-right: 1px solid #e6e6e6;
+  z-index: 1100;
+  padding-top: 16px;
+  box-shadow: 1px 0 0 rgba(0,0,0,0.02);
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px;
+}
+
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  color: #222;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+.sidebar-item:hover,
+.sidebar-item:focus {
+  background: rgba(0,0,0,0.04);
+  outline: none;
+}
+
+.top-header {
+  position: fixed;
+  top: 0;
+  left: 200px;
+  right: 0;
+  height: 56px;
+  background: #fff;
+  border-bottom: 1px solid #ddd;
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+}
+
+.top-header__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0 16px;
+}

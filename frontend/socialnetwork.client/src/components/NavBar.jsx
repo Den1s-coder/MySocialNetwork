@@ -56,67 +56,74 @@ export default function NavBar() {
     };
 
     return (
-        <header className="nav-header">
-            <nav className="nav-bar">
-                <div className="nav-left">
-                    <Link to="/">Головна</Link>
-                    {isAuthenticated && <Link to="/post/new">Створити пост</Link>}
-                    {isAuthenticated && <Link to="/chats">Чати</Link>}
-                </div>
+        <>
+            <aside className="nav-sidebar" aria-label="Главная навигация">
+                <nav className="sidebar-nav">
+                    <Link to="/" className="sidebar-item">Головна</Link>
+                    <Link to="/chats" className="sidebar-item">Чати</Link>
+                    <Link to="/friends" className="sidebar-item">Друзі</Link>
+                    <Link to="/settings" className="sidebar-item">Налаштування</Link>
+                </nav>
+            </aside>
 
-                <div className="nav-right">
-                    {isAuthenticated ? (
-                        <div className="avatar-wrapper" ref={avatarRef}>
-                            <button
-                                className="clickable-area"
-                                aria-haspopup="true"
-                                aria-expanded={menuOpen}
-                                onClick={() => setMenuOpen(s => !s)}
-                                title="Керування профілем"
-                                type="button"
-                            >
-                                <span className="avatar-circle">
-                                    {avatarUrl ? (
-                                        <img src={avatarUrl} alt="avatar" className="avatar-image" />
-                                    ) : (
-                                        <div className="initials">
-                                            {(currentUserName || '').slice(0, 2).toUpperCase() || 'U'}
-                                        </div>
-                                    )}
-                                </span>
+            <header className="top-header">
+                <div className="top-header__inner">
+                    <div className="brand">MySocialNetwork</div>
 
-                                <span className="username">{currentUserName ?? 'Користувач'}</span>
-                            </button>
+                    <div className="nav-right">
+                        {isAuthenticated ? (
+                            <div className="avatar-wrapper" ref={avatarRef}>
+                                <button
+                                    className="clickable-area"
+                                    aria-haspopup="true"
+                                    aria-expanded={menuOpen}
+                                    onClick={() => setMenuOpen(s => !s)}
+                                    title="Керування профілем"
+                                    type="button"
+                                >
+                                    <span className="avatar-circle">
+                                        {avatarUrl ? (
+                                            <img src={avatarUrl} alt="avatar" className="avatar-image" />
+                                        ) : (
+                                            <div className="initials">
+                                                {(currentUserName || '').slice(0, 2).toUpperCase() || 'U'}
+                                            </div>
+                                        )}
+                                    </span>
 
-                            <div className={`menu ${menuOpen ? 'open' : ''}`}>
-                                <div className="menu-header">
-                                    <div className="menu-hello">Вітаю,</div>
-                                    <div className="menu-username">{currentUserName ?? 'Користувач'}</div>
+                                    <span className="username">{currentUserName ?? 'Користувач'}</span>
+                                </button>
+
+                                <div className={`menu ${menuOpen ? 'open' : ''}`}>
+                                    <div className="menu-header">
+                                        <div className="menu-hello">Вітаю,</div>
+                                        <div className="menu-username">{currentUserName ?? 'Користувач'}</div>
+                                    </div>
+                                    <button
+                                        onClick={() => { setMenuOpen(false); navigate('/profile'); }}
+                                        className="menu-button"
+                                        type="button"
+                                    >
+                                        Профіль
+                                    </button>
+                                    <button
+                                        onClick={handleLogout}
+                                        className="menu-button menu-button--danger"
+                                        type="button"
+                                    >
+                                        Вийти
+                                    </button>
                                 </div>
-                                <button
-                                    onClick={() => { setMenuOpen(false); navigate('/profile'); }}
-                                    className="menu-button"
-                                    type="button"
-                                >
-                                    Профіль
-                                </button>
-                                <button
-                                    onClick={handleLogout}
-                                    className="menu-button menu-button--danger"
-                                    type="button"
-                                >
-                                    Вийти
-                                </button>
                             </div>
-                        </div>
-                    ) : (
-                        <>
-                            <Link to="/login">Увійти</Link>
-                            <Link to="/register">Зареєструватися</Link>
-                        </>
-                    )}
+                        ) : (
+                            <>
+                                <Link to="/login">Увійти</Link>
+                                <Link to="/register">Зареєструватися</Link>
+                            </>
+                        )}
+                    </div>
                 </div>
-            </nav>
-        </header>
+            </header>
+        </>
     );
 }
