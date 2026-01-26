@@ -43,18 +43,10 @@ namespace SocialNetwork.Infrastructure.Repos
             return await _context.Friendships
                 .AsNoTracking()
                 .Where(f => f.RequesterId == userId || f.AddresseeId == userId)
-                .ToListAsync();
-        }
-
-        public Task UpdateAsync(Friendship T, CancellationToken cancellationToken = default) //TODO
-        {
-            return await _context.Friendships
-                .AsNoTracking()
-                .Where(f => f.RequesterId == userId || f.AddresseeId == userId)
                 .ToListAsync(cancellationToken);
         }
 
-        public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
+        public async Task UpdateAsync(Friendship T, CancellationToken cancellationToken = default)
         {
             _context.Friendships.Update(T);
             await _context.SaveChangesAsync(cancellationToken);
@@ -75,7 +67,7 @@ namespace SocialNetwork.Infrastructure.Repos
             return _context.Friendships
                 .AsNoTracking()
                 .AnyAsync(f => (f.RequesterId == userId1 && f.AddresseeId == userId2) ||
-                         (f.RequesterId == userId2 && f.AddresseeId == userId1), cancellationToken);
+                        (f.AddresseeId == userId2 && f.RequesterId == userId1), cancellationToken);
         }
     }
 }
