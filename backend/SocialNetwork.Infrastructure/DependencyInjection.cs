@@ -17,6 +17,7 @@ namespace SocialNetwork.Infrastructure
             services.AddScoped<IMessageRepository, MessageRepository>();
             services.AddScoped<IFriendshipRepository, FriendshipRepository>();
             services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+            services.AddScoped<INotificationRepository, NotificationRepository>();
 
             services.Configure<JwtOptions>(configuration.GetSection("JwtOptions"));
             services.AddScoped<IJwtProvider, JwtProvider>();
