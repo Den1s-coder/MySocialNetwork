@@ -3,7 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using SocialNetwork.API.Extensions;
 using SocialNetwork.API.Hubs;
 using SocialNetwork.API.Middleware;
+using SocialNetwork.API.Services;
 using SocialNetwork.Application;
+using SocialNetwork.Application.Interfaces;
 using SocialNetwork.Application.Mappings;
 using SocialNetwork.Domain.Interfaces;
 using SocialNetwork.Infrastructure;
@@ -28,6 +30,8 @@ builder.Services.AddMediator();
 builder.Services.AddInfrastructure(builder.Configuration);
 
 builder.Services.AddApplication();
+
+builder.Services.AddScoped<INotificationPublisher, NotificationPublisher>();
 
 var storageConnection = builder.Configuration.GetValue<string>("AzureStorage:ConnectionString");
 var containerConfig = builder.Configuration.GetSection("AzureStorage:Containers");
