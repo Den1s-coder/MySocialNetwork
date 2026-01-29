@@ -4,7 +4,7 @@ import { authFetch } from '../hooks/authFetch';
 import Avatar from '../components/Avatar';
 
 const API_BASE = 'https://localhost:7142';
-const COMMENTS_PAGE_SIZE = 1;
+const COMMENTS_PAGE_SIZE = 10;
 
 export default function Post() {
     const { id } = useParams();
@@ -13,7 +13,7 @@ export default function Post() {
     const [status, setStatus] = useState('loading');
     const [error, setError] = useState(null);
 
-    const authed = useMemo(() => Boolean(localStorage.getItem('token')), []);
+    const authed = useMemo(() => Boolean(localStorage.getItem('accessToken')), []);
     const [commentText, setCommentText] = useState('');
     const [sendStatus, setSendStatus] = useState('idle');
 
@@ -97,19 +97,18 @@ export default function Post() {
     };
 
     const submitComment = async (e) => {
-        e.preventDefault();
+        e?.preventDefault();
         if (!authed) return;
 
+        const text = (commentText ?? '').trim();
+        if (!text) return;
+
+        setSendStatus('sending');
         setSendStatus('sending');
         try {
-            const token = localStorage.getItem('token');
-            const res = await fetch(`${API_BASE}/api/Comment/CreateComment`, {
+            const res = await authFetch(`${API_BASE}/api/Comment/CreateComment`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
-                },
-                body: JSON.stringify({ text: commentText, postId: id }),
+                body: JSON.stringify({ text, postId: id }),
             });
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
@@ -117,6 +116,7 @@ export default function Post() {
             setCommentsPage(1);
             setSendStatus('idle');
         } catch (err) {
+            console.error('Submit comment failed', err);
             setSendStatus('error');
         }
     };
@@ -163,6 +163,34 @@ export default function Post() {
 
             <section>
                 <h3>Коментарі</h3>
+
+                {authed ? (
+                    <form onSubmit={submitComment} style={{ marginBottom: 12, display: 'grid', gap: 8 }}>
+                        <textarea
+                            placeholder="Ваш коментар…"
+                            value={commentText}
+                            onChange={(e) => setCommentText(e.target.value)}
+                            rows={4}
+                            required
+                            style={{ width: '100%', resize: 'vertical', padding: 8 }}
+                        />
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <div style={{ fontSize: 12, color: '#666' }}>{commentText.length}/1000</div>
+                            <div style={{ display: 'flex', gap: 8 }}>
+                                <button type="button" onClick={() => setCommentText('')} disabled={sendStatus === 'sending'}>
+                                    Очистити
+                                </button>
+                                <button type="submit" disabled={sendStatus === 'sending' || !commentText.trim()}>
+                                    {sendStatus === 'sending' ? 'Надсилаємо…' : 'Надіслати'}
+                                </button>
+                            </div>
+                        </div>
+                        {sendStatus === 'error' && <div style={{ color: 'crimson' }}>Не вдалося надіслати коментар.</div>}
+                    </form>
+                ) : (
+                    <p>Щоб залишити коментар, будь ласка, <a href="/login">увійдіть</a>.</p>
+                )}
+
                 {comments.length === 0 ? (
                     <p>Коментарів ще немає.</p>
                 ) : (
@@ -192,25 +220,6 @@ export default function Post() {
                     </div>
                 )}
             </section>
-
-            {authed && (
-                <section>
-                    <h3>Додати коментар</h3>
-                    <form onSubmit={submitComment} style={{ display: 'grid', gap: 12 }}>
-                        <textarea
-                            placeholder="Ваш коментар…"
-                            value={commentText}
-                            onChange={(e) => setCommentText(e.target.value)}
-                            rows={4}
-                            required
-                        />
-                        <button disabled={sendStatus === 'sending'}>
-                            {sendStatus === 'sending' ? 'Надсилаємо…' : 'Надіслати'}
-                        </button>
-                        {sendStatus === 'error' && <p style={{ color: 'crimson' }}>Не вдалося надіслати коментар.</p>}
-                    </form>
-                </section>
-            )}
         </div>
     );
 }
