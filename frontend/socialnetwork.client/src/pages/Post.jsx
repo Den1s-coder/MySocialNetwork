@@ -4,7 +4,7 @@ import { authFetch } from '../hooks/authFetch';
 import Avatar from '../components/Avatar';
 
 const API_BASE = 'https://localhost:7142';
-const COMMENTS_PAGE_SIZE = 1;
+const COMMENTS_PAGE_SIZE = 10;
 
 export default function Post() {
     const { id } = useParams();
@@ -104,6 +104,7 @@ export default function Post() {
         if (!text) return;
 
         setSendStatus('sending');
+        setSendStatus('sending');
         try {
             const res = await authFetch(`${API_BASE}/api/Comment/CreateComment`, {
                 method: 'POST',
@@ -201,21 +202,14 @@ export default function Post() {
 
                 {authed ? (
                     <form onSubmit={submitComment} style={{ marginBottom: 12, display: 'grid', gap: 8 }}>
-                        <div style={{ position: 'relative' }}>
-                            <textarea
-                                placeholder="Ваш коментар…"
-                                value={commentText}
-                                onChange={(e) => setCommentText(e.target.value)}
-                                rows={4}
-                                required
-                                style={{ width: '100%', resize: 'vertical', padding: 8 }}
-                            />
-                            <div style={{ position: 'absolute', bottom: 8, left: 8 }}>
-                                <EmojiPickerButton 
-                                    onEmojiSelect={(emoji) => setCommentText(prev => prev + emoji)}
-                                />
-                            </div>
-                        </div>
+                        <textarea
+                            placeholder="Ваш коментар…"
+                            value={commentText}
+                            onChange={(e) => setCommentText(e.target.value)}
+                            rows={4}
+                            required
+                            style={{ width: '100%', resize: 'vertical', padding: 8 }}
+                        />
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <div style={{ fontSize: 12, color: '#666' }}>{commentText.length}/1000</div>
                             <div style={{ display: 'flex', gap: 8 }}>
@@ -263,15 +257,6 @@ export default function Post() {
                         ))}
                     </div>
                 )}
-
-                {commentsHasMore && (
-                    <div style={{ textAlign: 'center', marginTop: 12 }}>
-                        <button onClick={loadMoreComments} disabled={commentsLoading}>
-                            {commentsLoading ? 'Завантаження…' : 'Завантажити ще коментарі'}
-                        </button>
-                    </div>
-                )}
-            </section>
 
                 {commentsHasMore && (
                     <div style={{ textAlign: 'center', marginTop: 12 }}>
