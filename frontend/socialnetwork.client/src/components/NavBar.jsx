@@ -2,6 +2,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { authFetch } from '../hooks/authFetch';
+import NotificationBell from './NotificationBell';
 import './NavBar.css';
 
 export default function NavBar() {
@@ -72,49 +73,55 @@ export default function NavBar() {
 
                     <div className="nav-right">
                         {isAuthenticated ? (
-                            <div className="avatar-wrapper" ref={avatarRef}>
-                                <button
-                                    className="clickable-area"
-                                    aria-haspopup="true"
-                                    aria-expanded={menuOpen}
-                                    onClick={() => setMenuOpen(s => !s)}
-                                    title="Керування профілем"
-                                    type="button"
-                                >
-                                    <span className="avatar-circle">
-                                        {avatarUrl ? (
-                                            <img src={avatarUrl} alt="avatar" className="avatar-image" />
-                                        ) : (
-                                            <div className="initials">
-                                                {(currentUserName || '').slice(0, 2).toUpperCase() || 'U'}
-                                            </div>
-                                        )}
-                                    </span>
-
-                                    <span className="username">{currentUserName ?? 'Користувач'}</span>
-                                </button>
-
-                                <div className={`menu ${menuOpen ? 'open' : ''}`}>
-                                    <div className="menu-header">
-                                        <div className="menu-hello">Вітаю,</div>
-                                        <div className="menu-username">{currentUserName ?? 'Користувач'}</div>
-                                    </div>
-                                    <button
-                                        onClick={() => { setMenuOpen(false); navigate('/profile'); }}
-                                        className="menu-button"
-                                        type="button"
-                                    >
-                                        Профіль
-                                    </button>
-                                    <button
-                                        onClick={handleLogout}
-                                        className="menu-button menu-button--danger"
-                                        type="button"
-                                    >
-                                        Вийти
-                                    </button>
+                            <>
+                                <div className="notification-area" style={{ marginRight: 12 }}>
+                                    <NotificationBell apiBase="https://localhost:7142" />
                                 </div>
-                            </div>
+
+                                <div className="avatar-wrapper" ref={avatarRef}>
+                                    <button
+                                        className="clickable-area"
+                                        aria-haspopup="true"
+                                        aria-expanded={menuOpen}
+                                        onClick={() => setMenuOpen(s => !s)}
+                                        title="Керування профілем"
+                                        type="button"
+                                    >
+                                        <span className="avatar-circle">
+                                            {avatarUrl ? (
+                                                <img src={avatarUrl} alt="avatar" className="avatar-image" />
+                                            ) : (
+                                                <div className="initials">
+                                                    {(currentUserName || '').slice(0, 2).toUpperCase() || 'U'}
+                                                </div>
+                                            )}
+                                        </span>
+
+                                        <span className="username">{currentUserName ?? 'Користувач'}</span>
+                                    </button>
+
+                                    <div className={`menu ${menuOpen ? 'open' : ''}`}>
+                                        <div className="menu-header">
+                                            <div className="menu-hello">Вітаю,</div>
+                                            <div className="menu-username">{currentUserName ?? 'Користувач'}</div>
+                                        </div>
+                                        <button
+                                            onClick={() => { setMenuOpen(false); navigate('/profile'); }}
+                                            className="menu-button"
+                                            type="button"
+                                        >
+                                            Профіль
+                                        </button>
+                                        <button
+                                            onClick={handleLogout}
+                                            className="menu-button menu-button--danger"
+                                            type="button"
+                                        >
+                                            Вийти
+                                        </button>
+                                    </div>
+                                </div>
+                            </>
                         ) : (
                             <>
                                 <Link to="/login">Увійти</Link>

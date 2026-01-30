@@ -1,0 +1,44 @@
+.notification-bell .bell-button {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    position: relative;
+    font-size: 18px;
+}
+.notification-bell .badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background: crimson;
+    color: white;
+    border-radius: 10px;
+    padding: 2px 6px;
+    font-size: 12px;
+}
+.notification-dropdown {
+    position: absolute;
+    right: 0;
+    width: 320px;
+    max-height: 420px;
+    overflow: auto;
+    background: white;
+    border: 1px solid #ddd;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    border-radius: 6px;
+    margin-top: 8px;
+    z-index: 200;
+}
+.notification-dropdown .dropdown-header {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:8px 12px;
+    border-bottom:1px solid #f0f0f0;
+}
+.notification-dropdown .dropdown-list { padding:8px 0; }
+.notification-item { padding:10px 12px; border-bottom:1px solid #f5f5f5; }
+.notification-item.unread { background:#fff8e6; }
+.notification-item .notification-text { font-size:13px; }
+.notification-item .notification-meta { font-size:11px; color:#888; margin-top:6px; }
+.empty { padding:12px; color:#666; }
+.mark-read-btn { background:transparent; border:none; color:#007bff; cursor:pointer; }
