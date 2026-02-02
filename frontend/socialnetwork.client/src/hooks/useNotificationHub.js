@@ -7,26 +7,82 @@ export function useNotificationHub({ baseUrl, getToken, onNotification }) {
     const [connected, setConnected] = useState(false);
     const mountedRef = useRef(true);
 
-    const waitForToken = async (timeoutMs = 10000) => {
-        const token = await getToken();
-        if (token) return token;
+    const parseJwt = (token) => {
+        try {
+            const base64Url = token.split('.')[1];
+            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(''));
+            return JSON.parse(jsonPayload);
+        } catch {
+            return null;
+        }
+    };
+
+    const tryRefreshToken = async () => {
+        try {
+            const refreshToken = localStorage.getItem('refreshToken');
+            if (!refreshToken) return null;
+
+            const resp = await fetch(new URL('/api/Auth/refresh-token', baseUrl).toString(), {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(refreshToken)
+            });
+
+            if (!resp.ok) {
+                localStorage.removeItem('accessToken');
+                localStorage.removeItem('refreshToken');
+                window.dispatchEvent(new Event('tokens-updated'));
+                return null;
+            }
+
+            const data = await resp.json();
+            if (data?.accessToken && data?.refreshToken) {
+                localStorage.setItem('accessToken', data.accessToken);
+                localStorage.setItem('refreshToken', data.refreshToken);
+                window.dispatchEvent(new Event('tokens-updated'));
+                return data.accessToken;
+            }
+
+            return null;
+        } catch (e) {
+            console.warn('tryRefreshToken failed', e);
+            return null;
+        }
+    };
+
+    const ensureValidToken = async (timeoutMs = 10000) => {
+        let token = localStorage.getItem('accessToken') || (getToken ? await getToken() : null);
+        if (token) {
+            const payload = parseJwt(token);
+            const now = Math.floor(Date.now() / 1000);
+
+            if (payload?.exp && payload.exp > now + 5) {
+                return token;
+            }
+
+            const refreshed = await tryRefreshToken();
+            if (refreshed) return refreshed;
+            return null;
+        }
 
         return new Promise((resolve) => {
             let resolved = false;
             const onTokensUpdated = async () => {
                 try {
-                    const t = await getToken();
+                    const t = localStorage.getItem('accessToken') || (getToken ? await getToken() : null);
                     if (t) {
                         resolved = true;
                         window.removeEventListener('tokens-updated', onTokensUpdated);
                         resolve(t);
                     }
-                } catch {}
+                } catch { }
             };
-
             window.addEventListener('tokens-updated', onTokensUpdated);
 
-            const to = setTimeout(() => {
+            setTimeout(() => {
                 if (!resolved) {
                     window.removeEventListener('tokens-updated', onTokensUpdated);
                     resolve(null);
@@ -40,29 +96,23 @@ export function useNotificationHub({ baseUrl, getToken, onNotification }) {
 
         const create = async () => {
             if (startPromiseRef.current) {
-                try { await startPromiseRef.current; } catch {}
+                try { await startPromiseRef.current; } catch { }
                 return;
             }
 
-            const token = await waitForToken(10000); 
-            if (!token) {
-                console.warn('NotificationHub: no access token available after wait Ч skipping connection start');
+            const validToken = await ensureValidToken(10000);
+            if (!validToken) {
+                console.warn('NotificationHub: no valid access token available Ч skipping connection start');
                 return;
             }
 
             const connection = new signalR.HubConnectionBuilder()
                 .withUrl(new URL('/notificationHub', baseUrl).toString(), {
                     accessTokenFactory: async () => {
-                        try {
-                            const t = await getToken();
-                            // debug: длина токена (убрать в production)
-                            console.debug('NotificationHub: accessToken length=', t ? t.length : 0);
-                            return t;
-                        } catch (e) {
-                            console.warn('NotificationHub: accessTokenFactory failed', e);
-                            return null;
-                        }
-                    },
+                        const t = localStorage.getItem('accessToken') || (getToken ? await getToken() : null);
+                        console.debug('NotificationHub: accessToken length=', t ? t.length : 0);
+                        return t;
+                    }
                 })
                 .withAutomaticReconnect()
                 .configureLogging(signalR.LogLevel.Information)
@@ -120,7 +170,7 @@ export function useNotificationHub({ baseUrl, getToken, onNotification }) {
             try {
                 const c = connRef.current;
                 if (c) c.stop().catch(() => {});
-            } catch {}
+            } catch { }
         };
     }, [baseUrl, getToken, onNotification]);
 
