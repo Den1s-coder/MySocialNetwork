@@ -12,5 +12,7 @@ namespace SocialNetwork.Application.Interfaces
         Task SendNotificationAsync(Notification notification, CancellationToken cancellationToken = default);
         Task<IEnumerable<Notification>> GetUserNotificationsAsync(Guid userId, CancellationToken cancellationToken = default);
         Task<IEnumerable<Notification>> GetUnreadNotificationsAsync(Guid userId, CancellationToken cancellationToken = default);
+        Task MarkAsReadAsync(Guid userId, Guid notificationId, CancellationToken cancellationToken = default);
+        Task MarkAllAsReadAsync(Guid userId, CancellationToken cancellationToken = default);
     }
 }
