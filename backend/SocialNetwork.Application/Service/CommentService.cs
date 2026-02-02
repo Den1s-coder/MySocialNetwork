@@ -75,9 +75,9 @@ namespace SocialNetwork.Application.Service
 
             var evt = new CommentCreatedEvent
             (
+                comment.PostId,
                 comment.Id,
                 comment.AuthorId,
-                comment.PostId,
                 comment.CreatedAt
             );
 
