@@ -65,6 +65,12 @@ namespace SocialNetwork.Infrastructure.Repos
             existingUser.Email = updatedUser.Email;
             existingUser.ProfilePictureUrl = updatedUser.ProfilePictureUrl;
             existingUser.IsBanned = updatedUser.IsBanned;
+
+            if(!string.IsNullOrEmpty(updatedUser.PasswordHash))
+            {
+                existingUser.PasswordHash = updatedUser.PasswordHash;
+            }
+
             await _context.SaveChangesAsync();
         }
     }
