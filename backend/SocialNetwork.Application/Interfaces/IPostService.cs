@@ -1,4 +1,5 @@
 ﻿using SocialNetwork.Application.DTO;
+using SocialNetwork.Application.DTO.Posts;
 using SocialNetwork.Domain.Entities;
 using System;
 using System.Collections.Generic;

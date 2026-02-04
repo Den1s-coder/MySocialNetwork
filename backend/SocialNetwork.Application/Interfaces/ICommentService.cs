@@ -1,4 +1,5 @@
 ﻿using SocialNetwork.Application.DTO;
+using SocialNetwork.Application.DTO.Comments;
 using SocialNetwork.Domain.Entities;
 
 namespace SocialNetwork.Application.Interfaces

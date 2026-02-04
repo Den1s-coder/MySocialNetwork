@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
-using SocialNetwork.Application.DTO;
+using SocialNetwork.Application.DTO.Chats;
+using SocialNetwork.Application.DTO.Users;
 using SocialNetwork.Domain.Entities;
 
 

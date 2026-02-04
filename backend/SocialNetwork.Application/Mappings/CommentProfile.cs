@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using SocialNetwork.Application.DTO;
+using SocialNetwork.Application.DTO.Comments;
 using SocialNetwork.Domain.Entities;
 using System;
 using System.Collections.Generic;

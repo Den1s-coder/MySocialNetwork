@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
-using SocialNetwork.Application.DTO;
+using SocialNetwork.Application.DTO.Users;
 using SocialNetwork.Application.Interfaces;
 using SocialNetwork.Domain.Entities;
 using SocialNetwork.Domain.Interfaces;

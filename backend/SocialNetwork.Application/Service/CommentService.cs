@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.Extensions.Logging;
 using SocialNetwork.Application.DTO;
+using SocialNetwork.Application.DTO.Comments;
 using SocialNetwork.Application.Events;
 using SocialNetwork.Application.Interfaces;
 using SocialNetwork.Domain.Entities;
