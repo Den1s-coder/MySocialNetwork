@@ -94,21 +94,13 @@ namespace SocialNetwork.Infrastructure.Repos
             existingUser.Email = updatedUser.Email;
             existingUser.ProfilePictureUrl = updatedUser.ProfilePictureUrl;
             existingUser.IsBanned = updatedUser.IsBanned;
-            existingUser.Role = updatedUser.Role;
 
-            if (!string.IsNullOrEmpty(updatedUser.PasswordHash))
+            if(!string.IsNullOrEmpty(updatedUser.PasswordHash))
+            {
                 existingUser.PasswordHash = updatedUser.PasswordHash;
+            }
 
-            _context.Users.Update(existingUser);
-            await _context.SaveChangesAsync(cancellationToken);
-        }
-
-        public async Task<IEnumerable<User>> GetUsersByRoleAsync(UserRole role, CancellationToken cancellationToken = default)
-        {
-            return await _context.Users
-                .AsNoTracking()
-                .Where(u => u.Role == role)
-                .ToListAsync(cancellationToken);
+            await _context.SaveChangesAsync();
         }
     }
 }
