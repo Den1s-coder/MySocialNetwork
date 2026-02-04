@@ -11,6 +11,7 @@ import Search from './pages/Search.jsx'
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import NavBar from './components/NavBar.jsx';
 import FriendshipList from './pages/FriendshipList.jsx';
+import Settings from './pages/Settings.jsx';
 
 function App() {
   return (
@@ -27,8 +28,9 @@ function App() {
                     <Route path="/post/new" element={<NewPost />} />
                     <Route path="/post/:id" element={<Post />} />
                     <Route path="/chats" element={<ChatList />} />
-                      <Route path="/chat/:chatId" element={<Chat />} />
-                      <Route path="/friends" element={<FriendshipList />} />
+                    <Route path="/chat/:chatId" element={<Chat />} />
+                    <Route path="/friends" element={<FriendshipList />} />
+                    <Route path="/settings" element={<Settings />} />
                   </Routes>
               </div>
           </BrowserRouter>
