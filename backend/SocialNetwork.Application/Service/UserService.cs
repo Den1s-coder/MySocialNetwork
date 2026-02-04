@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
+using SocialNetwork.Application.DTO.Auth;
 using SocialNetwork.Application.DTO.Users;
 using SocialNetwork.Application.Interfaces;
 using SocialNetwork.Domain.Entities;
@@ -27,6 +28,41 @@ namespace SocialNetwork.Application.Service
                 throw new ArgumentException("User not found");
             }
             user.IsBanned = true;
+            await _userRepository.UpdateAsync(user);
+        }
+
+        public async Task ChangeEmailAsync(Guid userId, ChangeEmailDto changeEmailDto, CancellationToken cancellationToken = default)
+        {
+            var user = await _userRepository.GetByIdAsync(userId);
+
+            if (user == null)
+                throw new ArgumentException("User not found");
+
+            var verifyResult = new PasswordHasher<User>()
+                .VerifyHashedPassword(user, user.PasswordHash, changeEmailDto.Password);
+
+            if (verifyResult != PasswordVerificationResult.Success)
+                throw new UnauthorizedAccessException("Invalid password");
+
+            user.Email = changeEmailDto.NewEmail;
+            await _userRepository.UpdateAsync(user);
+        }
+
+        public async Task ChangePasswordAsync(Guid userId, ChangePasswordDto changePasswordDto, CancellationToken cancellationToken = default)
+        {
+            var user = await _userRepository.GetByIdAsync(userId);
+
+            if (user == null)
+                throw new ArgumentException("User not found");
+
+            var verifyResult = new PasswordHasher<User>()
+                .VerifyHashedPassword(user, user.PasswordHash, changePasswordDto.CurrentPassword);
+
+            if (verifyResult != PasswordVerificationResult.Success)
+                throw new UnauthorizedAccessException("Invalid password");
+
+            user.PasswordHash = new PasswordHasher<User>()
+                .HashPassword(user, changePasswordDto.NewPassword);
             await _userRepository.UpdateAsync(user);
         }
 
