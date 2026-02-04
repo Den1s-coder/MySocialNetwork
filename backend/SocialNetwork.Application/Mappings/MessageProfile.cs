@@ -1,7 +1,5 @@
 ﻿using AutoMapper;
-using SocialNetwork.Application.DTO;
 using SocialNetwork.Application.DTO.Chats;
-using SocialNetwork.Domain.Entities.Chats;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +13,7 @@ namespace SocialNetwork.Application.Mappings
     {
         public MessageProfile()
         {
-            CreateMap<Message, MessageDto>()
+            CreateMap<Domain.Entities.Message, MessageDto>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.ChatId, opt => opt.MapFrom(src => src.ChatId))
                 .ForMember(dest => dest.SenderId, opt => opt.MapFrom(src => src.SenderId))

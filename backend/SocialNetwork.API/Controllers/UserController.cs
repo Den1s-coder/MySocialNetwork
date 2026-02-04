@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using SocialNetwork.Application.DTO;
+using SocialNetwork.Application.DTO.Users;
 using SocialNetwork.Application.Interfaces;
 using System.Security.Claims;
 

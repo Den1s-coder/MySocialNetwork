@@ -1,8 +1,7 @@
 ﻿using AutoMapper;
 using SocialNetwork.Application.DTO.Chats;
 using SocialNetwork.Application.DTO.Users;
-using SocialNetwork.Domain.Entities.Chats;
-using SocialNetwork.Domain.Entities.Users;
+using SocialNetwork.Domain.Entities;
 
 
 namespace SocialNetwork.Application.Mappings

@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SocialNetwork.Application.DTO;
 using SocialNetwork.Application.DTO.Posts;
 using SocialNetwork.Application.Interfaces;
 using SocialNetwork.Domain.Interfaces;
