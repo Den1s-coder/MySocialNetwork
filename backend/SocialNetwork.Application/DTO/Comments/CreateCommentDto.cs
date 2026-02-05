@@ -7,7 +7,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace SocialNetwork.Application.DTO
+namespace SocialNetwork.Application.DTO.Comments
 {
     public record CreateCommentDto
     {

@@ -1,6 +1,6 @@
 ﻿using SocialNetwork.Domain.Enums;
 
-namespace SocialNetwork.Application.DTO
+namespace SocialNetwork.Application.DTO.Users
 {
     public class UserChatDto
     {

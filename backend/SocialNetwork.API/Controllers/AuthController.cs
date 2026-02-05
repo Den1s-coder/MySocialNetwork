@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SocialNetwork.Application.DTO;
+using SocialNetwork.Application.DTO.Auth;
 using SocialNetwork.Application.Interfaces;
 
 namespace SocialNetwork.API.Controllers

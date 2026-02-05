@@ -1,4 +1,4 @@
-﻿using SocialNetwork.Application.DTO;
+﻿using SocialNetwork.Application.DTO.Users;
 using SocialNetwork.Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -16,5 +16,7 @@ namespace SocialNetwork.Application.Interfaces
         public Task<UserDto> GetUserByEmailAsync(string email, CancellationToken cancellationToken = default);
         public Task<UserDto> GetUserByNameAsync(string name, CancellationToken cancellationToken = default);
         public Task UpdateProfileAsync(UserDto updatedUserDto, CancellationToken cancellationToken = default);
+        public Task ChangePasswordAsync(Guid userId, ChangePasswordDto changePasswordDto, CancellationToken cancellationToken = default);
+        public Task ChangeEmailAsync(Guid userId, ChangeEmailDto changeEmailDto, CancellationToken cancellationToken = default);
     }
 }

@@ -5,15 +5,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SocialNetwork.Application.DTO
+namespace SocialNetwork.Application.DTO.Auth
 {
-    public record RegisterDto
+    public record LoginDto
     {
         [Required]
-        public string UserName { get; set; }
-        [Required]
-        [EmailAddress]
-        public string Email { get; set; }
+        public string Username { get; set; }
         [Required]
         public string Password { get; set; }
     }

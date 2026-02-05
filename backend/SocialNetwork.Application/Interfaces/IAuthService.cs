@@ -1,4 +1,4 @@
-﻿using SocialNetwork.Application.DTO;
+﻿using SocialNetwork.Application.DTO.Auth;
 using System;
 using System.Collections.Generic;
 using System.Linq;

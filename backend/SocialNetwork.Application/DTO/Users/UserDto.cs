@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SocialNetwork.Application.DTO
+namespace SocialNetwork.Application.DTO.Users
 {
     public record UserDto
     {

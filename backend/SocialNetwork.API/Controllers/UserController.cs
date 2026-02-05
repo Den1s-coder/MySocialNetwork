@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using SocialNetwork.Application.DTO;
+using SocialNetwork.Application.DTO.Users;
 using SocialNetwork.Application.Interfaces;
 using System.Security.Claims;
 
@@ -27,7 +27,7 @@ namespace SocialNetwork.API.Controllers
 
             return Ok(usersDto);
         }
-        
+
         [HttpGet("users/{id:guid}")]
         public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken = default)
         {
@@ -55,7 +55,7 @@ namespace SocialNetwork.API.Controllers
             var userDto = await _userService.GetUserByNameAsync(username, cancellationToken);
 
             if (userDto == null) return NotFound();
-            
+
             return Ok(userDto);
         }
 
@@ -85,10 +85,28 @@ namespace SocialNetwork.API.Controllers
         public async Task<IActionResult> UpdateProfile([FromBody] UserDto updatedUserDto, CancellationToken cancellationToken = default)
         {
             var UserIdClaim = Guid.Parse(User.Claims.First(c => c.Type == ClaimTypes.Sid).Value);
-            
+
             updatedUserDto.Id = UserIdClaim;
 
             await _userService.UpdateProfileAsync(updatedUserDto, cancellationToken);
+            return Ok();
+        }
+
+        [Authorize]
+        [HttpPost("change-password")]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto changePasswordDto, CancellationToken cancellationToken = default)
+        {
+            var UserIdClaim = Guid.Parse(User.Claims.First(c => c.Type == ClaimTypes.Sid).Value);
+            await _userService.ChangePasswordAsync(UserIdClaim, changePasswordDto, cancellationToken);
+            return Ok();
+        }
+
+        [Authorize]
+        [HttpPost("change-email")]
+        public async Task<IActionResult> ChangeEmail([FromBody] ChangeEmailDto changeEmailDto, CancellationToken cancellationToken = default)
+        {
+            var UserIdClaim = Guid.Parse(User.Claims.First(c => c.Type == ClaimTypes.Sid).Value);
+            await _userService.ChangeEmailAsync(UserIdClaim, changeEmailDto, cancellationToken);
             return Ok();
         }
     }

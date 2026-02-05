@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
-using SocialNetwork.Application.DTO;
+using SocialNetwork.Application.DTO.Chats;
 using SocialNetwork.Domain.Entities;
 using SocialNetwork.Domain.Interfaces;
 using SocialNetwork.Infrastructure;

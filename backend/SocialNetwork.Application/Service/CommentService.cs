@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.Extensions.Logging;
 using SocialNetwork.Application.DTO;
+using SocialNetwork.Application.DTO.Comments;
 using SocialNetwork.Application.Events;
 using SocialNetwork.Application.Interfaces;
 using SocialNetwork.Domain.Entities;
@@ -75,9 +76,9 @@ namespace SocialNetwork.Application.Service
 
             var evt = new CommentCreatedEvent
             (
+                comment.PostId,
                 comment.Id,
                 comment.AuthorId,
-                comment.PostId,
                 comment.CreatedAt
             );
 

@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Azure.Core;
 using Microsoft.AspNetCore.Identity;
-using SocialNetwork.Application.DTO;
+using SocialNetwork.Application.DTO.Auth;
 using SocialNetwork.Application.Interfaces;
 using SocialNetwork.Domain.Entities;
 using SocialNetwork.Domain.Interfaces;
