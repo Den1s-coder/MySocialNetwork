@@ -1,13 +1,53 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const API_BASE = 'https://localhost:7142';
+const GOOGLE_CLIENT_ID = 'GOOGLE_CLIENT_ID'; 
 
 export default function Login() {
     const [form, setForm] = useState({ username: '', password: '' });
-    const [status, setStatus] = useState('idle'); // idle | loading | error | success
+    const [status, setStatus] = useState('idle'); 
     const [error, setError] = useState(null);
 
     const onChange = e => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
+
+    useEffect(() => {
+        const onLoad = () => {
+            if (window.google && GOOGLE_CLIENT_ID) {
+                window.google.accounts.id.initialize({
+                    client_id: GOOGLE_CLIENT_ID,
+                    callback: handleGoogleCredentialResponse
+                });
+                window.google.accounts.id.renderButton(
+                    document.getElementById('g_id_signin'),
+                    { theme: 'outline', size: 'large' }
+                );
+            }
+        };
+
+        if (document.readyState === 'complete') onLoad();
+        else window.addEventListener('load', onLoad);
+        return () => window.removeEventListener('load', onLoad);
+    }, []);
+
+    const handleGoogleCredentialResponse = async (response) => {
+        try {
+            setStatus('loading');
+            const res = await fetch(`${API_BASE}/api/Auth/google`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ idToken: response.credential }),
+            });
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const data = await res.json();
+            localStorage.setItem('accessToken', data.accessToken);
+            localStorage.setItem('refreshToken', data.refreshToken);
+            window.dispatchEvent(new Event('tokens-updated'));
+            setStatus('success');
+        } catch (err) {
+            setError(err.message || 'Google login error');
+            setStatus('error');
+        }
+    };
 
     const submit = async e => {
         e.preventDefault();
@@ -57,6 +97,11 @@ export default function Login() {
                 />
                 <button disabled={status === 'loading'}>{status === 'loading' ? 'Вхід…' : 'Увійти'}</button>
             </form>
+
+            <div style={{ marginTop: 12 }}>
+                <div id="g_id_signin"></div>
+            </div>
+
             {status === 'success' && <p>Успішний вхід. Токен збережено.</p>}
             {status === 'error' && <p style={{ color: 'crimson' }}>Помилка: {error}</p>}
         </div>
