@@ -12,7 +12,7 @@ namespace SocialNetwork.API.Controllers
         private readonly ILogger<AuthController> _logger;
         private readonly IAuthService _authService;
 
-        public AuthController(ILogger<AuthController> logger, IAuthService authService )
+        public AuthController(ILogger<AuthController> logger, IAuthService authService)
         {
             _logger = logger;
             _authService = authService;
@@ -51,6 +51,15 @@ namespace SocialNetwork.API.Controllers
 
             _logger.LogInformation("Token successfully refreshed");
 
+            return Ok(responce);
+        }
+
+        [HttpPost("google")]
+        public async Task<IActionResult> LoginWithLogin([FromBody] string idToken, CancellationToken cancellationToken = default)
+        {
+            _logger.LogInformation("Google login endpoint called");
+            var responce = await _authService.LoginWithGoogleAsync(idToken, cancellationToken);
+            _logger.LogInformation("User successfully logged in with Google");
             return Ok(responce);
         }
     }
