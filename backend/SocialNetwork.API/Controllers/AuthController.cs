@@ -53,5 +53,14 @@ namespace SocialNetwork.API.Controllers
 
             return Ok(responce);
         }
+
+        [HttpPost("google")]
+        public async Task<IActionResult> LoginWithLogin([FromBody] string idToken, CancellationToken cancellationToken = default)
+        {
+            _logger.LogInformation("Google login endpoint called");
+            var responce = await _authService.LoginWithGoogleAsync(idToken, cancellationToken);
+            _logger.LogInformation("User successfully logged in with Google");
+            return Ok(responce);
+        }
     }
 }
