@@ -12,5 +12,6 @@ namespace SocialNetwork.Application.Interfaces
         public Task RegisterAsync(RegisterDto userDto, CancellationToken cancellationToken = default);
         public Task<LoginResponce> LoginAsync(LoginDto loginDto, CancellationToken cancellationToken = default);
         public Task<LoginResponce> LoginWithRefreshTokenAsync(string refreshToken);
+        public Task<LoginResponce> LoginWithGoogleAsync(string idToken, CancellationToken cancellationToken = default);
     }
 }
