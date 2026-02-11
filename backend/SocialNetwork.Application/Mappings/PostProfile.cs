@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using SocialNetwork.Application.DTO.Posts;
-using SocialNetwork.Domain.Entities;
+using SocialNetwork.Domain.Entities.Posts;
 
 namespace SocialNetwork.Application.Mappings
 {

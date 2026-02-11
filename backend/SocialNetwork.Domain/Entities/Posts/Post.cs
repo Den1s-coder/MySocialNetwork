@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SocialNetwork.Domain.Entities.Comments;
+using SocialNetwork.Domain.Entities.Users;
 
-namespace SocialNetwork.Domain.Entities
+namespace SocialNetwork.Domain.Entities.Posts
 {
     public class Post : BaseEntity
     {
@@ -15,6 +11,7 @@ namespace SocialNetwork.Domain.Entities
         public User User { get; set; }
         public List<Comment> Comments { get; set; }
         public bool IsBanned { get; set; } = false;
+        public ICollection<PostReaction> Reactions { get; set; }
 
         public Post() { } //for EF migrations
 
@@ -24,6 +21,7 @@ namespace SocialNetwork.Domain.Entities
             Text = text;
             UserId = userId;
             Comments = new List<Comment>();
+            Reactions = new List<PostReaction>();
         }
     }
 }

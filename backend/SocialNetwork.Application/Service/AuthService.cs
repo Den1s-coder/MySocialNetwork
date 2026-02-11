@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using SocialNetwork.Application.DTO.Auth;
 using SocialNetwork.Application.Interfaces;
 using SocialNetwork.Domain.Entities;
+using SocialNetwork.Domain.Entities.Users;
 using SocialNetwork.Domain.Interfaces;
 
 namespace SocialNetwork.Application.Service

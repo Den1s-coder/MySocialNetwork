@@ -1,4 +1,4 @@
-﻿using SocialNetwork.Domain.Entities;
+﻿using SocialNetwork.Domain.Entities.Posts;
 using System;
 using System.Collections.Generic;
 using System.Linq;

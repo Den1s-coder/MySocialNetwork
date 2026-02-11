@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using SocialNetwork.Domain.Entities;
+using SocialNetwork.Domain.Entities.Chats;
 using SocialNetwork.Domain.Interfaces;
 using System;
 using System.Collections.Generic;

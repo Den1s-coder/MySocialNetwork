@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SocialNetwork.Domain.Entities;
+using SocialNetwork.Domain.Entities.Comments;
 using SocialNetwork.Domain.Interfaces;
 using System;
 using System.Collections.Generic;

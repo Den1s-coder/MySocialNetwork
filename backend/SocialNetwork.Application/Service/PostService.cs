@@ -4,7 +4,7 @@ using SocialNetwork.Application.DTO;
 using SocialNetwork.Application.DTO.Posts;
 using SocialNetwork.Application.Events;
 using SocialNetwork.Application.Interfaces;
-using SocialNetwork.Domain.Entities;
+using SocialNetwork.Domain.Entities.Posts;
 using SocialNetwork.Domain.Interfaces;
 using SocialNetwork.Infrastructure.Repos;
 using static System.Net.Mime.MediaTypeNames;

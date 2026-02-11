@@ -1,5 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SocialNetwork.Domain.Entities;
+using SocialNetwork.Domain.Entities.Chats;
+using SocialNetwork.Domain.Entities.Comments;
+using SocialNetwork.Domain.Entities.Posts;
+using SocialNetwork.Domain.Entities.Users;
 using SocialNetwork.Infrastructure.Configurations;
 
 
