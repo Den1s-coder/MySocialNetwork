@@ -4,7 +4,6 @@ using SocialNetwork.Application.DTO.Auth;
 using SocialNetwork.Application.DTO.Users;
 using SocialNetwork.Application.Interfaces;
 using SocialNetwork.Domain.Entities.Users;
-using SocialNetwork.Domain.Enums;
 using SocialNetwork.Domain.Interfaces;
 
 namespace SocialNetwork.Application.Service

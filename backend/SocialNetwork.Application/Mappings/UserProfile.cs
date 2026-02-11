@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using SocialNetwork.Application.DTO.Auth;
 using SocialNetwork.Application.DTO.Users;
-using SocialNetwork.Domain.Entities;
+using SocialNetwork.Domain.Entities.Users;
 
 namespace SocialNetwork.Application.Mappings
 {

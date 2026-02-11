@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using SocialNetwork.Application.DTO.Chats;
 using SocialNetwork.Application.Interfaces;
-using SocialNetwork.Domain.Entities;
+using SocialNetwork.Domain.Entities.Chats;
 using SocialNetwork.Domain.Interfaces;
 
 namespace SocialNetwork.Application.Service

@@ -6,7 +6,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SocialNetwork.Domain.Entities.Users;
-using SocialNetwork.Domain.Enums;
 
 namespace SocialNetwork.Infrastructure.Repos
 {
