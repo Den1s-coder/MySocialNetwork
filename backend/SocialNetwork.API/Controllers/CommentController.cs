@@ -48,6 +48,18 @@ namespace SocialNetwork.API.Controllers
             return Ok();
         }
 
+        [Authorize]
+        [HttpPost("{commentId:guid}/react")]
+        public async Task<IActionResult> ToggleReaction(Guid commentId, [FromQuery] Guid reactionType, CancellationToken cancellationToken = default)
+        {
+            var sid = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Sid)?.Value;
+            if (!Guid.TryParse(sid, out var userId))
+                return Unauthorized();
+
+            await _commentService.ToggleReactionAsync(commentId, userId, reactionType, cancellationToken);
+            return Ok();
+        }
+
 
         [Authorize(Roles = "Admin")]
         [HttpDelete("{commentId:guid}")]
