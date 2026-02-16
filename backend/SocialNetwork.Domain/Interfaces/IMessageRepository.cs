@@ -12,5 +12,6 @@ namespace SocialNetwork.Domain.Interfaces
         public Task<IEnumerable<Message>> GetMessagesByChatIdAsync(Guid chatId, CancellationToken cancellationToken = default);
         public Task<IEnumerable<Message>> GetMessagesBySenderIdAsync(Guid senderId, CancellationToken cancellationToken = default);
         public Task<IEnumerable<Message>> SearchMessagesInChatAsync(Guid chatId, string searchTerm, CancellationToken cancellationToken = default);
+        public Task ToggleReactionAsync(Guid messageId, Guid userId, Guid reactionType, CancellationToken cancellationToken = default);
     }
 }
