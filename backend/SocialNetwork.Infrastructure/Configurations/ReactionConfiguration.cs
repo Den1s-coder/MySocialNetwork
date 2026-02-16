@@ -1,6 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SocialNetwork.Domain.Entities.Reactions;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace SocialNetwork.Infrastructure.Configurations
 {
@@ -23,14 +28,6 @@ namespace SocialNetwork.Infrastructure.Configurations
             builder.Property(rt => rt.ImageUrl);
 
             builder.Property(rt => rt.SortOrder);
-
-            builder.HasData(
-                new ReactionType { Id = Guid.Parse("00000000-0000-0000-0000-000000000001"), Code = "like",  Symbol = "👍", SortOrder = 10 },
-                new ReactionType { Id = Guid.Parse("00000000-0000-0000-0000-000000000002"), Code = "love",  Symbol = "❤️", SortOrder = 20 },
-                new ReactionType { Id = Guid.Parse("00000000-0000-0000-0000-000000000003"), Code = "laugh", Symbol = "😂", SortOrder = 30 },
-                new ReactionType { Id = Guid.Parse("00000000-0000-0000-0000-000000000004"), Code = "sad",   Symbol = "😢", SortOrder = 40 },
-                new ReactionType { Id = Guid.Parse("00000000-0000-0000-0000-000000000005"), Code = "angry", Symbol = "😡", SortOrder = 50 }
-            );
         }
     }
 }
