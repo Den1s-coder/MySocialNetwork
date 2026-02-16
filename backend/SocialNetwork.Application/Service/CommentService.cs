@@ -116,5 +116,17 @@ namespace SocialNetwork.Application.Service
 
             return result;
         }
+
+        public async Task ToggleReactionAsync(Guid commentId, Guid userId, Guid reactionType, CancellationToken cancellationToken = default)
+        {
+            var existingComment = await _commentRepository.GetByIdAsync(commentId, cancellationToken);
+            if (existingComment == null)
+            {
+                _logger.LogWarning("Attempted to toggle reaction on non-existent comment with ID: " + commentId);
+                return;
+            }
+                
+            await _commentRepository.ToggleReactionAsync(commentId, userId, reactionType, cancellationToken);
+        }
     }
 }
