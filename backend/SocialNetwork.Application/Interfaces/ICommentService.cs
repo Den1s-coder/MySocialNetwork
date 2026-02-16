@@ -11,6 +11,7 @@ namespace SocialNetwork.Application.Interfaces
         public Task CreateAsync(CreateCommentDto commentDto, CancellationToken cancellationToken = default);
         public Task BanComment(Guid id, CancellationToken cancellationToken = default);
         public Task<PaginetedResult<CommentDto>> GetPostCommentsPagedAsync(Guid id,int page,int pageSize, CancellationToken cancellationToken = default);
+        public Task ToggleReactionAsync(Guid commentId, Guid userId, Guid reactionType, CancellationToken cancellationToken = default);
 
     }
 }

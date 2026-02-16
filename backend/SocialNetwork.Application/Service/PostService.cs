@@ -123,5 +123,17 @@ namespace SocialNetwork.Application.Service
 
             return _mapper.Map<IEnumerable<PostDto>>(posts);
         }
+
+        public async Task ToggleReactionAsync(Guid postId, Guid userId, Guid reactionType, CancellationToken cancellationToken = default)
+        {
+            var postExists = await _postRepository.GetByIdAsync(postId, cancellationToken);
+            if (postExists == null)
+            {
+                _logger.LogWarning("Attempted to toggle reaction on a post that does not exist: {PostId}", postId);
+                throw new ArgumentException("Post not found");
+            }
+
+            await _postRepository.ToggleReactionAsync(postId, userId, reactionType, cancellationToken);
+        }
     }
 }
