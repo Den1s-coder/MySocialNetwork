@@ -11,5 +11,6 @@ namespace SocialNetwork.Application.DTO
         public string Code { get; init; }
         public string Symbol { get; init; }
         public int Count { get; init; }
+        public bool IsReactedByCurrentUser { get; init; }
     }
 }
