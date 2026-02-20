@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 
 const API_BASE = 'https://localhost:7142';
-const GOOGLE_CLIENT_ID = 'GOOGLE_CLIENT_ID'; 
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
 
 export default function Login() {
     const [form, setForm] = useState({ username: '', password: '' });
@@ -11,22 +11,44 @@ export default function Login() {
     const onChange = e => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
 
     useEffect(() => {
-        const onLoad = () => {
-            if (window.google && GOOGLE_CLIENT_ID) {
+        let mounted = true;
+        let pollHandle = null;
+
+        const initGsi = () => {
+            if (!mounted) return;
+            if (!window.google || !GOOGLE_CLIENT_ID) return;
+            try {
                 window.google.accounts.id.initialize({
                     client_id: GOOGLE_CLIENT_ID,
                     callback: handleGoogleCredentialResponse
                 });
-                window.google.accounts.id.renderButton(
-                    document.getElementById('g_id_signin'),
-                    { theme: 'outline', size: 'large' }
-                );
+                const container = document.getElementById('g_id_signin');
+                if (container) {
+                    window.google.accounts.id.renderButton(container, { theme: 'outline', size: 'large' });
+                }
+            } catch (err) {
+                console.error('GSI init failed', err);
             }
         };
 
-        if (document.readyState === 'complete') onLoad();
-        else window.addEventListener('load', onLoad);
-        return () => window.removeEventListener('load', onLoad);
+        if (window.google) initGsi();
+
+        const onGsiLoaded = () => initGsi();
+        window.addEventListener('gsi-loaded', onGsiLoaded);
+
+        pollHandle = setInterval(() => {
+            if (window.google) {
+                initGsi();
+                clearInterval(pollHandle);
+                pollHandle = null;
+            }
+        }, 200);
+
+        return () => {
+            mounted = false;
+            window.removeEventListener('gsi-loaded', onGsiLoaded);
+            if (pollHandle) clearInterval(pollHandle);
+        };
     }, []);
 
     const handleGoogleCredentialResponse = async (response) => {
@@ -46,6 +68,19 @@ export default function Login() {
         } catch (err) {
             setError(err.message || 'Google login error');
             setStatus('error');
+        }
+    };
+
+    const handleGoogleSignInClick = () => {
+        if (window.google && window.google.accounts && window.google.accounts.id) {
+            try {
+                window.google.accounts.id.prompt();
+            } catch (e) {
+                console.error('GSI prompt failed', e);
+                setError('Помилка ініціалізації Google Sign-In');
+            }
+        } else {
+            setError('Google SDK ще не завантажений — перезавантажте сторінку');
         }
     };
 
@@ -100,6 +135,9 @@ export default function Login() {
 
             <div style={{ marginTop: 12 }}>
                 <div id="g_id_signin"></div>
+                <button type="button" onClick={handleGoogleSignInClick} style={{ marginTop: 8 }}>
+                    Увійти через Google
+                </button>
             </div>
 
             {status === 'success' && <p>Успішний вхід. Токен збережено.</p>}
