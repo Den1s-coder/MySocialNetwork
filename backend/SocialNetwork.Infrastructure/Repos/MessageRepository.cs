@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using SocialNetwork.Domain.Entities;
+using SocialNetwork.Domain.Entities.Chats;
+using SocialNetwork.Domain.Entities.Posts;
 using SocialNetwork.Domain.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -98,6 +99,28 @@ namespace SocialNetwork.Infrastructure.Repos
         {
             _context.Messages.Update(message);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task ToggleReactionAsync(Guid messageId, Guid UserId, Guid ReactionTypeId, CancellationToken cancellationToken = default)
+        {
+            var existingReaction = await _context.MessageReactions
+                .FirstOrDefaultAsync(r => r.MessageId == messageId && r.UserId == UserId, cancellationToken);
+
+            if (existingReaction == null)
+            {
+                var newReaction = new MessageReaction(UserId, messageId, ReactionTypeId);
+                _context.MessageReactions.Add(newReaction);
+            }
+            else if (existingReaction.ReactionTypeId == ReactionTypeId)
+            {
+                _context.MessageReactions.Remove(existingReaction);
+            }
+            else
+            {
+                existingReaction.ReactionTypeId = ReactionTypeId;
+            }
+
+            await _context.SaveChangesAsync(cancellationToken);
         }
     }
 }

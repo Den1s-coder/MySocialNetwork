@@ -4,7 +4,7 @@ using SocialNetwork.Application.DTO;
 using SocialNetwork.Application.DTO.Comments;
 using SocialNetwork.Application.Events;
 using SocialNetwork.Application.Interfaces;
-using SocialNetwork.Domain.Entities;
+using SocialNetwork.Domain.Entities.Comments;
 using SocialNetwork.Domain.Interfaces;
 using SocialNetwork.Infrastructure.Repos;
 using System;
@@ -115,6 +115,18 @@ namespace SocialNetwork.Application.Service
             };
 
             return result;
+        }
+
+        public async Task ToggleReactionAsync(Guid commentId, Guid userId, Guid reactionType, CancellationToken cancellationToken = default)
+        {
+            var existingComment = await _commentRepository.GetByIdAsync(commentId, cancellationToken);
+            if (existingComment == null)
+            {
+                _logger.LogWarning("Attempted to toggle reaction on non-existent comment with ID: " + commentId);
+                return;
+            }
+                
+            await _commentRepository.ToggleReactionAsync(commentId, userId, reactionType, cancellationToken);
         }
     }
 }

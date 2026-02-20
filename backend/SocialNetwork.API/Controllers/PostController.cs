@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SocialNetwork.Application.DTO;
 using SocialNetwork.Application.DTO.Posts;
 using SocialNetwork.Application.Interfaces;
 using System.Security.Claims;
@@ -75,6 +76,18 @@ namespace SocialNetwork.API.Controllers
 
             createPostDto.UserId = userId;
             await _postService.CreateAsync(createPostDto, cancellationToken);
+            return Ok();
+        }
+
+        [Authorize]
+        [HttpPost("{postId:guid}/react")]
+        public async Task<IActionResult> ToggleReaction(Guid postId, [FromQuery] ToggleReactionRequest req, CancellationToken cancellationToken = default)
+        {
+            var sid = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Sid)?.Value;
+            if (!Guid.TryParse(sid, out var userId))
+                return Unauthorized();
+
+            await _postService.ToggleReactionAsync(postId, userId, req.ReactionTypeId, cancellationToken);
             return Ok();
         }
 

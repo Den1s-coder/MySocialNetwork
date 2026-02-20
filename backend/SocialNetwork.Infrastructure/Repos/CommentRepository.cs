@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SocialNetwork.Domain.Entities;
+using SocialNetwork.Domain.Entities.Comments;
+using SocialNetwork.Domain.Entities.Posts;
 using SocialNetwork.Domain.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -73,6 +74,28 @@ namespace SocialNetwork.Infrastructure.Repos
         {
             _context.Comments.Add(comment);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task ToggleReactionAsync(Guid commentId, Guid UserId, Guid ReactionTypeId, CancellationToken cancellationToken = default)
+        {
+            var existingReaction = await _context.CommentReactions
+                .FirstOrDefaultAsync(r => r.CommentId == commentId && r.UserId == UserId, cancellationToken);
+
+            if (existingReaction == null)
+            {
+                var newReaction = new CommentReaction(UserId, commentId, ReactionTypeId);
+                _context.CommentReactions.Add(newReaction);
+            }
+            else if (existingReaction.ReactionTypeId == ReactionTypeId)
+            {
+                _context.CommentReactions.Remove(existingReaction);
+            }
+            else
+            {
+                existingReaction.ReactionTypeId = ReactionTypeId;
+            }
+
+            await _context.SaveChangesAsync(cancellationToken);
         }
     }
 }

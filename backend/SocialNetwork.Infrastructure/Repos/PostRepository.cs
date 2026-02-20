@@ -1,11 +1,11 @@
-﻿using SocialNetwork.Domain.Entities;
-using SocialNetwork.Domain.Interfaces;
+﻿using SocialNetwork.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SocialNetwork.Domain.Entities.Posts;
 
 namespace SocialNetwork.Infrastructure.Repos
 {
@@ -13,7 +13,7 @@ namespace SocialNetwork.Infrastructure.Repos
     {
         private SocialDbContext _context;
 
-        public PostRepository(SocialDbContext context) 
+        public PostRepository(SocialDbContext context)
         {
             _context = context;
         }
@@ -92,12 +92,34 @@ namespace SocialNetwork.Infrastructure.Repos
         {
             var existingPost = await _context.Posts.FirstOrDefaultAsync(p => p.Id == updatedPost.Id);
 
-            if (existingPost == null) 
+            if (existingPost == null)
                 throw new ArgumentException("Post not found");
 
             existingPost.Text = updatedPost.Text;
             existingPost.UpdatedAt = DateTime.UtcNow;
             await _context.SaveChangesAsync();
+        }
+
+        public async Task ToggleReactionAsync(Guid postId, Guid UserId, Guid ReactionTypeId, CancellationToken cancellationToken = default)
+        {
+            var existingReaction = await _context.PostReactions
+                .FirstOrDefaultAsync(r => r.PostId == postId && r.UserId == UserId, cancellationToken);
+
+            if (existingReaction == null)
+            {
+                var newReaction = new PostReaction(UserId, postId, ReactionTypeId);
+                _context.PostReactions.Add(newReaction);
+            }
+            else if (existingReaction.ReactionTypeId == ReactionTypeId)
+            {
+                _context.PostReactions.Remove(existingReaction);
+            }
+            else
+            {
+                existingReaction.ReactionTypeId = ReactionTypeId;
+            }
+
+            await _context.SaveChangesAsync(cancellationToken);
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿using SocialNetwork.Application.DTO.Users;
-using SocialNetwork.Domain.Entities;
+using SocialNetwork.Domain.Entities.Users;
 using System;
 using System.Collections.Generic;
 using System.Linq;

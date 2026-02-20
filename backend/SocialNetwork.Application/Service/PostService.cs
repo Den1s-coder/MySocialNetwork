@@ -4,7 +4,7 @@ using SocialNetwork.Application.DTO;
 using SocialNetwork.Application.DTO.Posts;
 using SocialNetwork.Application.Events;
 using SocialNetwork.Application.Interfaces;
-using SocialNetwork.Domain.Entities;
+using SocialNetwork.Domain.Entities.Posts;
 using SocialNetwork.Domain.Interfaces;
 using SocialNetwork.Infrastructure.Repos;
 using static System.Net.Mime.MediaTypeNames;
@@ -122,6 +122,18 @@ namespace SocialNetwork.Application.Service
             var posts = await _postRepository.GetPostsByUserIdAsync(userId);
 
             return _mapper.Map<IEnumerable<PostDto>>(posts);
+        }
+
+        public async Task ToggleReactionAsync(Guid postId, Guid userId, Guid reactionType, CancellationToken cancellationToken = default)
+        {
+            var postExists = await _postRepository.GetByIdAsync(postId, cancellationToken);
+            if (postExists == null)
+            {
+                _logger.LogWarning("Attempted to toggle reaction on a post that does not exist: {PostId}", postId);
+                throw new ArgumentException("Post not found");
+            }
+
+            await _postRepository.ToggleReactionAsync(postId, userId, reactionType, cancellationToken);
         }
     }
 }

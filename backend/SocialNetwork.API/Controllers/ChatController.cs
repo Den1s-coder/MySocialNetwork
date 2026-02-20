@@ -16,8 +16,8 @@ namespace SocialNetwork.API.Controllers
         private readonly IMessageService _messageService;
         private readonly IMapper _mapper;
 
-        public ChatController(ILogger<ChatController> logger, 
-            IMessageService messageService, 
+        public ChatController(ILogger<ChatController> logger,
+            IMessageService messageService,
             IChatService chatService)
         {
             _logger = logger;
@@ -47,6 +47,18 @@ namespace SocialNetwork.API.Controllers
             var chat = await _chatService.CreatePrivateChatAsync(userId, secondUserId, cancellationToken);
             _logger.LogInformation("Private chat created between users {UserId1} and {UserId2} with Chat ID: {ChatId}", userId, secondUserId, chat.Id);
             return Ok(new { chatId = chat.Id });
+        }
+
+        [Authorize]
+        [HttpPost("{messageId:guid}/react")]
+        public async Task<IActionResult> ToggleReaction(Guid messageId, [FromQuery] Guid reactionType, CancellationToken cancellationToken = default)
+        {
+            var sid = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Sid)?.Value;
+            if (!Guid.TryParse(sid, out var userId))
+                return Unauthorized();
+
+            await _messageService.ToogleReactionAsync(messageId, userId, reactionType, cancellationToken);
+            return NoContent();
         }
     }
 }

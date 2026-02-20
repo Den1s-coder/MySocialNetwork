@@ -1,4 +1,5 @@
 ﻿using SocialNetwork.Application.DTO.Comments;
+using SocialNetwork.Domain.Entities.Comments;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,8 +17,10 @@ namespace SocialNetwork.Application.DTO.Posts
         public string UserName { get; set; }
         public string? ProfilePictureUrl { get; set; }
         public List<CommentDto> Comments { get; set; }
+        public List<ReactionSummaryDto> Reactions { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public bool IsBanned { get; set; }
+
     }
 }

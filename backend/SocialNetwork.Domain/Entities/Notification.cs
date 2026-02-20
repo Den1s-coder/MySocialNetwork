@@ -1,4 +1,6 @@
-﻿namespace SocialNetwork.Domain.Entities
+﻿using SocialNetwork.Domain.Entities.Users;
+
+namespace SocialNetwork.Domain.Entities
 {
     public class Notification : BaseEntity
     {
