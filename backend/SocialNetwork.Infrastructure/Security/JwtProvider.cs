@@ -1,12 +1,13 @@
 ﻿using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using SocialNetwork.Domain.Entities;
+using SocialNetwork.Domain.Entities.Users;
 using SocialNetwork.Domain.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -20,7 +21,7 @@ namespace SocialNetwork.Infrastructure.Security
             _options = options.Value;
         }
 
-        public string Generate(User user)
+        public string GenerateAccessToken(User user)
         {
             var claims = new List<Claim>
             {
@@ -39,6 +40,11 @@ namespace SocialNetwork.Infrastructure.Security
                 signingCredentials: signingKey);
 
             return new JwtSecurityTokenHandler().WriteToken(jwtToken);
+        }
+
+        public string GenerateRefreshToken()
+        {
+            return Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
         }
     }
 }

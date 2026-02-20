@@ -1,5 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SocialNetwork.Domain.Entities;
+using SocialNetwork.Domain.Entities.Chats;
+using SocialNetwork.Domain.Entities.Comments;
+using SocialNetwork.Domain.Entities.Posts;
+using SocialNetwork.Domain.Entities.Reactions;
+using SocialNetwork.Domain.Entities.Users;
 using SocialNetwork.Infrastructure.Configurations;
 
 
@@ -19,6 +24,12 @@ namespace SocialNetwork.Infrastructure
         public DbSet<Chat> Chats { get; set; }
         public DbSet<UserChat> UserChats { get; set; }
         public DbSet<Friendship> Friendships { get; set; }
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
+        public DbSet<ReactionType> ReactionTypes { get; set; }
+        public DbSet<PostReaction> PostReactions { get; set; }
+        public DbSet<CommentReaction> CommentReactions { get; set; }
+        public DbSet<MessageReaction> MessageReactions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -29,6 +40,12 @@ namespace SocialNetwork.Infrastructure
             modelBuilder.ApplyConfiguration(new ChatConfiguration());
             modelBuilder.ApplyConfiguration(new UserChatConfiguration());
             modelBuilder.ApplyConfiguration(new FriendshipConfiguration());
+            modelBuilder.ApplyConfiguration(new RefreshTokenConfiguration());
+            modelBuilder.ApplyConfiguration(new NotificationConfiguration());
+            modelBuilder.ApplyConfiguration(new ReactionConfiguration());
+            modelBuilder.ApplyConfiguration(new PostReactionConfiguration());
+            modelBuilder.ApplyConfiguration(new CommentReactionConfiguration());
+            modelBuilder.ApplyConfiguration(new MessageReactionConfiguration());
         }
     }
 }

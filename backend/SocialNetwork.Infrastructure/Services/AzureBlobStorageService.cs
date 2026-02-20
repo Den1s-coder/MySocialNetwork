@@ -35,31 +35,15 @@ namespace SocialNetwork.Infrastructure.Services
         {
             var containerClient = _blobServiceClient.GetBlobContainerClient(_containerName);
 
-            await containerClient.CreateIfNotExistsAsync(PublicAccessType.None);
+            await containerClient.CreateIfNotExistsAsync(PublicAccessType.Blob);
 
             var blobClient = containerClient.GetBlobClient(fileName);
-
             var uploadOptions = new BlobUploadOptions
             {
                 HttpHeaders = new BlobHttpHeaders { ContentType = contentType }
             };
 
             await blobClient.UploadAsync(fileStream, uploadOptions);
-
-            if (_sharedKeyCredential != null)
-            {
-                var sasBuilder = new BlobSasBuilder
-                {
-                    BlobContainerName = _containerName,
-                    BlobName = fileName,
-                    Resource = "b",
-                    ExpiresOn = DateTimeOffset.UtcNow.AddHours(1)
-                };
-                sasBuilder.SetPermissions(BlobSasPermissions.Read);
-
-                var sas = sasBuilder.ToSasQueryParameters(_sharedKeyCredential).ToString();
-                return $"{blobClient.Uri}?{sas}";
-            }
 
             return blobClient.Uri.ToString();
         }
@@ -75,20 +59,6 @@ namespace SocialNetwork.Infrastructure.Services
         {
             var containerClient = _blobServiceClient.GetBlobContainerClient(_containerName);
             var blobClient = containerClient.GetBlobClient(fileName);
-
-            if (_sharedKeyCredential != null)
-            {
-                var sasBuilder = new BlobSasBuilder
-                {
-                    BlobContainerName = _containerName,
-                    BlobName = fileName,
-                    Resource = "b",
-                    ExpiresOn = DateTimeOffset.UtcNow.AddHours(1)
-                };
-                sasBuilder.SetPermissions(BlobSasPermissions.Read);
-                var sas = sasBuilder.ToSasQueryParameters(_sharedKeyCredential).ToString();
-                return $"{blobClient.Uri}?{sas}";
-            }
 
             return blobClient.Uri.ToString();
         }

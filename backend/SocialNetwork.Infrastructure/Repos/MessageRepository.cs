@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using SocialNetwork.Domain.Entities;
+using SocialNetwork.Domain.Entities.Chats;
+using SocialNetwork.Domain.Entities.Posts;
 using SocialNetwork.Domain.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -21,7 +22,7 @@ namespace SocialNetwork.Infrastructure.Repos
             _logger = logger;
         }
 
-        public async Task CreateAsync(Message message)
+        public async Task CreateAsync(Message message, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -37,7 +38,7 @@ namespace SocialNetwork.Infrastructure.Repos
             }
         }
 
-        public async Task DeleteAsync(Guid id)
+        public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
         {
             var message = await _context.Messages.FindAsync(id);
             if (message != null)
@@ -52,48 +53,74 @@ namespace SocialNetwork.Infrastructure.Repos
             }
         }
 
-        public async Task<IEnumerable<Message>> GetAllAsync()
+        public async Task<IEnumerable<Message>> GetAllAsync(CancellationToken cancellationToken = default)
         {
             return await _context.Messages
                 .AsNoTracking()
+                .Include(m => m.Sender)
                 .ToListAsync();
         }
 
-        public async Task<Message?> GetByIdAsync(Guid id)
+        public async Task<Message?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
             return await _context.Messages
                 .AsNoTracking()
                 .FirstOrDefaultAsync(m => m.Id == id);
         }
 
-        public async Task<IEnumerable<Message>> GetMessagesByChatIdAsync(Guid chatId)
+        public async Task<IEnumerable<Message>> GetMessagesByChatIdAsync(Guid chatId, CancellationToken cancellationToken = default)
         {
             return await _context.Messages
                 .Where(m => m.ChatId == chatId)
+                .Include(m => m.Sender)
                 .AsNoTracking()
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Message>> GetMessagesBySenderIdAsync(Guid senderId)
+        public async Task<IEnumerable<Message>> GetMessagesBySenderIdAsync(Guid senderId, CancellationToken cancellationToken = default)
         {
             return await _context.Messages
                 .Where(m => m.SenderId == senderId)
+                .Include(m => m.Sender)
                 .AsNoTracking()
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Message>> SearchMessagesInChatAsync(Guid chatId, string searchTerm)
+        public async Task<IEnumerable<Message>> SearchMessagesInChatAsync(Guid chatId, string searchTerm, CancellationToken cancellationToken = default)
         {
             return await _context.Messages
                 .Where(m => m.ChatId == chatId && m.Content.Contains(searchTerm))
+                .Include(m => m.Sender)
                 .AsNoTracking()
                 .ToListAsync();
         }
 
-        public async Task UpdateAsync(Message message)
+        public async Task UpdateAsync(Message message, CancellationToken cancellationToken = default)
         {
             _context.Messages.Update(message);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task ToggleReactionAsync(Guid messageId, Guid UserId, Guid ReactionTypeId, CancellationToken cancellationToken = default)
+        {
+            var existingReaction = await _context.MessageReactions
+                .FirstOrDefaultAsync(r => r.MessageId == messageId && r.UserId == UserId, cancellationToken);
+
+            if (existingReaction == null)
+            {
+                var newReaction = new MessageReaction(UserId, messageId, ReactionTypeId);
+                _context.MessageReactions.Add(newReaction);
+            }
+            else if (existingReaction.ReactionTypeId == ReactionTypeId)
+            {
+                _context.MessageReactions.Remove(existingReaction);
+            }
+            else
+            {
+                existingReaction.ReactionTypeId = ReactionTypeId;
+            }
+
+            await _context.SaveChangesAsync(cancellationToken);
         }
     }
 }

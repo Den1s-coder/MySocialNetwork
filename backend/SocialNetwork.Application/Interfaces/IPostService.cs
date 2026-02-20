@@ -1,4 +1,5 @@
 ﻿using SocialNetwork.Application.DTO;
+using SocialNetwork.Application.DTO.Posts;
 using SocialNetwork.Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -10,12 +11,14 @@ namespace SocialNetwork.Application.Interfaces
 {
     public interface IPostService
     {
-        Task<IEnumerable<PostDto>> GetAllAsync();
-        Task<PostDto?> GetByIdAsync(Guid id);
-        Task CreateAsync(CreatePostDto postDto);
-        Task BanPost(Guid id);
-        Task<IEnumerable<PostDto>> GetPostsByUserIdAsync(Guid userId);
-        Task<IEnumerable<PostDto>> GetPostsByTagAsync(string tag);
-        Task<IEnumerable<PostDto>> GetPostsByDateRangeAsync(DateTime startDate, DateTime endDate);
+        Task<IEnumerable<PostDto>> GetAllAsync(CancellationToken cancellationToken = default);
+        Task<PostDto?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
+        Task CreateAsync(CreatePostDto postDto, CancellationToken cancellationToken = default);
+        Task BanPost(Guid id, CancellationToken cancellationToken = default);
+        Task<IEnumerable<PostDto>> GetPostsByUserIdAsync(Guid userId, CancellationToken cancellationToken = default);
+        Task<IEnumerable<PostDto>> GetPostsByTagAsync(string tag, CancellationToken cancellationToken = default);
+        Task<IEnumerable<PostDto>> GetPostsByDateRangeAsync(DateTime startDate, DateTime endDate, CancellationToken cancellationToken = default);
+        Task<PaginetedResult<PostDto>> GetPagedAsync(int page, int pageSize, CancellationToken cancellationToken = default);
+        Task ToggleReactionAsync(Guid postId, Guid userId, Guid reactionType, CancellationToken cancellationToken = default);
     }
 }
