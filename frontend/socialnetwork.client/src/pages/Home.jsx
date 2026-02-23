@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import './Home.css';
 import { authFetch } from '../hooks/authFetch';
 import Avatar from '../components/Avatar';
+import ReactionBar from '../components/ReactionBar';
 import { useAuth } from '../hooks/useAuth';
 
 const API_BASE = 'https://localhost:7142';
@@ -19,7 +20,7 @@ export default function Home() {
     const [loadingPage, setLoadingPage] = useState(false);
 
     const [newPostText, setNewPostText] = useState('');
-    const [createStatus, setCreateStatus] = useState('idle'); 
+    const [createStatus, setCreateStatus] = useState('idle');
     const [createError, setCreateError] = useState(null);
 
     const loadPosts = async (pageNumber = 1, signalToken = {}) => {
@@ -67,6 +68,13 @@ export default function Home() {
 
     const pickAvatarUrl = (p) => {
         return p.authorProfilePictureUrl || p.profilePictureUrl || p.authorAvatarUrl || p.userProfilePictureUrl || null;
+    };
+
+    /** Оптимістичне оновлення реакцій поста у списку */
+    const handlePostReactionChanged = (postId, updatedReactions, newCode) => {
+        setPosts(prev => prev.map(p =>
+            p.id === postId ? { ...p, reactions: updatedReactions, currentUserReactionCode: newCode } : p
+        ));
     };
 
     const submitPost = async (e) => {
@@ -174,10 +182,24 @@ export default function Home() {
                                         <div className="post-card__time">{timeStr}</div>
                                     </div>
                                 ) : (
-                                    <Link to={`/post/${p.id}`} className="post-card__link">
-                                        <div className="post-card__text">{p.text}</div>
-                                        <div className="post-card__time">{timeStr}</div>
-                                    </Link>
+                                    <>
+                                        <Link to={`/post/${p.id}`} className="post-card__link">
+                                            <div className="post-card__text">{p.text}</div>
+                                            <div className="post-card__time">{timeStr}</div>
+                                        </Link>
+
+                                        {/* Реакції поста */}
+                                        <ReactionBar
+                                            reactions={p.reactions ?? []}
+                                            currentUserReactionCode={p.currentUserReactionCode ?? null}
+                                            entityId={p.id}
+                                            entityType="Post"
+                                            authed={isAuthenticated}
+                                            onReactionChanged={(updatedReactions, newCode) =>
+                                                handlePostReactionChanged(p.id, updatedReactions, newCode)
+                                            }
+                                        />
+                                    </>
                                 )}
                             </li>
                         );
