@@ -24,13 +24,10 @@ namespace SocialNetwork.Application.Mappings
                 .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => src.UpdatedAt))
                 .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => src.ImageUrl))
                 .ForMember(dest => dest.ProfilePictureUrl, opt => opt.MapFrom(src => src.User.ProfilePictureUrl))
-                .ForMember(dest => dest.Reactions, opt => opt.MapFrom((src, dest, _, context) =>
+                .ForMember(dest => dest.Reactions, opt => opt.MapFrom((src, _, _, _) =>
                 {
                     if (src.Reactions == null || src.Reactions.Count == 0)
                         return new List<ReactionSummaryDto>();
-
-                    context.Items.TryGetValue("CurrentUserId", out var rawUserId);
-                    var currentUserId = rawUserId as Guid?;
 
                     return src.Reactions
                         .GroupBy(r => new { r.ReactionType.Code, r.ReactionType.Symbol })
@@ -39,11 +36,26 @@ namespace SocialNetwork.Application.Mappings
                         {
                             Code = g.Key.Code,
                             Symbol = g.Key.Symbol,
-                            Count = g.Count(),
-                            IsReactedByCurrentUser = currentUserId.HasValue
-                                && g.Any(r => r.UserId == currentUserId.Value)
+                            Count = g.Count()
                         })
                         .ToList();
+                }))
+                .ForMember(dest => dest.CurrentUserReactionCode, opt => opt.MapFrom((src, _, _, context) =>
+                {
+                    if (!context.TryGetItems(out var items))
+                        return null;
+
+                    if (!items.TryGetValue("CurrentUserId", out var rawUserId))
+                        return null;
+
+                    var currentUserId = rawUserId as Guid?;
+
+                    if (!currentUserId.HasValue || src.Reactions == null)
+                        return null;
+
+                    return src.Reactions
+                        .FirstOrDefault(r => r.UserId == currentUserId.Value)?
+                        .ReactionType?.Code;
                 }))
                 .ReverseMap();
         }
