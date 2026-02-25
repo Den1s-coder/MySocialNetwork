@@ -1,4 +1,4 @@
-﻿using SocialNetwork.Domain.Entities;
+﻿using SocialNetwork.Domain.Entities.Users;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +9,7 @@ namespace SocialNetwork.Domain.Interfaces
 {
     public interface IJwtProvider
     {
-        string Generate(User user);
+        string GenerateAccessToken(User user);
+        string GenerateRefreshToken();
     }
 }

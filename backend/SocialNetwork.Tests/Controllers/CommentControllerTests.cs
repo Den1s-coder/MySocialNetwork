@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
 using SocialNetwork.API.Controllers;
-using SocialNetwork.Application.DTO;
+using SocialNetwork.Application.DTO.Comments;
 using SocialNetwork.Application.Interfaces;
 using SocialNetwork.Domain.Entities;
 

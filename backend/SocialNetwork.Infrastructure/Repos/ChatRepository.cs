@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using SocialNetwork.Domain.Entities;
+using SocialNetwork.Domain.Entities.Chats;
 using SocialNetwork.Domain.Enums;
 using SocialNetwork.Domain.Interfaces;
 using System;
@@ -22,14 +22,14 @@ namespace SocialNetwork.Infrastructure.Repos
             _logger = logger;
         }
 
-        public async Task CreateAsync(Chat chat)
+        public async Task CreateAsync(Chat chat, CancellationToken cancellationToken = default)
         {
             _context.Chats.Add(chat);
             await _context.SaveChangesAsync();
             _logger.LogInformation("Chat created with ID: " + chat.Id);
         }
 
-        public async Task DeleteAsync(Guid id)
+        public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
         {
             var chat = await _context.Chats.FindAsync(id);
             if (chat != null)
@@ -44,21 +44,21 @@ namespace SocialNetwork.Infrastructure.Repos
             }
         }
 
-        public async Task<IEnumerable<Chat>> GetAllAsync()
+        public async Task<IEnumerable<Chat>> GetAllAsync(CancellationToken cancellationToken = default)
         {
             return await _context.Chats
                 .AsNoTracking()
                 .ToListAsync();
         }
 
-        public async Task<Chat?> GetByIdAsync(Guid id)
+        public async Task<Chat?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
             return await _context.Chats
                 .AsNoTracking()
                 .FirstOrDefaultAsync(c => c.Id == id);
         }
 
-        public async Task<Chat?> GetChatBetweenUsersAsync(Guid userId1, Guid userId2)
+        public async Task<Chat?> GetChatBetweenUsersAsync(Guid userId1, Guid userId2, CancellationToken cancellationToken = default)
         {
             return await _context.Chats
                 .Include(c => c.UserChats)
@@ -69,7 +69,7 @@ namespace SocialNetwork.Infrastructure.Repos
                     c.UserChats.Any(uc => uc.UserId == userId2));
         }
 
-        public async Task<IEnumerable<Chat>> GetChatsByUserIdAsync(Guid userId)
+        public async Task<IEnumerable<Chat>> GetChatsByUserIdAsync(Guid userId, CancellationToken cancellationToken = default)
         {
             return await _context.Chats
                 .Include(c => c.UserChats)
@@ -79,7 +79,7 @@ namespace SocialNetwork.Infrastructure.Repos
                 .ToListAsync();
         }
 
-        public async Task<Chat?> GetChatWithMessagesAsync(Guid chatId)
+        public async Task<Chat?> GetChatWithMessagesAsync(Guid chatId, CancellationToken cancellationToken = default)
         {
             return await _context.Chats
                 .Include(c => c.Messages)
@@ -87,9 +87,7 @@ namespace SocialNetwork.Infrastructure.Repos
                 .FirstOrDefaultAsync(c => c.Id == chatId);
         }
 
-
-
-        public async Task UpdateAsync(Chat chat)
+        public async Task UpdateAsync(Chat chat, CancellationToken cancellationToken = default)
         {
             _context.Chats.Update(chat);
             await _context.SaveChangesAsync();

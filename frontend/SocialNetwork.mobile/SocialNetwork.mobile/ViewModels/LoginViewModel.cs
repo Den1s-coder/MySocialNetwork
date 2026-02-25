@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Xamarin.Forms;
+using Xamarin.Essentials;
+using System.Diagnostics;
 
 namespace SocialNetwork.mobile.ViewModels
 {
@@ -50,6 +52,17 @@ namespace SocialNetwork.mobile.ViewModels
                 }
 
                 await auth.LoginAsync(Username, Password);
+
+                try
+                {
+                    var profileVm = new ProfileViewModel();
+                    var ok = await profileVm.TryLoadProfileAsync();
+                    Debug.WriteLine($"Login: TryLoadProfileAsync returned {ok}, profileId={profileVm.Id}");
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"Login: profile load failed: {ex}");
+                }
 
                 await Shell.Current.GoToAsync("//PostsPage");
             }

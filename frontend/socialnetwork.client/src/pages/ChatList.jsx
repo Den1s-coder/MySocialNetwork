@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import { authFetch } from '../hooks/authFetch';
+import Avatar from '../components/Avatar';
 
 const API_BASE = 'https://localhost:7142';
 
 export default function ChatList() {
     const navigate = useNavigate();
-    const { token, isAuthenticated } = useAuth();
+    const { accessToken, isAuthenticated, currentUserId, currentUserName } = useAuth();
     const [chats, setChats] = useState([]);
     const [users, setUsers] = useState([]);
     const [status, setStatus] = useState('idle');
@@ -20,20 +22,20 @@ export default function ChatList() {
     }, [isAuthenticated, navigate]);
 
     useEffect(() => {
-        if (!token) return;
+        if (!accessToken) return;
 
         const loadData = async () => {
             setStatus('loading');
             try {
-                const chatsRes = await fetch(`${API_BASE}/api/Chat/chats`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
+                const chatsRes = await authFetch(`${API_BASE}/api/Chat/chats`, {
+                    headers: { 'Authorization': `Bearer ${accessToken}` }
                 });
                 if (!chatsRes.ok) throw new Error(`HTTP ${chatsRes.status}`);
                 const chatsData = await chatsRes.json();
                 setChats(chatsData);
 
-                const usersRes = await fetch(`${API_BASE}/api/User/users`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
+                const usersRes = await authFetch(`${API_BASE}/api/User/users`, {
+                    headers: { 'Authorization': `Bearer ${accessToken}` }
                 });
                 if (!usersRes.ok) throw new Error(`HTTP ${usersRes.status}`);
                 const usersData = await usersRes.json();
@@ -46,13 +48,13 @@ export default function ChatList() {
             }
         };
         loadData();
-    }, [token]);
+    }, [accessToken]);
 
     const createPrivateChat = async (otherUserId) => {
         try {
-            const res = await fetch(`${API_BASE}/api/Chat/private/${otherUserId}`, {
+            const res = await authFetch(`${API_BASE}/api/Chat/private/${otherUserId}`, {
                 method: 'POST',
-                headers: { 'Authorization': `Bearer ${token}` }
+                headers: { 'Authorization': `Bearer ${accessToken}` }
             });
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
             const { chatId } = await res.json();
@@ -63,6 +65,56 @@ export default function ChatList() {
         } catch (e) {
             setError(e.message || 'Помилка створення чату');
         }
+    };
+
+    const normalizeParticipants = (chat) => {
+        const ucs = chat.userChats || chat.UserChats || [];
+        return (ucs || []).map(uc => ({
+            userId: (uc.userId || uc.UserId || '')?.toString(),
+            userName: uc.userName || uc.UserName || '',
+            profilePictureUrl: uc.profilePictureUrl || uc.ProfilePictureUrl || null
+        }));
+    };
+
+    const getChatTitle = (chat) => {
+        if (!chat) return 'Чат';
+        const type = chat.type;
+        const isPrivate = type === 0 || String(type).toLowerCase() === 'private';
+        const participants = normalizeParticipants(chat);
+
+        if (isPrivate && participants.length > 0) {
+            const other = participants.find(p => {
+                if (!p.userId) return false;
+                if (!currentUserId) return true; 
+                return p.userId.toString().toLowerCase() !== currentUserId.toString().toLowerCase();
+            });
+            if (other) return other.userName || other.userId || 'Користувач';
+            const first = participants[0];
+            if (first) return first.userName || first.userId || 'Користувач';
+            return chat.title || 'Приватний чат';
+        }
+
+        if (chat.title && String(chat.title).trim() !== '') return chat.title;
+        if (participants.length > 0) {
+            const names = participants.map(p => p.userName || p.userId || 'Користувач');
+            return names.join(', ');
+        }
+        return chat.title || 'Чат';
+    };
+
+    const getChatAvatar = (chat) => {
+        const ucs = chat.userChats || chat.UserChats || [];
+        const participants = (ucs || []).map(uc => ({
+            userId: (uc.userId || uc.UserId || '')?.toString(),
+            userName: uc.userName || uc.UserName || '',
+            profilePictureUrl: uc.profilePictureUrl || uc.ProfilePictureUrl || null
+        }));
+        const isPrivate = chat.type === 0 || String(chat.type).toLowerCase() === 'private';
+        if (isPrivate && participants.length > 0) {
+            const other = participants.find(p => p.userId && currentUserId && p.userId.toLowerCase() !== currentUserId.toString().toLowerCase()) || participants[0];
+            return other?.profilePictureUrl ?? null;
+        }
+        return null;
     };
 
     if (status === 'loading') return <p>Завантаження…</p>;
@@ -92,10 +144,13 @@ export default function ChatList() {
                                         color: 'inherit'
                                     }}
                                 >
-                                    <div style={{ fontWeight: 'bold' }}>
-                                        {chat.title}
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                                        <Avatar url={getChatAvatar(chat)} name={getChatTitle(chat)} />
+                                        <div style={{ fontWeight: 'bold' }}>
+                                            {getChatTitle(chat)}
+                                        </div>
                                     </div>
-                                    <div style={{ fontSize: 12, color: '#666' }}>
+                                    <div style={{ fontSize: 12, color: '#666', marginTop: 6 }}>
                                         Тип: {chat.type === 0 ? 'Приватний' : chat.type === 1 ? 'Група' : 'Канал'}
                                     </div>
                                 </Link>
