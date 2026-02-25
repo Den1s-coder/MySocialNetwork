@@ -40,6 +40,8 @@ namespace SocialNetwork.Infrastructure.Repos
                 .AsNoTracking()
                 .Include(p => p.Comments)
                 .Include(p => p.User)
+                .Include(p => p.Reactions)
+                    .ThenInclude(r => r.ReactionType)
                 .ToListAsync(cancellationToken);
         }
 
@@ -49,6 +51,8 @@ namespace SocialNetwork.Infrastructure.Repos
                 .AsNoTracking()
                 .Include(p => p.Comments)
                 .Include(p => p.User)
+                .Include(p => p.Reactions)
+                    .ThenInclude(r => r.ReactionType)
                 .OrderByDescending(p => p.CreatedAt);
 
             var total = await query.CountAsync(cancellationToken);
@@ -65,6 +69,8 @@ namespace SocialNetwork.Infrastructure.Repos
             return await _context.Posts
                 .Include(p => p.User)
                 .Include(p => p.Comments)
+                .Include(p => p.Reactions)
+                    .ThenInclude(r => r.ReactionType)
                 .FirstOrDefaultAsync(p => p.Id == id);
         }
 
@@ -85,6 +91,8 @@ namespace SocialNetwork.Infrastructure.Repos
                 .Where(p => p.UserId == userId)
                 .Include(p => p.Comments)
                 .Include(p => p.User)
+                .Include(p => p.Reactions)
+                    .ThenInclude(r => r.ReactionType)
                 .ToListAsync();
         }
 
