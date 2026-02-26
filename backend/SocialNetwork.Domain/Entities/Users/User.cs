@@ -1,6 +1,7 @@
 ﻿using SocialNetwork.Domain.Entities.Chats;
 using SocialNetwork.Domain.Entities.Comments;
 using SocialNetwork.Domain.Entities.Posts;
+using SocialNetwork.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +15,7 @@ namespace SocialNetwork.Domain.Entities.Users
         public string Name { get; set; }
         public string Email { get; set; }
         public string PasswordHash { get; set; }
+        public UserRole Role { get; set; }
         public string? ProfilePictureUrl { get; set; }
         public List<Post> UserPosts { get; set; }
         public List<Comment> UserComments { get; set; }
