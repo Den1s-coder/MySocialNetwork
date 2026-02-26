@@ -1,6 +1,7 @@
 ﻿using SocialNetwork.Domain.Entities.Chats;
 using SocialNetwork.Domain.Entities.Comments;
 using SocialNetwork.Domain.Entities.Posts;
+using SocialNetwork.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
