@@ -3,10 +3,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
 using SocialNetwork.API.Controllers;
+using SocialNetwork.Application.DTO;
 using SocialNetwork.Application.DTO.Comments;
 using SocialNetwork.Application.DTO.Posts;
 using SocialNetwork.Application.Interfaces;
-using SocialNetwork.Domain.Interfaces;
 using System.Security.Claims;
 
 namespace SocialNetwork.Tests.Controllers
@@ -26,6 +26,30 @@ namespace SocialNetwork.Tests.Controllers
 
 
             _postController = new PostController(_postServiceMock.Object, _cloudStorageServiceMock.Object, _loggerMock.Object);
+        }
+
+        private void SetupUser(Guid userId, string role = "User")
+        {
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Sid, userId.ToString()),
+                new Claim(ClaimTypes.Role, role)
+            };
+            var identity = new ClaimsIdentity(claims, "TestAuth");
+            var principal = new ClaimsPrincipal(identity);
+
+            _postController.ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext { User = principal }
+            };
+        }
+
+        private void SetupAnonymousUser()
+        {
+            _postController.ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext { User = new ClaimsPrincipal(new ClaimsIdentity()) }
+            };
         }
 
         private void SetupUser(Guid userId, string role = "User")
