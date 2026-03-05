@@ -267,7 +267,11 @@ public class UserControllerTests
         var userId = Guid.NewGuid();
         SetupUser(userId);
 
-        var changePasswordDto = new ChangePasswordDto("OldPassword123", "NewPassword456");
+        var changePasswordDto = new ChangePasswordDto
+        {
+            CurrentPassword = "OldPassword123",
+            NewPassword = "NewPassword456"
+        };
 
         _userServiceMock.Setup(s => s.ChangePasswordAsync(userId, changePasswordDto, It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
@@ -287,7 +291,11 @@ public class UserControllerTests
         var userId = Guid.NewGuid();
         SetupUser(userId);
 
-        var changeEmailDto = new ChangeEmailDto("newemail@test.com", "Password123");
+        var changeEmailDto = new ChangeEmailDto
+        {
+            NewEmail = "newemail@test.com",
+            Password = "Password123"
+        };
 
         _userServiceMock.Setup(s => s.ChangeEmailAsync(userId, changeEmailDto, It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
