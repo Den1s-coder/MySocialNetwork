@@ -20,7 +20,6 @@ public class PostServiceTests
     private readonly Mock<IEventDispatcher> _eventDispatcherMock;
     private readonly IMapper _mapper;
     private readonly PostService _postService;
-    private readonly Mock<ICloudStorageService> _cloudStorageServiceMock;
 
     public PostServiceTests()
     {
@@ -28,7 +27,6 @@ public class PostServiceTests
         _userRepoMock = new Mock<IUserRepository>();
         _loggerMock = new Mock<ILogger<PostService>>();
         _eventDispatcherMock = new Mock<IEventDispatcher>();
-        _cloudStorageServiceMock = new Mock<ICloudStorageService>();
 
         var config = new MapperConfiguration(cfg =>
         {
@@ -42,8 +40,7 @@ public class PostServiceTests
             _userRepoMock.Object,
             _mapper,
             _loggerMock.Object,
-            _eventDispatcherMock.Object,
-            _cloudStorageServiceMock.Object);
+            _eventDispatcherMock.Object);
     }
 
     [Fact]
