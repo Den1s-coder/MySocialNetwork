@@ -310,46 +310,46 @@ namespace SocialNetwork.Infrastructure.Migrations
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000001"),
                             Code = "like",
-                            CreatedAt = new DateTime(2026, 2, 23, 13, 44, 59, 948, DateTimeKind.Utc).AddTicks(9348),
+                            CreatedAt = new DateTime(2026, 3, 12, 6, 59, 46, 719, DateTimeKind.Utc).AddTicks(9416),
                             SortOrder = 10,
                             Symbol = "👍",
-                            UpdatedAt = new DateTime(2026, 2, 23, 13, 44, 59, 948, DateTimeKind.Utc).AddTicks(9352)
+                            UpdatedAt = new DateTime(2026, 3, 12, 6, 59, 46, 719, DateTimeKind.Utc).AddTicks(9419)
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000002"),
                             Code = "love",
-                            CreatedAt = new DateTime(2026, 2, 23, 13, 44, 59, 949, DateTimeKind.Utc).AddTicks(226),
+                            CreatedAt = new DateTime(2026, 3, 12, 6, 59, 46, 720, DateTimeKind.Utc).AddTicks(284),
                             SortOrder = 20,
                             Symbol = "❤️",
-                            UpdatedAt = new DateTime(2026, 2, 23, 13, 44, 59, 949, DateTimeKind.Utc).AddTicks(228)
+                            UpdatedAt = new DateTime(2026, 3, 12, 6, 59, 46, 720, DateTimeKind.Utc).AddTicks(284)
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000003"),
                             Code = "laugh",
-                            CreatedAt = new DateTime(2026, 2, 23, 13, 44, 59, 949, DateTimeKind.Utc).AddTicks(237),
+                            CreatedAt = new DateTime(2026, 3, 12, 6, 59, 46, 720, DateTimeKind.Utc).AddTicks(290),
                             SortOrder = 30,
                             Symbol = "😂",
-                            UpdatedAt = new DateTime(2026, 2, 23, 13, 44, 59, 949, DateTimeKind.Utc).AddTicks(238)
+                            UpdatedAt = new DateTime(2026, 3, 12, 6, 59, 46, 720, DateTimeKind.Utc).AddTicks(291)
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000004"),
                             Code = "sad",
-                            CreatedAt = new DateTime(2026, 2, 23, 13, 44, 59, 949, DateTimeKind.Utc).AddTicks(240),
+                            CreatedAt = new DateTime(2026, 3, 12, 6, 59, 46, 720, DateTimeKind.Utc).AddTicks(293),
                             SortOrder = 40,
                             Symbol = "😢",
-                            UpdatedAt = new DateTime(2026, 2, 23, 13, 44, 59, 949, DateTimeKind.Utc).AddTicks(241)
+                            UpdatedAt = new DateTime(2026, 3, 12, 6, 59, 46, 720, DateTimeKind.Utc).AddTicks(293)
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000005"),
                             Code = "angry",
-                            CreatedAt = new DateTime(2026, 2, 23, 13, 44, 59, 949, DateTimeKind.Utc).AddTicks(243),
+                            CreatedAt = new DateTime(2026, 3, 12, 6, 59, 46, 720, DateTimeKind.Utc).AddTicks(295),
                             SortOrder = 50,
                             Symbol = "😡",
-                            UpdatedAt = new DateTime(2026, 2, 23, 13, 44, 59, 949, DateTimeKind.Utc).AddTicks(243)
+                            UpdatedAt = new DateTime(2026, 3, 12, 6, 59, 46, 720, DateTimeKind.Utc).AddTicks(295)
                         });
                 });
 
