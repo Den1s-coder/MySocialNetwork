@@ -67,27 +67,34 @@ export default function FrindshipList() {
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
             const data = await res.json();
 
-            const items = await Promise.all(
-                (Array.isArray(data) ? data : []).map(async (f) => {
-                    const requesterId = f.requesterId ?? f.RequesterId;
-                    const addresseeId = f.addresseeId ?? f.AddresseeId;
-                    const otherId =
-                        String(requesterId).toLowerCase() === String(currentUserId)?.toLowerCase()
-                            ? addresseeId
-                            : requesterId;
+            const seen = new Set();
+            const items = [];
 
-                    const user = await fetchUser(otherId);
-                    return {
-                        id: otherId,
-                        friendshipId: f.id ?? f.Id,
-                        userId: otherId,
-                        name: user?.name ?? user?.userName ?? "Без имени",
-                        email: user?.email ?? "-",
-                        avatar: user?.profilePictureUrl ?? user?.avatarUrl ?? null,
-                        status: "accepted",
-                    };
-                })
-            );
+            for (const f of Array.isArray(data) ? data : []) {
+                const requesterId = f.requesterId ?? f.RequesterId;
+                const addresseeId = f.addresseeId ?? f.AddresseeId;
+                const otherId =
+                    String(requesterId).toLowerCase() === String(currentUserId)?.toLowerCase()
+                        ? addresseeId
+                        : requesterId;
+
+                const otherKey = String(otherId).toLowerCase();
+                if (otherKey === String(currentUserId)?.toLowerCase() || seen.has(otherKey)) {
+                    continue;
+                }
+                seen.add(otherKey);
+
+                const user = await fetchUser(otherId);
+                items.push({
+                    id: otherId,
+                    friendshipId: f.id ?? f.Id,
+                    userId: otherId,
+                    name: user?.name ?? user?.userName ?? "Без имени",
+                    email: user?.email ?? "-",
+                    avatar: user?.profilePictureUrl ?? user?.avatarUrl ?? null,
+                    status: "accepted",
+                });
+            }
 
             setFriends(items);
         } catch (err) {
@@ -287,7 +294,7 @@ export default function FrindshipList() {
                                 disabled={busyIds.has(String(it.userId))}
                                 style={{ background: "#f5f5f5" }}
                             >
-                                {busyIds.has(String(it.userId)) ? "..." : "Удалить"}
+                                {busyIds.has(String(it.userId)) ? "..." : "Видалити"}
                             </button>
                         </div>
                     </li>
