@@ -15,5 +15,7 @@ namespace SocialNetwork.Application.DTO.Chats
         public string? ProfilePictureUrl { get; set; }
         public string Content { get; set; }
         public DateTime SentAt { get; set; }
+        public List<ReactionSummaryDto> Reactions { get; set; }
+        public string? CurrentUserReactionCode { get; set; }
     }
 }
