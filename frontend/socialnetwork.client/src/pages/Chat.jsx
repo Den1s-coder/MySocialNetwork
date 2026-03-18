@@ -4,6 +4,7 @@ import { useChatHub } from '../hooks/useChatHub';
 import { useAuth } from '../hooks/useAuth';
 import { authFetch } from '../hooks/authFetch';
 import Avatar from '../components/Avatar';
+import ReactionBar from '../components/ReactionBar';
 
 const BASE_URL = 'https://localhost:7142';
 const API_BASE = 'https://localhost:7142';
@@ -196,6 +197,22 @@ export default function Chat() {
                                     }}>
                                         {m.content}
                                     </div>
+                                    <ReactionBar 
+                                        reactions={m.reactions || []}
+                                        currentUserReactionCode={m.currentUserReactionCode}
+                                        entityId={m.id}
+                                        entityType="Message"
+                                        authed={true}
+                                        currentUserId={currentUserId}
+                                        entityAuthorId={m.senderId}
+                                        onReactionChanged={(updatedReactions, newCode) => {
+                                            setMessages(messages.map(msg => 
+                                                msg.id === m.id 
+                                                    ? { ...msg, reactions: updatedReactions, currentUserReactionCode: newCode }
+                                                    : msg
+                                            ));
+                                        }}
+                                    />
                                 </div>
                                 {isCurrentUser && <Avatar url={m.senderProfilePictureUrl} name={m.senderName} size={36} />}
                             </div>
