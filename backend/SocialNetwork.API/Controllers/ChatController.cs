@@ -36,7 +36,8 @@ namespace SocialNetwork.API.Controllers
         [HttpGet("chats/{chatId:guid}/messages")]
         public async Task<IActionResult> GetMessages(Guid chatId, CancellationToken cancellationToken = default)
         {
-            var messages = await _messageService.GetMessageByChatIdAsync(chatId, cancellationToken);
+            var userId = Guid.Parse(User.Claims.First(c => c.Type == ClaimTypes.Sid).Value);
+            var messages = await _messageService.GetMessageByChatIdAsync(chatId, userId, cancellationToken);
             return Ok(messages);
         }
 
@@ -51,13 +52,13 @@ namespace SocialNetwork.API.Controllers
 
         [Authorize]
         [HttpPost("{messageId:guid}/react")]
-        public async Task<IActionResult> ToggleReaction(Guid messageId, [FromQuery] Guid reactionType, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> ToggleReaction(Guid messageId, [FromQuery] Guid ReactionTypeId, CancellationToken cancellationToken = default)
         {
             var sid = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Sid)?.Value;
             if (!Guid.TryParse(sid, out var userId))
                 return Unauthorized();
 
-            await _messageService.ToogleReactionAsync(messageId, userId, reactionType, cancellationToken);
+            await _messageService.ToogleReactionAsync(messageId, userId, ReactionTypeId, cancellationToken);
             return NoContent();
         }
     }
