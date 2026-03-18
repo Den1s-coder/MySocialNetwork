@@ -20,11 +20,25 @@ namespace SocialNetwork.Application.Service
             _logger = logger;
         }
 
-        public async Task<IEnumerable<MessageDto>> GetMessageByChatIdAsync(Guid chatid, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<MessageDto>> GetMessageByChatIdAsync(Guid chatId, Guid userId, CancellationToken cancellationToken = default)
         {
-            var messages = await _messageRepository.GetMessagesByChatIdAsync(chatid);
+            var messages = await _messageRepository.GetMessagesByChatIdAsync(chatId, cancellationToken);
+            var messageDtos = _mapper.Map<IEnumerable<MessageDto>>(messages);
 
-            return _mapper.Map<IEnumerable<Message>, IEnumerable<MessageDto>>(messages);
+            foreach (var dto in messageDtos)
+            {
+                var message = messages.FirstOrDefault(m => m.Id == dto.Id);
+                if (message != null)
+                {
+                    var userReaction = message.Reactions.FirstOrDefault(r => r.UserId == userId);
+                    if (userReaction != null)
+                    {
+                        dto.CurrentUserReactionCode = userReaction.ReactionType.Code;
+                    }
+                }
+            }
+
+            return messageDtos;
         }
 
         public async Task ToogleReactionAsync(Guid messageId, Guid userId, Guid reactionType, CancellationToken cancellationToken = default)
