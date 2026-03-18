@@ -4,6 +4,7 @@ import { useChatHub } from '../hooks/useChatHub';
 import { useAuth } from '../hooks/useAuth';
 import { authFetch } from '../hooks/authFetch';
 import Avatar from '../components/Avatar';
+import ReactionBar from '../components/ReactionBar';
 
 const BASE_URL = import.meta.env.VITE_API_BASE || '';
 const API_BASE = import.meta.env.VITE_API_BASE || '';
@@ -399,6 +400,22 @@ export default function Chat() {
                                             {getRoleName(participant.role)}
                                         </div>
                                     </div>
+                                    <ReactionBar 
+                                        reactions={m.reactions || []}
+                                        currentUserReactionCode={m.currentUserReactionCode}
+                                        entityId={m.id}
+                                        entityType="Message"
+                                        authed={true}
+                                        currentUserId={currentUserId}
+                                        entityAuthorId={m.senderId}
+                                        onReactionChanged={(updatedReactions, newCode) => {
+                                            setMessages(messages.map(msg => 
+                                                msg.id === m.id 
+                                                    ? { ...msg, reactions: updatedReactions, currentUserReactionCode: newCode }
+                                                    : msg
+                                            ));
+                                        }}
+                                    />
                                 </div>
                                 {isCurrentUser && <Avatar url={m.senderProfilePictureUrl} name={m.senderName} size={36} />}
                             </div>
