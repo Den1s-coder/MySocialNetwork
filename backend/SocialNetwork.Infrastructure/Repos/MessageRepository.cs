@@ -73,6 +73,8 @@ namespace SocialNetwork.Infrastructure.Repos
             return await _context.Messages
                 .Where(m => m.ChatId == chatId)
                 .Include(m => m.Sender)
+                .Include(m => m.Reactions)
+                    .ThenInclude(r => r.ReactionType)
                 .AsNoTracking()
                 .ToListAsync(cancellationToken);
         }
