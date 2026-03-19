@@ -153,11 +153,56 @@ export default function ChatList() {
                                     <div style={{ fontSize: 12, color: '#666', marginTop: 6 }}>
                                         Тип: {chat.type === 0 ? 'Приватний' : chat.type === 1 ? 'Група' : 'Канал'}
                                     </div>
+
+                                    {chat.type === 1 && (
+                                        <div style={{ marginTop: 8 }}>
+                                            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                                                {normalizeParticipants(chat).map((p, idx) => (
+                                                    <div
+                                                        key={idx}
+                                                        style={{
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            gap: 6,
+                                                            padding: 6,
+                                                            background: '#f5f5f5',
+                                                            borderRadius: 4,
+                                                            fontSize: 13
+                                                        }}
+                                                    >
+                                                        <Avatar url={p.profilePictureUrl} name={p.userName} size={24} />
+                                                        {p.userName}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
                                 </Link>
                             </li>
                         ))}
                     </ul>
                 )}
+            </div>
+
+            <div style={{ marginBottom: 32 }}>
+                <h3>Створити новий чат</h3>
+                <button
+                    onClick={() => navigate('/create-group-chat')}
+                    style={{
+                        display: 'block',
+                        width: '100%',
+                        padding: 12,
+                        marginBottom: 12,
+                        background: '#28a745',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: 4,
+                        cursor: 'pointer',
+                        fontWeight: 'bold'
+                    }}
+                >
+                    + Груповий чат
+                </button>
             </div>
 
             <div>
