@@ -13,7 +13,7 @@ namespace SocialNetwork.Application.Interfaces
         public Task<ChatDto> CreatePrivateChatAsync(Guid userId1, Guid userId2, CancellationToken cancellationToken = default);
         public Task<ChatDto> CreateGroupChatAsync(string title, Guid ownerId, CancellationToken cancellationToken = default);
         public Task<ChatDto> CreateChannelChatAsync(string title, Guid ownerId, CancellationToken cancellationToken = default);
-        public Task AddUserToChatAsync(Guid chatId, Guid userId, CancellationToken cancellationToken = default);
+        public Task AddUserToChatAsync(Guid chatId, Guid userId, Guid requesterId, CancellationToken cancellationToken = default);
         public Task RemoveUserFromChatAsync(Guid chatId, Guid userId, CancellationToken cancellationToken = default);
         public Task ChangeUserRoleInChatAsync(Guid chatId, Guid userId, int newRole, CancellationToken cancellationToken = default);
         public Task<IEnumerable<ChatDto>> GetChatsByUserIdAsync(Guid userId, CancellationToken cancellationToken = default);
