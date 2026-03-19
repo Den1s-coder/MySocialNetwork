@@ -4,7 +4,7 @@ import { useAuth } from '../hooks/useAuth';
 import { authFetch } from '../hooks/authFetch';
 import Avatar from '../components/Avatar';
 
-const API_BASE = import.meta.env.VITE_API_BASE || '';
+const API_BASE = 'https://localhost:7142';
 
 export default function CreateGroupChat() {
     const navigate = useNavigate();
@@ -27,17 +27,50 @@ export default function CreateGroupChat() {
 
         const loadFriends = async () => {
             try {
-                const res = await authFetch(`${API_BASE}/api/Friend/MyFriends`);
-                if (!res.ok) {
-                    throw new Error(`HTTP ${res.status}`);
-                }
-                const friendsData = await res.json();
+                const res = await authFetch(`${API_BASE}/api/Friend/MyFriends`, {
+                    headers: { 'Authorization': `Bearer ${accessToken}` }
+                });
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const friendships = await res.json();
 
-                if (Array.isArray(friendsData) && friendsData.length > 0) {
-                    setFriends(friendsData);
-                } else {
-                    setFriends([]);
-                }
+                const friendIds = new Set();
+                const currentUserIdStr = String(currentUserId).toLowerCase();
+
+                friendships.forEach(f => {
+                    const requesterId = f.requesterId ?? f.RequesterId;
+                    const addresseeId = f.addresseeId ?? f.AddresseeId;
+
+                    const requesterIdStr = String(requesterId).toLowerCase();
+                    const addresseeIdStr = String(addresseeId).toLowerCase();
+
+                    if (requesterIdStr === currentUserIdStr) {
+                        friendIds.add(addresseeId);
+                    } else if (addresseeIdStr === currentUserIdStr) {
+                        friendIds.add(requesterId);
+                    }
+                });
+
+                const friendsData = await Promise.all(
+                    Array.from(friendIds).map(async (friendId) => {
+                        try {
+                            const userRes = await authFetch(`${API_BASE}/api/User/users/${friendId}`, {
+                                headers: { 'Authorization': `Bearer ${accessToken}` }
+                            });
+                            if (!userRes.ok) {
+                                console.error(`Failed to load user ${friendId}`);
+                                return null;
+                            }
+                            const userData = await userRes.json();
+                            return userData;
+                        } catch (err) {
+                            console.error(`Error loading user ${friendId}:`, err);
+                            return null;
+                        }
+                    })
+                );
+
+                const validFriends = friendsData.filter(f => f !== null);
+                setFriends(validFriends);
                 setLoading(false);
             } catch (e) {
                 console.error('Error loading friends:', e);
@@ -70,6 +103,7 @@ export default function CreateGroupChat() {
             const res = await authFetch(`${API_BASE}/api/Chat/group`, {
                 method: 'POST',
                 headers: {
+                    'Authorization': `Bearer ${accessToken}`,
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({ title })
@@ -81,7 +115,8 @@ export default function CreateGroupChat() {
             for (const userId of selectedUsers) {
                 try {
                     await authFetch(`${API_BASE}/api/Chat/group/${chatId}/members/${userId}`, {
-                        method: 'POST'
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${accessToken}` }
                     });
                 } catch (addError) {
                     console.error(`Помилка при додаванні користувача ${userId}:`, addError);
