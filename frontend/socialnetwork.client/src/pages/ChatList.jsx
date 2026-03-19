@@ -158,13 +158,26 @@ export default function ChatList() {
                                     </div>
 
                                     {chat.type === 1 && (
-                                        <div className="chatlist-participants">
-                                            {normalizeParticipants(chat).map((p, idx) => (
-                                                <div key={idx} className="chatlist-participant-tag">
-                                                    <Avatar url={p.profilePictureUrl} name={p.userName} size={24} />
-                                                    {p.userName}
-                                                </div>
-                                            ))}
+                                        <div style={{ marginTop: 8 }}>
+                                            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                                                {normalizeParticipants(chat).map((p, idx) => (
+                                                    <div
+                                                        key={idx}
+                                                        style={{
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            gap: 6,
+                                                            padding: 6,
+                                                            background: '#f5f5f5',
+                                                            borderRadius: 4,
+                                                            fontSize: 13
+                                                        }}
+                                                    >
+                                                        <Avatar url={p.profilePictureUrl} name={p.userName} size={24} />
+                                                        {p.userName}
+                                                    </div>
+                                                ))}
+                                            </div>
                                         </div>
                                     )}
                                 </Link>
@@ -174,17 +187,28 @@ export default function ChatList() {
                 )}
             </div>
 
-            <div className="chatlist-section">
+            <div style={{ marginBottom: 32 }}>
                 <h3>Створити новий чат</h3>
                 <button
                     onClick={() => navigate('/create-group-chat')}
-                    className="chatlist-btn chatlist-btn--primary"
+                    style={{
+                        display: 'block',
+                        width: '100%',
+                        padding: 12,
+                        marginBottom: 12,
+                        background: '#28a745',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: 4,
+                        cursor: 'pointer',
+                        fontWeight: 'bold'
+                    }}
                 >
                     + Груповий чат
                 </button>
             </div>
 
-            <div className="chatlist-section">
+            <div>
                 <h3>Створити приватний чат</h3>
                 <p className="chatlist-description">Оберіть користувача для початку приватного чату:</p>
                 <input
