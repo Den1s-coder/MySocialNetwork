@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SocialNetwork.Domain.Entities.Chats;
+using SocialNetwork.Domain.Entities.Users;
 using SocialNetwork.Domain.Enums;
 using SocialNetwork.Domain.Interfaces;
 using System;
