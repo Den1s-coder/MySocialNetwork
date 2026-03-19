@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SocialNetwork.Domain.Entities.Chats;
+using SocialNetwork.Domain.Entities.Users;
 using SocialNetwork.Domain.Enums;
 using SocialNetwork.Domain.Interfaces;
 using System;
@@ -25,17 +26,17 @@ namespace SocialNetwork.Infrastructure.Repos
         public async Task CreateAsync(Chat chat, CancellationToken cancellationToken = default)
         {
             _context.Chats.Add(chat);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellationToken);
             _logger.LogInformation("Chat created with ID: " + chat.Id);
         }
 
         public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            var chat = await _context.Chats.FindAsync(id);
+            var chat = await _context.Chats.FindAsync(new object[] { id }, cancellationToken: cancellationToken);
             if (chat != null)
             {
                 _context.Chats.Remove(chat);
-                await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync(cancellationToken);
                 _logger.LogInformation("Chat deleted with ID: " + id);
             }
             else
@@ -48,14 +49,14 @@ namespace SocialNetwork.Infrastructure.Repos
         {
             return await _context.Chats
                 .AsNoTracking()
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
         }
 
         public async Task<Chat?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
             return await _context.Chats
                 .AsNoTracking()
-                .FirstOrDefaultAsync(c => c.Id == id);
+                .FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
         }
 
         public async Task<Chat?> GetChatBetweenUsersAsync(Guid userId1, Guid userId2, CancellationToken cancellationToken = default)
@@ -66,7 +67,7 @@ namespace SocialNetwork.Infrastructure.Repos
                 .Where(c => c.Type == ChatType.Private)
                 .FirstOrDefaultAsync(c =>
                     c.UserChats.Any(uc => uc.UserId == userId1) &&
-                    c.UserChats.Any(uc => uc.UserId == userId2));
+                    c.UserChats.Any(uc => uc.UserId == userId2), cancellationToken);
         }
 
         public async Task<IEnumerable<Chat>> GetChatsByUserIdAsync(Guid userId, CancellationToken cancellationToken = default)
@@ -76,7 +77,7 @@ namespace SocialNetwork.Infrastructure.Repos
                     .ThenInclude(uc => uc.User)
                 .Where(c => c.UserChats.Any(p => p.UserId == userId))
                 .AsNoTracking()
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
         }
 
         public async Task<Chat?> GetChatWithMessagesAsync(Guid chatId, CancellationToken cancellationToken = default)
@@ -84,13 +85,41 @@ namespace SocialNetwork.Infrastructure.Repos
             return await _context.Chats
                 .Include(c => c.Messages)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(c => c.Id == chatId);
+                .FirstOrDefaultAsync(c => c.Id == chatId, cancellationToken);
         }
 
         public async Task UpdateAsync(Chat chat, CancellationToken cancellationToken = default)
         {
             _context.Chats.Update(chat);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellationToken);
+        }
+
+        public async Task AddUserToChatAsync(Guid chatId, Guid userId, ChatRole role, CancellationToken cancellationToken = default)
+        {
+            var userChat = new UserChat
+            {
+                ChatId = chatId,
+                UserId = userId,
+                Role = role,
+                JoinedAt = DateTime.UtcNow
+            };
+
+            _context.UserChats.Add(userChat);
+            await _context.SaveChangesAsync(cancellationToken);
+            _logger.LogInformation("User {UserId} added to chat {ChatId}", userId, chatId);
+        }
+
+        public async Task RemoveUserFromChatAsync(Guid chatId, Guid userId, CancellationToken cancellationToken = default)
+        {
+            var userChat = await _context.UserChats
+                .FirstOrDefaultAsync(uc => uc.ChatId == chatId && uc.UserId == userId, cancellationToken);
+
+            if (userChat != null)
+            {
+                _context.UserChats.Remove(userChat);
+                await _context.SaveChangesAsync(cancellationToken);
+                _logger.LogInformation("User {UserId} removed from chat {ChatId}", userId, chatId);
+            }
         }
     }
 }
