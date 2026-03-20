@@ -3,7 +3,6 @@ import { authFetch } from '../hooks/authFetch';
 
 const API_BASE = 'https://localhost:7142';
 
-// Seed-дані з бекенду — порядок відповідає SortOrder
 const REACTION_TYPES = [
     { id: '00000000-0000-0000-0000-000000000001', code: 'like',  symbol: '👍' },
     { id: '00000000-0000-0000-0000-000000000002', code: 'love',  symbol: '❤️' },
@@ -13,17 +12,19 @@ const REACTION_TYPES = [
 ];
 
 /**
- * @param {{ reactions: {code,symbol,count}[], currentUserReactionCode: string|null, entityId: string, entityType: 'Post'|'Comment', authed: boolean, onReactionChanged: (updatedReactions, newCode) => void }} props
+ * @param {{ reactions: {code,symbol,count}[], currentUserReactionCode: string|null, entityId: string, entityType: 'Post'|'Comment'|'Message', authed: boolean, onReactionChanged: (updatedReactions, newCode) => void, currentUserId?: string, entityAuthorId?: string }} props
  */
-export default function ReactionBar({ reactions = [], currentUserReactionCode, entityId, entityType = 'Post', authed, onReactionChanged }) {
+export default function ReactionBar({ reactions = [], currentUserReactionCode, entityId, entityType = 'Post', authed, onReactionChanged, currentUserId, entityAuthorId }) {
     const [pickerOpen, setPickerOpen] = useState(false);
     const [sending, setSending] = useState(false);
 
+    const isOwnContent = currentUserId && entityAuthorId && 
+        String(currentUserId).toLowerCase() === String(entityAuthorId).toLowerCase();
+
     const toggleReaction = async (reactionTypeId, code) => {
-        if (!authed || sending) return;
+        if (!authed || sending || isOwnContent) return;
         setSending(true);
 
-        // Оптимістичне оновлення
         const isRemoving = currentUserReactionCode === code;
         const optimisticReactions = buildOptimistic(reactions, code, currentUserReactionCode);
         const optimisticCode = isRemoving ? null : code;
@@ -31,15 +32,20 @@ export default function ReactionBar({ reactions = [], currentUserReactionCode, e
         setPickerOpen(false);
 
         try {
-            const endpoint = entityType === 'Comment'
-                ? `${API_BASE}/api/Comment/${entityId}/react?ReactionTypeId=${reactionTypeId}`
-                : `${API_BASE}/api/Post/${entityId}/react?ReactionTypeId=${reactionTypeId}`;
+            let endpoint;
+            
+            if (entityType === 'Comment') {
+                endpoint = `${API_BASE}/api/Comment/${entityId}/react?ReactionTypeId=${reactionTypeId}`;
+            } else if (entityType === 'Message') {
+                endpoint = `${API_BASE}/api/Chat/${entityId}/react?ReactionTypeId=${reactionTypeId}`;
+            } else {
+                endpoint = `${API_BASE}/api/Post/${entityId}/react?ReactionTypeId=${reactionTypeId}`;
+            }
 
             const res = await authFetch(endpoint, { method: 'POST' });
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
         } catch (err) {
             console.error('Toggle reaction failed', err);
-            // Відкат
             onReactionChanged?.(reactions, currentUserReactionCode);
         } finally {
             setSending(false);
@@ -48,33 +54,32 @@ export default function ReactionBar({ reactions = [], currentUserReactionCode, e
 
     return (
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap', marginTop: 8 }}>
-            {/* Відображення існуючих реакцій */}
             {reactions.filter(r => r.count > 0).map(r => (
                 <button
                     key={r.code}
                     onClick={() => {
-                        if (!authed) return;
+                        if (!authed || isOwnContent) return;
                         const rt = REACTION_TYPES.find(t => t.code === r.code);
                         if (rt) toggleReaction(rt.id, rt.code);
                     }}
-                    disabled={!authed || sending}
+                    disabled={!authed || sending || isOwnContent}
+                    title={isOwnContent ? 'Не можна ставити реакції на свій контент' : r.code}
                     style={{
                         display: 'inline-flex', alignItems: 'center', gap: 4,
                         padding: '4px 8px', border: '1px solid',
                         borderColor: currentUserReactionCode === r.code ? '#4a90d9' : '#ddd',
                         background: currentUserReactionCode === r.code ? '#e8f0fe' : '#f9f9f9',
-                        borderRadius: 16, cursor: authed ? 'pointer' : 'default',
+                        borderRadius: 16, cursor: (authed && !isOwnContent) ? 'pointer' : 'default',
                         fontSize: 14, lineHeight: 1,
+                        opacity: isOwnContent ? 0.6 : 1,
                     }}
-                    title={r.code}
                 >
                     <span>{r.symbol}</span>
                     <span style={{ fontSize: 12, color: '#555' }}>{r.count}</span>
                 </button>
             ))}
 
-            {/* Кнопка "+" для вибору реакції */}
-            {authed && (
+            {authed && !isOwnContent && (
                 <div style={{ position: 'relative' }}>
                     <button
                         onClick={() => setPickerOpen(o => !o)}
@@ -120,25 +125,21 @@ export default function ReactionBar({ reactions = [], currentUserReactionCode, e
     );
 }
 
-/** Оптимістично перераховує масив реакцій */
 function buildOptimistic(reactions, clickedCode, currentCode) {
     const rt = REACTION_TYPES.find(t => t.code === clickedCode);
     if (!rt) return reactions;
 
     let result = reactions.map(r => ({ ...r }));
 
-    // Зняти попередню реакцію
     if (currentCode) {
         const prev = result.find(r => r.code === currentCode);
         if (prev) prev.count = Math.max(0, prev.count - 1);
     }
 
-    // Якщо натиснули ту саму — просто зняли
     if (currentCode === clickedCode) {
         return result.filter(r => r.count > 0);
     }
 
-    // Додати нову
     const existing = result.find(r => r.code === clickedCode);
     if (existing) {
         existing.count += 1;

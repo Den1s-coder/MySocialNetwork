@@ -67,7 +67,7 @@ namespace SocialNetwork.Infrastructure.Repos
             return _context.Friendships
                 .AsNoTracking()
                 .AnyAsync(f => (f.RequesterId == userId1 && f.AddresseeId == userId2) ||
-                        (f.AddresseeId == userId2 && f.RequesterId == userId1), cancellationToken);
+                         (f.RequesterId == userId2 && f.AddresseeId == userId1), cancellationToken);
         }
     }
 }

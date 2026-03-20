@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SocialNetwork.Domain.Entities.Users;
+using SocialNetwork.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,6 +36,11 @@ namespace SocialNetwork.Infrastructure.Configurations
             builder.Property(u => u.ProfilePictureUrl)
                 .HasMaxLength(500)
                 .IsRequired(false);
+
+            builder.Property(u => u.Role)
+                .HasConversion<string>()
+                .HasDefaultValue(UserRole.User)
+                .IsRequired();
 
             builder.Property(u => u.CreatedAt)
                 .IsRequired();

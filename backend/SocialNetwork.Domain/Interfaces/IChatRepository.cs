@@ -1,16 +1,14 @@
 ﻿using SocialNetwork.Domain.Entities.Chats;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using SocialNetwork.Domain.Enums;
 
 namespace SocialNetwork.Domain.Interfaces
 {
-    public interface IChatRepository: IGenerycRepository<Chat>
+    public interface IChatRepository : IGenerycRepository<Chat>
     {
         public Task<IEnumerable<Chat>> GetChatsByUserIdAsync(Guid userId, CancellationToken cancellationToken = default);
         public Task<Chat?> GetChatWithMessagesAsync(Guid chatId, CancellationToken cancellationToken = default);
         public Task<Chat?> GetChatBetweenUsersAsync(Guid userId1, Guid userId2, CancellationToken cancellationToken = default);
+        public Task AddUserToChatAsync(Guid chatId, Guid userId, ChatRole role, CancellationToken cancellationToken = default);
+        public Task RemoveUserFromChatAsync(Guid chatId, Guid userId, CancellationToken cancellationToken = default);
     }
 }

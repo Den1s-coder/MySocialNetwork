@@ -11,6 +11,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import NavBar from './components/NavBar.jsx';
 import FriendshipList from './pages/FriendshipList.jsx';
 import Settings from './pages/Settings.jsx';
+import CreateGroupChat from './pages/CreateGroupChat.jsx';
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
                     <Route path="/chat/:chatId" element={<Chat />} />
                     <Route path="/friends" element={<FriendshipList />} />
                     <Route path="/settings" element={<Settings />} />
+                    <Route path="/create-group-chat" element={<CreateGroupChat />} />
                   </Routes>
               </div>
           </BrowserRouter>
