@@ -17,5 +17,6 @@ namespace SocialNetwork.Application.Interfaces
         public Task RemoveUserFromChatAsync(Guid chatId, Guid userId, CancellationToken cancellationToken = default);
         public Task ChangeUserRoleInChatAsync(Guid chatId, Guid userId, int newRole, CancellationToken cancellationToken = default);
         public Task<IEnumerable<ChatDto>> GetChatsByUserIdAsync(Guid userId, CancellationToken cancellationToken = default);
+        public Task DeleteChatAsync(Guid chatId, Guid requesterId, CancellationToken cancellationToken = default);
     }
 }
