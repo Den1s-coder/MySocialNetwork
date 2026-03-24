@@ -159,5 +159,20 @@ namespace SocialNetwork.Application.Service
             var chats = await _chatRepository.GetChatsByUserIdAsync(userId, cancellationToken);
             return _mapper.Map<IEnumerable<ChatDto>>(chats);
         }
+
+        public async Task DeleteChatAsync(Guid chatId, Guid requesterId, CancellationToken cancellationToken = default)
+        {
+            var chat = await _chatRepository.GetByIdAsync(chatId, cancellationToken);
+
+            if (chat == null)
+                throw new Exception("Chat not found");
+
+            var userChat = chat.UserChats.FirstOrDefault(uc => uc.UserId == requesterId);
+
+            if (userChat == null || userChat.Role != ChatRole.Owner)
+                throw new Exception("Only the chat owner can delete the chat");
+
+            await _chatRepository.DeleteAsync(chatId, cancellationToken);
+        }
     }
 }
