@@ -9,6 +9,6 @@ namespace SocialNetwork.Application.DTO.Users
 {
     public record ChangeUserRoleRequest
     {
-        public string NewRole { get; init; }
+        public UserRole NewRole { get; init; }
     }
 }
