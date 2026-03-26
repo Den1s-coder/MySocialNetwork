@@ -122,6 +122,15 @@ namespace SocialNetwork.API.Controllers
             return Ok();
         }
 
+        [Authorize(Roles = "Admin")]
+        [HttpPost("users/{userId:guid}/ban")]
+        public async Task<IActionResult> BanUser(Guid userId, CancellationToken cancellationToken = default)
+        {
+            await _userService.BanUser(userId, cancellationToken);
+            return Ok();
+        }
+
+        [Authorize(Roles = "Admin")]
         [HttpGet("users/by-role")]
         public async Task<IActionResult> GetUsersByRole([FromQuery] UserRole role, CancellationToken cancellationToken = default)
         {
