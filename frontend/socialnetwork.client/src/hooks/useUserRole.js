@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { authFetch } from './authFetch';
 
-const API_BASE = import.meta.env.VITE_API_BASE || '';
+const API_BASE = 'https://localhost:7142';
 
 export const useUserRole = () => {
     const [role, setRole] = useState(null);
