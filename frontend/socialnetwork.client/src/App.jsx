@@ -13,6 +13,8 @@ import NavBar from './components/NavBar.jsx';
 import FriendshipList from './pages/FriendshipList.jsx';
 import Settings from './pages/Settings.jsx';
 import CreateGroupChat from './pages/CreateGroupChat.jsx';
+import AdminPanel from './pages/AdminPanel.jsx';
+import ProtectedRoute from './components/ProtectedRoute.jsx';
 
 function App() {
   return (
@@ -33,6 +35,14 @@ function App() {
                     <Route path="/friends" element={<FriendshipList />} />
                     <Route path="/settings" element={<Settings />} />
                     <Route path="/create-group-chat" element={<CreateGroupChat />} />
+                    <Route 
+                      path="/admin" 
+                      element={
+                        <ProtectedRoute requiredRole="Admin">
+                          <AdminPanel />
+                        </ProtectedRoute>
+                      } 
+                    />
                   </Routes>
               </div>
           </BrowserRouter>
