@@ -3,11 +3,13 @@ import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { authFetch } from '../hooks/authFetch';
 import NotificationBell from './NotificationBell';
+import { useUserRole } from '../hooks/useUserRole';
 import './NavBar.css';
 
 export default function NavBar() {
     const navigate = useNavigate();
     const { isAuthenticated, logout, accessToken, currentUserName } = useAuth();
+    const { isAdmin } = useUserRole();
 
     const [avatarUrl, setAvatarUrl] = useState(null);
     const [menuOpen, setMenuOpen] = useState(false);
@@ -131,6 +133,12 @@ export default function NavBar() {
                     </div>
                 </div>
             </header>
+
+            {isAdmin && (
+                <Link to="/admin" className="nav-link">
+                    Адмін панель
+                </Link>
+            )}
         </>
     );
 }
