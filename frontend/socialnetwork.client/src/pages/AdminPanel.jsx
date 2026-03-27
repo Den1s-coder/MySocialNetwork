@@ -17,9 +17,6 @@ export default function AdminPanel() {
     const [filterRole, setFilterRole] = useState('');
     const [actionInProgress, setActionInProgress] = useState(false);
 
-    if (roleLoading) return <div style={{ padding: '20px' }}>Завантаження…</div>;
-    if (!isAdmin) return <div style={{ padding: '20px', color: 'red' }}>Доступ заборонений</div>;
-
     const loadUsers = async () => {
         setLoading(true);
         setError(null);
@@ -29,18 +26,20 @@ export default function AdminPanel() {
             const data = await res.json();
             setUsers(Array.isArray(data) ? data : []);
         } catch (err) {
-            setError(err.message || 'Помилка завантаження користувачів');
+            setError(err.message || 'РџРѕРјРёР»РєР° Р·Р°РІР°РЅС‚Р°Р¶РµРЅРЅСЏ РєРѕСЂРёСЃС‚СѓРІР°С‡С–РІ');
         } finally {
             setLoading(false);
         }
     };
 
     useEffect(() => {
-        loadUsers();
-    }, []);
+        if (!roleLoading && isAdmin) {
+            loadUsers();
+        }
+    }, [roleLoading, isAdmin]);
 
     const handleChangeRole = async (userId, newRole) => {
-        if (!window.confirm(`Змінити роль користувача на ${newRole}?`)) return;
+        if (!window.confirm(`Р—РјС–РЅРёС‚Рё СЂРѕР»СЊ РєРѕСЂРёСЃС‚СѓРІР°С‡Р° РЅР° ${newRole}?`)) return;
 
         setActionInProgress(true);
         try {
@@ -54,16 +53,16 @@ export default function AdminPanel() {
             setUsers(prev => prev.map(u => 
                 u.id === userId ? { ...u, role: newRole } : u
             ));
-            alert('Роль змінена');
+            alert('Р РѕР»СЊ Р·РјС–РЅРµРЅР°');
         } catch (err) {
-            alert(`Помилка: ${err.message}`);
+            alert(`РџРѕРјРёР»РєР°: ${err.message}`);
         } finally {
             setActionInProgress(false);
         }
     };
 
     const handleBanUser = async (userId, userName) => {
-        if (!window.confirm(`Блокувати користувача ${userName}?`)) return;
+        if (!window.confirm(`Р‘Р»РѕРєСѓРІР°С‚Рё РєРѕСЂРёСЃС‚СѓРІР°С‡Р° ${userName}?`)) return;
 
         setActionInProgress(true);
         try {
@@ -75,13 +74,16 @@ export default function AdminPanel() {
             setUsers(prev => prev.map(u => 
                 u.id === userId ? { ...u, isBanned: true } : u
             ));
-            alert('Користувач заблокований');
+            alert('РљРѕСЂРёСЃС‚СѓРІР°С‡ Р·Р°Р±Р»РѕРєРѕРІР°РЅРёР№');
         } catch (err) {
-            alert(`Помилка: ${err.message}`);
+            alert(`РџРѕРјРёР»РєР°: ${err.message}`);
         } finally {
             setActionInProgress(false);
         }
     };
+
+    if (roleLoading) return <div style={{ padding: '20px' }}>Р—Р°РІР°РЅС‚Р°Р¶РµРЅРЅСЏвЂ¦</div>;
+    if (!isAdmin) return <div style={{ padding: '20px', color: 'red' }}>Р”РѕСЃС‚СѓРї Р·Р°Р±РѕСЂРѕРЅРµРЅРёР№</div>;
 
     const filteredUsers = users.filter(u => {
         const matchesSearch = u.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -90,18 +92,18 @@ export default function AdminPanel() {
         return matchesSearch && matchesRole;
     });
 
-    if (loading) return <div style={{ padding: '20px' }}>Завантаження користувачів…</div>;
+    if (loading) return <div style={{ padding: '20px' }}>Р—Р°РІР°РЅС‚Р°Р¶РµРЅРЅСЏ РєРѕСЂРёСЃС‚СѓРІР°С‡С–РІвЂ¦</div>;
 
     return (
         <div className="container">
-            <h2>Адмін панель</h2>
+            <h2>РђРґРјС–РЅ РїР°РЅРµР»СЊ</h2>
 
-            {error && <div style={{ color: 'red', marginBottom: 16 }}>Помилка: {error}</div>}
+            {error && <div style={{ color: 'red', marginBottom: 16 }}>РџРѕРјРёР»РєР°: {error}</div>}
 
             <div className="admin-filters" style={{ marginBottom: 16, display: 'grid', gap: 12, gridTemplateColumns: '1fr 1fr' }}>
                 <input
                     type="text"
-                    placeholder="Пошук за ім'ям або email…"
+                    placeholder="РџРѕС€СѓРє Р·Р° С–Рј'СЏРј Р°Р±Рѕ emailвЂ¦"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     style={{ padding: 8, border: '1px solid #ddd', borderRadius: 4 }}
@@ -111,26 +113,26 @@ export default function AdminPanel() {
                     onChange={(e) => setFilterRole(e.target.value)}
                     style={{ padding: 8, border: '1px solid #ddd', borderRadius: 4 }}
                 >
-                    <option value="">Усі ролі</option>
-                    <option value="User">Користувач</option>
-                    <option value="Moderator">Модератор</option>
-                    <option value="Admin">Адміністратор</option>
+                    <option value="">РЈСЃС– СЂРѕР»С–</option>
+                    <option value="User">РљРѕСЂРёСЃС‚СѓРІР°С‡</option>
+                    <option value="Moderator">РњРѕРґРµСЂР°С‚РѕСЂ</option>
+                    <option value="Admin">РђРґРјС–РЅС–СЃС‚СЂР°С‚РѕСЂ</option>
                 </select>
             </div>
 
             <div style={{ marginBottom: 12, color: '#666' }}>
-                Всього користувачів: <strong>{filteredUsers.length}</strong>
+                Р’СЃСЊРѕРіРѕ РєРѕСЂРёСЃС‚СѓРІР°С‡С–РІ: <strong>{filteredUsers.length}</strong>
             </div>
 
             <div className="users-table" style={{ overflowX: 'auto', marginBottom: 16 }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                     <thead>
                         <tr style={{ backgroundColor: '#f5f5f5', borderBottom: '2px solid #ddd' }}>
-                            <th style={{ padding: 12, textAlign: 'left' }}>Ім'я</th>
+                            <th style={{ padding: 12, textAlign: 'left' }}>Р†Рј'СЏ</th>
                             <th style={{ padding: 12, textAlign: 'left' }}>Email</th>
-                            <th style={{ padding: 12, textAlign: 'left' }}>Роль</th>
-                            <th style={{ padding: 12, textAlign: 'left' }}>Статус</th>
-                            <th style={{ padding: 12, textAlign: 'center' }}>Дії</th>
+                            <th style={{ padding: 12, textAlign: 'left' }}>Р РѕР»СЊ</th>
+                            <th style={{ padding: 12, textAlign: 'left' }}>РЎС‚Р°С‚СѓСЃ</th>
+                            <th style={{ padding: 12, textAlign: 'center' }}>Р”С–С—</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -145,16 +147,16 @@ export default function AdminPanel() {
                                         disabled={actionInProgress}
                                         style={{ padding: 4, borderRadius: 4 }}
                                     >
-                                        <option value="User">Користувач</option>
-                                        <option value="Moderator">Модератор</option>
-                                        <option value="Admin">Адміністратор</option>
+                                        <option value="User">РљРѕСЂРёСЃС‚СѓРІР°С‡</option>
+                                        <option value="Moderator">РњРѕРґРµСЂР°С‚РѕСЂ</option>
+                                        <option value="Admin">РђРґРјС–РЅС–СЃС‚СЂР°С‚РѕСЂ</option>
                                     </select>
                                 </td>
                                 <td style={{ padding: 12 }}>
                                     {user.isBanned ? (
-                                        <span style={{ color: 'red', fontWeight: 'bold' }}>Заблокований</span>
+                                        <span style={{ color: 'red', fontWeight: 'bold' }}>Р—Р°Р±Р»РѕРєРѕРІР°РЅРёР№</span>
                                     ) : (
-                                        <span style={{ color: 'green' }}>Активний</span>
+                                        <span style={{ color: 'green' }}>РђРєС‚РёРІРЅРёР№</span>
                                     )}
                                 </td>
                                 <td style={{ padding: 12, textAlign: 'center' }}>
@@ -172,7 +174,7 @@ export default function AdminPanel() {
                                                 opacity: actionInProgress ? 0.6 : 1
                                             }}
                                         >
-                                            Блокувати
+                                            Р‘Р»РѕРєСѓРІР°С‚Рё
                                         </button>
                                     )}
                                 </td>
@@ -184,7 +186,7 @@ export default function AdminPanel() {
 
             {filteredUsers.length === 0 && (
                 <div style={{ textAlign: 'center', padding: 20, color: '#666' }}>
-                    Користувачів не знайдено
+                    РљРѕСЂРёСЃС‚СѓРІР°С‡С–РІ РЅРµ Р·РЅР°Р№РґРµРЅРѕ
                 </div>
             )}
         </div>
