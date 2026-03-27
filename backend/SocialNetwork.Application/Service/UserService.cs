@@ -4,6 +4,7 @@ using SocialNetwork.Application.DTO.Auth;
 using SocialNetwork.Application.DTO.Users;
 using SocialNetwork.Application.Interfaces;
 using SocialNetwork.Domain.Entities.Users;
+using SocialNetwork.Domain.Enums;
 using SocialNetwork.Domain.Interfaces;
 
 namespace SocialNetwork.Application.Service
@@ -66,6 +67,17 @@ namespace SocialNetwork.Application.Service
             await _userRepository.UpdateAsync(user);
         }
 
+        public async Task ChangeUserRoleAsync(Guid userId, UserRole newRole, CancellationToken cancellationToken = default)
+        {
+            var user = await _userRepository.GetByIdAsync(userId);
+
+            if (user == null)
+                throw new ArgumentException("User not found");
+
+            user.Role = newRole;
+            await _userRepository.UpdateAsync(user);
+        }
+
         public async Task<IEnumerable<UserDto>> GetAllUsersAsync(CancellationToken cancellationToken = default)
         {
             var users = await _userRepository.GetAllAsync();
@@ -80,6 +92,16 @@ namespace SocialNetwork.Application.Service
             return _mapper.Map<UserDto?>(user);
         }
 
+        public async Task<UserRole> GetUserRoleAsync(Guid userId, CancellationToken cancellationToken = default)
+        {
+            var user = await _userRepository.GetByIdAsync(userId);
+
+            if (user == null)
+                throw new ArgumentException("User not found");
+
+            return user.Role;
+        }
+
         public async Task<UserDto> GetUserByEmailAsync(string email, CancellationToken cancellationToken = default)
         {
             var user = await _userRepository.GetByEmailAsync(email);
@@ -92,6 +114,14 @@ namespace SocialNetwork.Application.Service
             var user = await _userRepository.GetByUserNameAsync(name);
 
             return _mapper.Map<UserDto?>(user);
+        }
+
+        public async Task<IEnumerable<UserDto>> GetUsersByRoleAsync(UserRole role, CancellationToken cancellationToken = default)
+        {
+            var users = await _userRepository.GetAllAsync();
+            var usersByRole = users.Where(u => u.Role == role);
+
+            return _mapper.Map<IEnumerable<UserDto>>(usersByRole);
         }
 
         public async Task UpdateProfileAsync(UserDto updatedUserDto, CancellationToken cancellationToken = default)

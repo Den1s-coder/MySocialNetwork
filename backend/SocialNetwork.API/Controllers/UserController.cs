@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using SocialNetwork.Application.DTO.Users;
 using SocialNetwork.Application.Interfaces;
+using SocialNetwork.Domain.Enums;
 using System.Security.Claims;
 
 namespace SocialNetwork.API.Controllers
@@ -108,6 +109,33 @@ namespace SocialNetwork.API.Controllers
             var UserIdClaim = Guid.Parse(User.Claims.First(c => c.Type == ClaimTypes.Sid).Value);
             await _userService.ChangeEmailAsync(UserIdClaim, changeEmailDto, cancellationToken);
             return Ok();
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPost("users/{userId:guid}/role")]
+        public async Task<IActionResult> ChangeUserRole(
+            Guid userId, 
+            [FromBody] ChangeUserRoleRequest request,
+            CancellationToken cancellationToken = default)
+        {
+            await _userService.ChangeUserRoleAsync(userId, request.NewRole, cancellationToken);
+            return Ok();
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPost("users/{userId:guid}/ban")]
+        public async Task<IActionResult> BanUser(Guid userId, CancellationToken cancellationToken = default)
+        {
+            await _userService.BanUser(userId, cancellationToken);
+            return Ok();
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpGet("users/by-role")]
+        public async Task<IActionResult> GetUsersByRole([FromQuery] UserRole role, CancellationToken cancellationToken = default)
+        {
+            var usersDto = await _userService.GetUsersByRoleAsync(role, cancellationToken);
+            return Ok(usersDto);
         }
     }
 }

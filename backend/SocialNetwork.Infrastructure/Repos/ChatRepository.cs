@@ -55,6 +55,7 @@ namespace SocialNetwork.Infrastructure.Repos
         public async Task<Chat?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
             return await _context.Chats
+                .Include(c => c.UserChats)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
         }

@@ -37,5 +37,19 @@ namespace SocialNetwork.Domain.Entities.Users
             PasswordHash = passwordHash;
             UserPosts = new List<Post>();
         }
+
+        public bool HasRoleOrHigher(UserRole requiredRole) => Role >= requiredRole;
+
+        public bool IsAdmin() => Role == UserRole.Admin;
+
+        public bool IsModeratorOrAdmin() => Role >= UserRole.Moderator;
+
+        public string GetRoleDescription() => Role switch
+        {
+            UserRole.Admin => "Адміністратор",
+            UserRole.Moderator => "Модератор",
+            UserRole.User => "Звичайний користувач",
+            _ => "Невідома роль"
+        };
     }
 }
