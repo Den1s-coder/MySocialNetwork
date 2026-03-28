@@ -23,12 +23,14 @@ namespace SocialNetwork.Application.Service
         public async Task<IEnumerable<MessageDto>> GetMessageByChatIdAsync(Guid chatId, Guid userId, CancellationToken cancellationToken = default)
         {
             var messages = await _messageRepository.GetMessagesByChatIdAsync(chatId, cancellationToken);
+
+            var messageDict = messages.ToDictionary(m => m.Id);
+            
             var messageDtos = _mapper.Map<IEnumerable<MessageDto>>(messages);
 
             foreach (var dto in messageDtos)
             {
-                var message = messages.FirstOrDefault(m => m.Id == dto.Id);
-                if (message != null)
+                if (messageDict.TryGetValue(dto.Id, out var message))
                 {
                     var userReaction = message.Reactions.FirstOrDefault(r => r.UserId == userId);
                     if (userReaction != null)
