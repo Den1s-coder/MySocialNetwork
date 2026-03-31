@@ -118,7 +118,12 @@ namespace SocialNetwork.API.Controllers
             [FromBody] ChangeUserRoleRequest request,
             CancellationToken cancellationToken = default)
         {
-            await _userService.ChangeUserRoleAsync(userId, request.NewRole, cancellationToken);
+            if (!Enum.TryParse<UserRole>(request.NewRole, out var userRole))
+            {
+                return BadRequest($"Невалідна роль: {request.NewRole}");
+            }
+
+            await _userService.ChangeUserRoleAsync(userId, userRole, cancellationToken);
             return Ok();
         }
 
