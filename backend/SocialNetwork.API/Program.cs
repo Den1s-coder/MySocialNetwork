@@ -50,11 +50,14 @@ builder.Services.AddCors(options =>
     });
 });
 
-
 builder.Services.AddAuth();
 
 builder.Services.AddDbContext<SocialDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+
+    options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+});
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerAuth();
@@ -63,7 +66,6 @@ var app = builder.Build();
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
