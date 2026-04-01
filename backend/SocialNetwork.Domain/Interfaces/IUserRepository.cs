@@ -1,4 +1,5 @@
 ﻿using SocialNetwork.Domain.Entities.Users;
+using SocialNetwork.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,6 @@ namespace SocialNetwork.Domain.Interfaces
         public Task<User?> GetByEmailAsync(string Email, CancellationToken cancellationToken = default);
 
         public Task<User?> GetByUserNameAsync(string UserName, CancellationToken cancellationToken = default);
-
+        public Task<IEnumerable<User>> GetUsersByRoleAsync(UserRole role, CancellationToken cancellationToken = default);
     }
 }
