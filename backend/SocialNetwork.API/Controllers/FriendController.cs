@@ -32,6 +32,21 @@ namespace SocialNetwork.API.Controllers
             return Ok(friends);
         }
 
+        [HttpGet("user/{userId:guid}")]
+        public async Task<IActionResult> GetUserFriends(Guid userId, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var friends = await _friendService.GetFriendsOfUser(userId, cancellationToken);
+                return Ok(friends);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting friends for user {UserId}", userId);
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
         [Authorize]
         [HttpGet("PendingRequests")]
         public async Task<IActionResult> GetPendingFriendRequests(CancellationToken cancellationToken = default)

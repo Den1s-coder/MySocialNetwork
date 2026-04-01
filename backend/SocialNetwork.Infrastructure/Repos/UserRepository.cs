@@ -56,7 +56,7 @@ namespace SocialNetwork.Infrastructure.Repos
                 .FirstOrDefaultAsync(u => u.Id == id, cancellationToken);
         }
 
-        public Task<User?> GetByUserNameAsync(string UserName, CancellationToken cancellationToken = default)
+        public Task<User?> GetByUserNameAsync(string userName, CancellationToken cancellationToken = default)
         {
             return _context.Users
                 .AsNoTracking()
@@ -65,13 +65,8 @@ namespace SocialNetwork.Infrastructure.Repos
 
         public async Task UpdateAsync(User updatedUser, CancellationToken cancellationToken = default)
         {
-            var lowerQuery = query.ToLower();
-            var searchQuery = _context.Users
-                .AsNoTracking()
-                .Where(u => !u.IsBanned && 
-                    (u.Name.ToLower().Contains(lowerQuery) || 
-                     u.Email.ToLower().Contains(lowerQuery)))
-                .OrderBy(u => u.Name);
+            var existingUser = await _context.Users
+                .FirstOrDefaultAsync(u => u.Id == updatedUser.Id, cancellationToken);
 
             var total = await searchQuery.CountAsync(cancellationToken);
             var items = await searchQuery
@@ -95,12 +90,12 @@ namespace SocialNetwork.Infrastructure.Repos
             existingUser.ProfilePictureUrl = updatedUser.ProfilePictureUrl;
             existingUser.IsBanned = updatedUser.IsBanned;
 
-            if(!string.IsNullOrEmpty(updatedUser.PasswordHash))
+            if (!string.IsNullOrEmpty(updatedUser.PasswordHash))
             {
                 existingUser.PasswordHash = updatedUser.PasswordHash;
             }
 
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellationToken);
         }
 
         public async Task<IEnumerable<User>> GetUsersByRoleAsync(UserRole role, CancellationToken cancellationToken = default)
