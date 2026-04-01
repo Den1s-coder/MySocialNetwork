@@ -118,10 +118,8 @@ namespace SocialNetwork.Application.Service
 
         public async Task<IEnumerable<UserDto>> GetUsersByRoleAsync(UserRole role, CancellationToken cancellationToken = default)
         {
-            var users = await _userRepository.GetAllAsync();
-            var usersByRole = users.Where(u => u.Role == role);
-
-            return _mapper.Map<IEnumerable<UserDto>>(usersByRole);
+            var users = await _userRepository.GetUsersByRoleAsync(role, cancellationToken);
+            return _mapper.Map<IEnumerable<UserDto>>(users);
         }
 
         public async Task UpdateProfileAsync(UserDto updatedUserDto, CancellationToken cancellationToken = default)

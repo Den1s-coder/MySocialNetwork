@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SocialNetwork.Domain.Entities.Users;
+using SocialNetwork.Domain.Enums;
 
 namespace SocialNetwork.Infrastructure.Repos
 {
@@ -72,6 +73,14 @@ namespace SocialNetwork.Infrastructure.Repos
             }
 
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<IEnumerable<User>> GetUsersByRoleAsync(UserRole role, CancellationToken cancellationToken = default)
+        {
+            return await _context.Users
+                .AsNoTracking()
+                .Where(u => u.Role == role)
+                .ToListAsync(cancellationToken);
         }
     }
 }
