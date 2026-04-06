@@ -10,9 +10,9 @@ using SocialNetwork.Infrastructure.Configurations;
 
 namespace SocialNetwork.Infrastructure
 {
-    public class SocialDbContext:DbContext
+    public class SocialDbContext: DbContext
     {
-        public SocialDbContext(DbContextOptions<SocialDbContext> options):base(options)
+        public SocialDbContext(DbContextOptions<SocialDbContext> options): base(options)
         {
 
         }

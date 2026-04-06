@@ -13,5 +13,6 @@ namespace SocialNetwork.Application.DTO.Users
         public string Email { get; set; }
         public string? ProfilePictureUrl { get; set; }
         public bool IsBanned { get; set; } = false;
+        public string Role { get; set; } = "User";
     }
 }
