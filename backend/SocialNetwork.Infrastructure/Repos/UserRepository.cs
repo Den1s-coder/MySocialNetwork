@@ -68,20 +68,6 @@ namespace SocialNetwork.Infrastructure.Repos
             var existingUser = await _context.Users
                 .FirstOrDefaultAsync(u => u.Id == updatedUser.Id, cancellationToken);
 
-            var total = await searchQuery.CountAsync(cancellationToken);
-            var items = await searchQuery
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
-                .ToListAsync(cancellationToken);
-
-            return (items, total);
-        }
-
-        public async Task UpdateAsync(User updatedUser, CancellationToken cancellationToken = default)
-        {
-            var existingUser = await _context.Users
-                .FirstOrDefaultAsync(u => u.Id == updatedUser.Id, cancellationToken);
-
             if (existingUser == null)
                 throw new ArgumentException("User not found");
 
@@ -89,12 +75,12 @@ namespace SocialNetwork.Infrastructure.Repos
             existingUser.Email = updatedUser.Email;
             existingUser.ProfilePictureUrl = updatedUser.ProfilePictureUrl;
             existingUser.IsBanned = updatedUser.IsBanned;
+            existingUser.Role = updatedUser.Role;
 
             if (!string.IsNullOrEmpty(updatedUser.PasswordHash))
-            {
                 existingUser.PasswordHash = updatedUser.PasswordHash;
-            }
 
+            _context.Users.Update(existingUser);
             await _context.SaveChangesAsync(cancellationToken);
         }
 
