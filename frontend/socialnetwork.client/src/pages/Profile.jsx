@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import './Profile.css';
 import { authFetch } from '../hooks/authFetch';
+import RoleBadge from '../components/RoleBadge';
 
 const API_BASE = 'https://localhost:7142';
 const guidRegex = /^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$/;
@@ -191,7 +192,7 @@ export default function Profile() {
   };
 
   const sendFriendRequest = async () => {
-    if (!accessToken) { alert('Требуется авторізація'); return; }
+    if (!accessToken) { alert('Требуется авторизація'); return; }
     if (!profile?.id) return;
     try {
       const res = await authFetch(`${API_BASE}/api/Friend/SendFriendRequest`, {
@@ -285,7 +286,10 @@ export default function Profile() {
             ) : (
               <>
                 <div className="profile-name-section">
-                  <div className="profile-name">{profile.name ?? profile.userName}</div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                    <div className="profile-name">{profile.name ?? profile.userName}</div>
+                    <RoleBadge role={profile.role} />
+                  </div>
                   {isOwner && (
                     <button 
                       onClick={() => setIsEditingProfile(true)} 

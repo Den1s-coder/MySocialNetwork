@@ -83,6 +83,7 @@ export default function AdminPanel() {
     };
 
     if (roleLoading) return <div style={{ padding: '20px' }}>Завантаження…</div>;
+
     if (!isAdmin) return <div style={{ padding: '20px', color: 'red' }}>Доступ заборонений</div>;
 
     const filteredUsers = users.filter(u => {
