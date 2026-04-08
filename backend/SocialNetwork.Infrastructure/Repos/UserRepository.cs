@@ -68,18 +68,19 @@ namespace SocialNetwork.Infrastructure.Repos
             var existingUser = await _context.Users
                 .FirstOrDefaultAsync(u => u.Id == updatedUser.Id, cancellationToken);
 
-            if (existingUser == null) return;
+            if (existingUser == null)
+                throw new ArgumentException("User not found");
 
             existingUser.Name = updatedUser.Name;
             existingUser.Email = updatedUser.Email;
             existingUser.ProfilePictureUrl = updatedUser.ProfilePictureUrl;
             existingUser.IsBanned = updatedUser.IsBanned;
+            existingUser.Role = updatedUser.Role;
 
             if (!string.IsNullOrEmpty(updatedUser.PasswordHash))
-            {
                 existingUser.PasswordHash = updatedUser.PasswordHash;
-            }
 
+            _context.Users.Update(existingUser);
             await _context.SaveChangesAsync(cancellationToken);
         }
 
