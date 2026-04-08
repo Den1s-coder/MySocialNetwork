@@ -1,6 +1,4 @@
 ﻿import React from 'react';
-import { FiShield, FiFlag } from 'react-icons/fi';
-import { MdAdminPanelSettings } from 'react-icons/md';
 import './RoleBadge.css';
 
 export default function RoleBadge({ role }) {
@@ -13,19 +11,19 @@ export default function RoleBadge({ role }) {
       color: '#ff6b6b',
       backgroundColor: '#ffe0e0',
       label: 'Адмін',
-      icon: <MdAdminPanelSettings size={14} />
+      emoji: '🔴'
     },
     Moderator: {
       color: '#ffa940',
       backgroundColor: '#ffe7ba',
       label: 'Модератор',
-      icon: <FiFlag size={14} />
+      emoji: '🟠'
     },
     User: {
       color: '#52c41a',
       backgroundColor: '#f6ffed',
       label: 'Користувач',
-      icon: <FiShield size={14} />
+      emoji: '🟢'
     }
   };
 
@@ -42,7 +40,7 @@ export default function RoleBadge({ role }) {
       color: '#999',
       backgroundColor: '#f0f0f0',
       label: normalizedRole,
-      icon: <FiShield size={14} />
+      emoji: '⚪'
     };
   }
 
@@ -51,14 +49,10 @@ export default function RoleBadge({ role }) {
       className="role-badge"
       style={{
         color: config.color,
-        backgroundColor: config.backgroundColor,
-        display: 'flex',
-        alignItems: 'center',
-        gap: '4px'
+        backgroundColor: config.backgroundColor
       }}
       title={`Роль: ${config.label}`}
     >
-      {config.icon}
       {config.label}
     </span>
   );

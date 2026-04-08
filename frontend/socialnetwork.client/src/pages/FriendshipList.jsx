@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { authFetch } from "../hooks/authFetch";
 import Avatar from "../components/Avatar";
+import RoleBadge from "../components/RoleBadge";
 
 const API_BASE = "https://localhost:7142";
 
@@ -51,6 +52,7 @@ export default function FriendshipList() {
                         avatar: requester?.profilePictureUrl ?? null,
                         status: "pending",
                         requestedAt: fr.requestedAt ?? fr.RequestedAt,
+                        role: requester?.role ?? "User",
                     };
                 })
             );
@@ -68,7 +70,6 @@ export default function FriendshipList() {
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
             const data = await res.json();
 
-            // API повертає UserDto об'єкти напрямо
             const items = (Array.isArray(data) ? data : []).map((user) => ({
                 id: `friend-${user.id}`,
                 friendshipId: user.id,
@@ -77,6 +78,7 @@ export default function FriendshipList() {
                 email: user.email ?? "-",
                 avatar: user.profilePictureUrl ?? null,
                 status: "accepted",
+                role: user.role ?? "User",
             }));
 
             setFriends(items);
@@ -207,7 +209,10 @@ export default function FriendshipList() {
             >
                 <Avatar url={it.avatar} name={it.displayName} size={48} />
                 <div>
-                    <div style={{ fontWeight: 600 }}>{it.displayName}</div>
+                    <div style={{ fontWeight: 600, display: "flex", alignItems: "center", gap: 8 }}>
+                        {it.displayName}
+                        <RoleBadge role={it.role} />
+                    </div>
                     <div style={{ fontSize: 12, color: "#666" }}>{it.email}</div>
                     <div style={{ fontSize: 12, color: "#888" }}>
                         Статус: {isRequest ? "Заявка" : it.status}
