@@ -93,6 +93,33 @@ namespace SocialNetwork.API.Hubs
             }
         }
 
+        public async Task NotifyUserAdded(Guid chatId, Guid addedUserId, string userName)
+        {
+            try
+            {
+                _logger.LogInformation("User {UserName} (ID: {UserId}) added to chat {ChatId}", userName, addedUserId, chatId);
+
+                var systemMessage = new Message
+                {
+                    Id = Guid.NewGuid(),
+                    ChatId = chatId,
+                    SenderId = Guid.Empty, 
+                    Content = $"{userName} присоединился к чату",
+                    SentAt = DateTime.UtcNow
+                };
+
+                await _messageRepository.CreateAsync(systemMessage);
+                var messageDto = _mapper.Map<MessageDto>(systemMessage);
+
+                await Clients.Group(chatId.ToString()).SendAsync("ReceiveMessage", messageDto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "NotifyUserAdded: Error notifying user addition to chat {ChatId}", chatId);
+                throw;
+            }
+        }
+
         public override async Task OnConnectedAsync()
         {
             var connectionId = Context.ConnectionId;
