@@ -2,8 +2,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
-using SocialNetwork.Application.DTO;
+using SocialNetwork.Application.DTO.Chats;
 using SocialNetwork.Domain.Entities;
+using SocialNetwork.Domain.Entities.Chats;
 using SocialNetwork.Domain.Interfaces;
 using SocialNetwork.Infrastructure;
 using System.Runtime.CompilerServices;
@@ -88,6 +89,33 @@ namespace SocialNetwork.API.Hubs
             catch (Exception ex)
             {
                 _logger.LogError(ex, "SendMessage: Error sending message to chat {ChatId}", chatId);
+                throw;
+            }
+        }
+
+        public async Task NotifyUserAdded(Guid chatId, Guid addedUserId, string userName)
+        {
+            try
+            {
+                _logger.LogInformation("User {UserName} (ID: {UserId}) added to chat {ChatId}", userName, addedUserId, chatId);
+
+                var systemMessage = new Message
+                {
+                    Id = Guid.NewGuid(),
+                    ChatId = chatId,
+                    SenderId = Guid.Empty, 
+                    Content = $"{userName} присоединился к чату",
+                    SentAt = DateTime.UtcNow
+                };
+
+                await _messageRepository.CreateAsync(systemMessage);
+                var messageDto = _mapper.Map<MessageDto>(systemMessage);
+
+                await Clients.Group(chatId.ToString()).SendAsync("ReceiveMessage", messageDto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "NotifyUserAdded: Error notifying user addition to chat {ChatId}", chatId);
                 throw;
             }
         }

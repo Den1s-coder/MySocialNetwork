@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { authFetch } from '../hooks/authFetch';
 
 const API_BASE = 'https://localhost:7142';
 
@@ -14,10 +15,10 @@ export default function NewPost() {
         setStatus('loading');
         setError(null);
         try {
-            const token = localStorage.getItem('token');
+            const token = localStorage.getItem('accessToken');
             if (!token) throw new Error('Необхідна авторизація');
 
-            const res = await fetch(`${API_BASE}/api/Post`, {
+            const res = await authFetch(`${API_BASE}/api/Post`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -32,7 +33,7 @@ export default function NewPost() {
             }
 
             setStatus('success');
-            navigate('/profile'); // або на '/', за бажанням
+            navigate('/profile');
         } catch (err) {
             setError(err.message || 'Помилка створення поста');
             setStatus('error');

@@ -1,5 +1,6 @@
-﻿using SocialNetwork.Application.DTO;
+﻿using SocialNetwork.Application.DTO.Users;
 using SocialNetwork.Domain.Entities;
+using SocialNetwork.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,11 +11,16 @@ namespace SocialNetwork.Application.Interfaces
 {
     public interface IUserService
     {
-        public Task<IEnumerable<UserDto>> GetAllUsersAsync();
-        public Task<UserDto> GetByIdAsync(Guid id);
-        public Task BanUser(Guid id);
-        public Task<UserDto> GetUserByEmailAsync(string email);
-        public Task<UserDto> GetUserByNameAsync(string name);
-        public Task UpdateProfileAsync(UserDto updatedUserDto);
+        public Task<IEnumerable<UserDto>> GetAllUsersAsync(CancellationToken cancellationToken = default);
+        public Task<UserDto> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
+        public Task BanUser(Guid id, CancellationToken cancellationToken = default);
+        public Task<UserDto> GetUserByEmailAsync(string email, CancellationToken cancellationToken = default);
+        public Task<UserDto> GetUserByNameAsync(string name, CancellationToken cancellationToken = default);
+        public Task UpdateProfileAsync(UserDto updatedUserDto, CancellationToken cancellationToken = default);
+        public Task ChangePasswordAsync(Guid userId, ChangePasswordDto changePasswordDto, CancellationToken cancellationToken = default);
+        public Task ChangeEmailAsync(Guid userId, ChangeEmailDto changeEmailDto, CancellationToken cancellationToken = default);
+        public Task ChangeUserRoleAsync(Guid userId, UserRole newRole, CancellationToken cancellationToken = default);
+        public Task<UserRole> GetUserRoleAsync(Guid userId, CancellationToken cancellationToken = default);
+        public Task<IEnumerable<UserDto>> GetUsersByRoleAsync(UserRole role, CancellationToken cancellationToken = default);
     }
 }

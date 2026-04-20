@@ -2,8 +2,9 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using SocialNetwork.Application.DTO;
+using SocialNetwork.Application.DTO.Users;
 using SocialNetwork.Application.Interfaces;
+using SocialNetwork.Domain.Enums;
 using System.Security.Claims;
 
 namespace SocialNetwork.API.Controllers
@@ -21,17 +22,17 @@ namespace SocialNetwork.API.Controllers
         }
 
         [HttpGet("users")]
-        public async Task<IActionResult> GetAllUsers()
+        public async Task<IActionResult> GetAllUsers(CancellationToken cancellationToken = default)
         {
-            var usersDto = await _userService.GetAllUsersAsync();
+            var usersDto = await _userService.GetAllUsersAsync(cancellationToken);
 
             return Ok(usersDto);
         }
-        
+
         [HttpGet("users/{id:guid}")]
-        public async Task<IActionResult> GetById(Guid id)
+        public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken = default)
         {
-            var userDto = await _userService.GetByIdAsync(id);
+            var userDto = await _userService.GetByIdAsync(id, cancellationToken);
 
             if (userDto == null) return NotFound();
 
@@ -39,9 +40,9 @@ namespace SocialNetwork.API.Controllers
         }
 
         [HttpGet("users/by-email")]
-        public async Task<IActionResult> GetByEmail([FromQuery] string email)
+        public async Task<IActionResult> GetByEmail([FromQuery] string email, CancellationToken cancellationToken = default)
         {
-            var userDto = await _userService.GetUserByEmailAsync(email);
+            var userDto = await _userService.GetUserByEmailAsync(email, cancellationToken);
             if (userDto == null)
             {
                 return NotFound();
@@ -50,18 +51,18 @@ namespace SocialNetwork.API.Controllers
         }
 
         [HttpGet("users/by-username")]
-        public async Task<IActionResult> GetByUserName([FromQuery] string username)
+        public async Task<IActionResult> GetByUserName([FromQuery] string username, CancellationToken cancellationToken = default)
         {
-            var userDto = await _userService.GetUserByNameAsync(username);
+            var userDto = await _userService.GetUserByNameAsync(username, cancellationToken);
 
             if (userDto == null) return NotFound();
-            
+
             return Ok(userDto);
         }
 
         [Authorize]
         [HttpGet("profile")]
-        public async Task<IActionResult> GetProfile()
+        public async Task<IActionResult> GetProfile(CancellationToken cancellationToken = default)
         {
             var sid = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Sid)?.Value;
             if (string.IsNullOrEmpty(sid) || !Guid.TryParse(sid, out var userId))
@@ -70,7 +71,7 @@ namespace SocialNetwork.API.Controllers
                 return Unauthorized();
             }
 
-            var userDto = await _userService.GetByIdAsync(userId);
+            var userDto = await _userService.GetByIdAsync(userId, cancellationToken);
             if (userDto == null)
             {
                 _logger.LogWarning("GetProfile: user not found {UserId}", userId);
@@ -82,14 +83,64 @@ namespace SocialNetwork.API.Controllers
 
         [Authorize]
         [HttpPut("profile")]
-        public async Task<IActionResult> UpdateProfile([FromBody] UserDto updatedUserDto)
+        public async Task<IActionResult> UpdateProfile([FromBody] UserDto updatedUserDto, CancellationToken cancellationToken = default)
         {
             var UserIdClaim = Guid.Parse(User.Claims.First(c => c.Type == ClaimTypes.Sid).Value);
-            
+
             updatedUserDto.Id = UserIdClaim;
 
-            await _userService.UpdateProfileAsync(updatedUserDto);
+            await _userService.UpdateProfileAsync(updatedUserDto, cancellationToken);
             return Ok();
+        }
+
+        [Authorize]
+        [HttpPost("change-password")]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto changePasswordDto, CancellationToken cancellationToken = default)
+        {
+            var UserIdClaim = Guid.Parse(User.Claims.First(c => c.Type == ClaimTypes.Sid).Value);
+            await _userService.ChangePasswordAsync(UserIdClaim, changePasswordDto, cancellationToken);
+            return Ok();
+        }
+
+        [Authorize]
+        [HttpPost("change-email")]
+        public async Task<IActionResult> ChangeEmail([FromBody] ChangeEmailDto changeEmailDto, CancellationToken cancellationToken = default)
+        {
+            var UserIdClaim = Guid.Parse(User.Claims.First(c => c.Type == ClaimTypes.Sid).Value);
+            await _userService.ChangeEmailAsync(UserIdClaim, changeEmailDto, cancellationToken);
+            return Ok();
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPost("users/{userId:guid}/role")]
+        public async Task<IActionResult> ChangeUserRole(
+            Guid userId, 
+            [FromBody] ChangeUserRoleRequest request,
+            CancellationToken cancellationToken = default)
+        {
+            if (!Enum.TryParse<UserRole>(request.NewRole, out var userRole))
+            {
+                return BadRequest($"Невалідна роль: {request.NewRole}");
+            }
+
+            await _userService.ChangeUserRoleAsync(userId, userRole, cancellationToken);
+            return Ok();
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPost("users/{userId:guid}/ban")]
+        public async Task<IActionResult> BanUser(Guid userId, CancellationToken cancellationToken = default)
+        {
+            await _userService.BanUser(userId, cancellationToken);
+            return Ok();
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpGet("users/by-role")]
+        public async Task<IActionResult> GetUsersByRole([FromQuery] UserRole role, CancellationToken cancellationToken = default)
+        {
+            var usersDto = await _userService.GetUsersByRoleAsync(role, cancellationToken);
+            return Ok(usersDto);
         }
     }
 }

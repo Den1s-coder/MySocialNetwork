@@ -136,10 +136,4 @@
     <PackageReference Include="Xamarin.Essentials" Version="1.7.0" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
-  <ItemGroup>
-    <ProjectReference Include="..\SocialNetwork.mobile\SocialNetwork.mobile.csproj">
-      <Project>{82BF6E3F-479A-4504-A6A9-0FB5AD87E652}</Project>
-      <Name>SocialNetwork.mobile</Name>
-    </ProjectReference>
-  </ItemGroup>
 </Project>

@@ -1,24 +1,78 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:selectors="clr-namespace:SocialNetwork.mobile.Selectors"
+             xmlns:dto="clr-namespace:SocialNetwork.mobile.DTO"
              x:Class="SocialNetwork.mobile.Views.ChatDetailPage"
              Title="Chat">
-    <StackLayout Padding="10">
-        <CollectionView ItemsSource="{Binding Messages}" SelectionMode="None">
-            <CollectionView.ItemTemplate>
-                <DataTemplate>
-                    <StackLayout Padding="8">
-                        <Label Text="{Binding SenderName}" FontAttributes="Bold" />
-                        <Label Text="{Binding Content}" />
-                        <Label Text="{Binding SentAt}" FontSize="12" TextColor="Gray" />
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+
+            <DataTemplate x:Key="LeftTemplate">
+                <Grid Padding="10,5,60,5" x:DataType="dto:MessageDto">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <StackLayout Grid.Column="0" VerticalOptions="End">
+                        <Label Text="{Binding SenderName}" FontSize="10" TextColor="Gray" LineBreakMode="TailTruncation" WidthRequest="50"/>
                     </StackLayout>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
+
+                    <Frame Grid.Column="1" 
+                           HorizontalOptions="Start" 
+                           BackgroundColor="#e9ecef" 
+                           CornerRadius="15" 
+                           HasShadow="False" 
+                           Padding="12">
+                        <StackLayout Spacing="2">
+                            <Label Text="{Binding Content}" LineBreakMode="WordWrap" TextColor="Black" FontSize="16" />
+                            <Label Text="{Binding SentAt, StringFormat='{0:HH:mm}'}" FontSize="10" TextColor="Gray" HorizontalOptions="End" />
+                        </StackLayout>
+                    </Frame>
+                </Grid>
+            </DataTemplate>
+
+            <DataTemplate x:Key="RightTemplate">
+                <Grid Padding="60,5,10,5" x:DataType="dto:MessageDto">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <Frame Grid.Column="0" BackgroundColor="#007bff" CornerRadius="15" HasShadow="False" Padding="12" HorizontalOptions="End">
+                        <StackLayout Spacing="2">
+                            <Label Text="{Binding Content}" LineBreakMode="WordWrap" TextColor="White" FontSize="16" />
+                            <Label Text="{Binding SentAt, StringFormat='{0:HH:mm}'}" FontSize="10" TextColor="#E0E0E0" HorizontalOptions="End" />
+                        </StackLayout>
+                    </Frame>
+                </Grid>
+            </DataTemplate>
+
+            <selectors:MessageTemplateSelector x:Key="MessageTemplateSelector"
+                                               LeftTemplate="{StaticResource LeftTemplate}"
+                                               RightTemplate="{StaticResource RightTemplate}" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="*, Auto" RowSpacing="0" BackgroundColor="White">
+
+        <CollectionView x:Name="MessagesList"
+                        Grid.Row="0"
+                        ItemsSource="{Binding Messages}"
+                        ItemTemplate="{StaticResource MessageTemplateSelector}"
+                        ItemsUpdatingScrollMode="KeepLastItemInView"
+                        SelectionMode="None"
+                        VerticalOptions="FillAndExpand">
         </CollectionView>
 
-        <StackLayout Orientation="Horizontal">
-            <Entry Text="{Binding NewMessage}" HorizontalOptions="FillAndExpand" />
-            <Button Text="Send" Command="{Binding SendCommand}" />
-        </StackLayout>
-    </StackLayout>
+        <Grid Grid.Row="1" ColumnDefinitions="*, Auto" Padding="10" BackgroundColor="#F0F0F0">
+            <Frame Grid.Column="0" Padding="10,0" CornerRadius="20" BackgroundColor="White" HasShadow="False" BorderColor="#DDD">
+                <Entry Text="{Binding NewMessage}" Placeholder="Введіть повідомлення..." BackgroundColor="Transparent" />
+            </Frame>
+            <Button Grid.Column="1" Text="Send" Command="{Binding SendCommand}" Margin="10,0,0,0" CornerRadius="20" HeightRequest="40" />
+        </Grid>
+
+    </Grid>
 </ContentPage>
