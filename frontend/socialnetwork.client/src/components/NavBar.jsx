@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { authFetch } from '../hooks/authFetch';
 import NotificationBell from './NotificationBell';
+import ThemeToggle from './ThemeToggle';
 import { useUserRole } from '../hooks/useUserRole';
 import './NavBar.css';
 
@@ -80,6 +81,8 @@ export default function NavBar() {
                                     <NotificationBell apiBase="https://localhost:7142" />
                                 </div>
 
+                                <ThemeToggle />
+
                                 <div className="avatar-wrapper" ref={avatarRef}>
                                     <button
                                         className="clickable-area"
@@ -126,6 +129,7 @@ export default function NavBar() {
                             </>
                         ) : (
                             <>
+                                <ThemeToggle />
                                 <Link to="/login">Увійти</Link>
                                 <Link to="/register">Зареєструватися</Link>
                             </>

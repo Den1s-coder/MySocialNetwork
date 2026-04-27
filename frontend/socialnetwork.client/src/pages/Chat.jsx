@@ -6,6 +6,7 @@ import { authFetch } from '../hooks/authFetch';
 import Avatar from '../components/Avatar';
 import ReactionBar from '../components/ReactionBar';
 import AddUsersToChatModal from '../components/AddUsersToChatModal';
+import './Chat.css';
 
 const BASE_URL = 'https://localhost:7142';
 const API_BASE = 'https://localhost:7142';
@@ -196,42 +197,29 @@ export default function Chat() {
 
     return (
         <>
-            <div style={{ maxWidth: 1200, margin: '24px auto', padding: '0 12px', display: 'flex', gap: 16 }}>
-                <div style={{ flex: 1 }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div className="chat-container">
+                <div className="chat-main">
+                    <div className="chat-header">
+                        <div className="chat-title-wrapper">
                             <Avatar url={chatAvatar} name={chatTitle} />
-                            <h2 style={{ margin: 0 }}>{chatTitle ? `Чат з ${chatTitle}` : `Чат ${chatId}`}</h2>
+                            <h2>{chatTitle ? `Чат з ${chatTitle}` : `Чат ${chatId}`}</h2>
                         </div>
-                        <div style={{ display: 'flex', gap: 8 }}>
+                        <div className="chat-header-buttons">
                             <button 
                                 onClick={() => setShowParticipants(!showParticipants)}
-                                style={{ 
-                                    padding: '8px 12px', 
-                                    background: '#6c757d', 
-                                    color: 'white', 
-                                    border: 'none', 
-                                    borderRadius: 4,
-                                    cursor: 'pointer'
-                                }}
+                                className="chat-btn chat-btn--secondary"
                             >
                                 {showParticipants ? '← Приховати' : '→ Учасники'}
                             </button>
-                            <button onClick={() => navigate('/chats')} style={{ padding: '8px 12px' }}>← До списку чатів</button>
+                            <button onClick={() => navigate('/chats')} className="chat-btn chat-btn--secondary">
+                                ← До списку чатів
+                            </button>
                         </div>
                     </div>
 
-                    <div style={{
-                        height: 400,
-                        border: '1px solid #ddd',
-                        borderRadius: 8,
-                        padding: 16,
-                        overflowY: 'auto',
-                        marginBottom: 16,
-                        background: '#f9f9f9'
-                    }}>
+                    <div className="chat-messages">
                         {messages.length === 0 ? (
-                            <p style={{ color: '#666', textAlign: 'center' }}>Повідомлень поки немає</p>
+                            <p className="chat-empty">Повідомлень поки немає</p>
                         ) : (
                             messages.map(m => {
                                 const isCurrentUser = String(m.senderId).toLowerCase() === String(currentUserId).toString().toLowerCase();
@@ -239,32 +227,14 @@ export default function Chat() {
                                 return (
                                     <div
                                         key={m.id ?? `${m.chatId}-${m.sentAt}-${m.senderId}`}
-                                        style={{
-                                            marginBottom: 12,
-                                            display: 'flex',
-                                            justifyContent: isCurrentUser ? 'flex-end' : 'flex-start',
-                                            alignItems: 'flex-end',
-                                            gap: 8
-                                        }}
+                                        className={`chat-message ${isCurrentUser ? 'chat-message--sent' : 'chat-message--received'}`}
                                     >
                                         {!isCurrentUser && <Avatar url={m.senderProfilePictureUrl} name={m.senderName} size={36} />}
-                                        <div style={{ maxWidth: '70%' }}>
-                                            <div style={{
-                                                fontSize: 12,
-                                                color: '#666',
-                                                marginBottom: 4,
-                                                textAlign: isCurrentUser ? 'right' : 'left'
-                                            }}>
+                                        <div className="chat-message-content">
+                                            <div className="chat-message-meta">
                                                 {isCurrentUser ? currentUserName : m.senderName || m.senderId} • {new Date(m.sentAt).toLocaleString()}
                                             </div>
-                                            <div style={{
-                                                background: isCurrentUser ? '#007bff' : '#e9ecef',
-                                                color: isCurrentUser ? 'white' : 'black',
-                                                padding: 8,
-                                                borderRadius: 8,
-                                                display: 'inline-block',
-                                                wordWrap: 'break-word'
-                                            }}>
+                                            <div className={`chat-message-bubble ${isCurrentUser ? 'chat-message-bubble--sent' : 'chat-message-bubble--received'}`}>
                                                 {m.content}
                                             </div>
                                             <ReactionBar 
@@ -291,17 +261,17 @@ export default function Chat() {
                         )}
                     </div>
 
-                    <form onSubmit={handleSend} style={{ display: 'flex', gap: 8 }}>
+                    <form onSubmit={handleSend} className="chat-input-form">
                         <input
                             value={text}
                             onChange={e => setText(e.target.value)}
                             placeholder="Введіть повідомлення..."
-                            style={{ flex: 1, padding: 8, border: '1px solid #ddd', borderRadius: 4 }}
+                            className="chat-input"
                         />
                         <button
                             type="submit"
                             disabled={!connected || !text.trim()}
-                            style={{ padding: '8px 16px', background: '#007bff', color: 'white', border: 'none', borderRadius: 4 }}
+                            className="chat-btn chat-btn--primary"
                         >
                             Відправити
                         </button>
@@ -309,40 +279,19 @@ export default function Chat() {
                 </div>
 
                 {showParticipants && (
-                    <div style={{
-                        width: 280,
-                        border: '1px solid #ddd',
-                        borderRadius: 8,
-                        padding: 16,
-                        background: '#f9f9f9',
-                        height: 'fit-content',
-                        maxHeight: 'calc(100vh - 120px)',
-                        overflowY: 'auto'
-                    }}>
-                        <h3 style={{ marginTop: 0, marginBottom: 16 }}>Учасники ({participants.length})</h3>
+                    <div className="chat-sidebar">
+                        <h3>Учасники ({participants.length})</h3>
                         
-                        <div style={{ marginBottom: 16 }}>
+                        <div className="chat-participants">
                             {participants.map(participant => (
-                                <div
-                                    key={participant.id}
-                                    style={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: 10,
-                                        padding: 10,
-                                        background: 'white',
-                                        borderRadius: 6,
-                                        marginBottom: 8,
-                                        border: '1px solid #e0e0e0'
-                                    }}
-                                >
+                                <div key={participant.id} className="chat-participant">
                                     <Avatar url={participant.pic} name={participant.name} size={32} />
-                                    <div style={{ flex: 1 }}>
-                                        <div style={{ fontWeight: 500, fontSize: 14 }}>
+                                    <div className="chat-participant-info">
+                                        <div className="chat-participant-name">
                                             {participant.name}
                                             {participant.id === String(currentUserId).toLowerCase() && ' (Ви)'}
                                         </div>
-                                        <div style={{ fontSize: 12, color: '#666' }}>
+                                        <div className="chat-participant-role">
                                             {getRoleName(participant.role)}
                                         </div>
                                     </div>
@@ -351,42 +300,17 @@ export default function Chat() {
                         </div>
 
                         {chatType !== 0 && (userRole === 0 || userRole === 1) && (
-                            <div style={{
-                                paddingTop: 16,
-                                borderTop: '1px solid #ddd',
-                                display: 'flex',
-                                flexDirection: 'column',
-                                gap: 10
-                            }}>
+                            <div className="chat-sidebar-actions">
                                 <button
                                     onClick={() => setShowAddUserModal(true)}
-                                    style={{
-                                        width: '100%',
-                                        padding: '10px 12px',
-                                        background: '#28a745',
-                                        color: 'white',
-                                        border: 'none',
-                                        borderRadius: 4,
-                                        cursor: 'pointer',
-                                        fontWeight: 'bold'
-                                    }}
+                                    className="chat-btn chat-btn--primary"
                                 >
                                     + Додати користувача
                                 </button>
                                 <button
                                     onClick={handleDeleteChat}
                                     disabled={deleting}
-                                    style={{
-                                        width: '100%',
-                                        padding: '10px 12px',
-                                        background: '#dc3545',
-                                        color: 'white',
-                                        border: 'none',
-                                        borderRadius: 4,
-                                        cursor: deleting ? 'not-allowed' : 'pointer',
-                                        fontWeight: 'bold',
-                                        opacity: deleting ? 0.6 : 1
-                                    }}
+                                    className="chat-btn chat-btn--danger"
                                 >
                                     {deleting ? 'Видалення...' : 'Видалити чат'}
                                 </button>

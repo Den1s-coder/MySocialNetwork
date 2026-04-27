@@ -1,5 +1,6 @@
 ﻿import { useState } from 'react';
 import { authFetch } from '../hooks/authFetch';
+import './ReactionBar.css';
 
 const API_BASE = 'https://localhost:7142';
 
@@ -53,7 +54,7 @@ export default function ReactionBar({ reactions = [], currentUserReactionCode, e
     };
 
     return (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap', marginTop: 8 }}>
+        <div className="reaction-bar">
             {reactions.filter(r => r.count > 0).map(r => (
                 <button
                     key={r.code}
@@ -64,54 +65,32 @@ export default function ReactionBar({ reactions = [], currentUserReactionCode, e
                     }}
                     disabled={!authed || sending || isOwnContent}
                     title={isOwnContent ? 'Не можна ставити реакції на свій контент' : r.code}
-                    style={{
-                        display: 'inline-flex', alignItems: 'center', gap: 4,
-                        padding: '4px 8px', border: '1px solid',
-                        borderColor: currentUserReactionCode === r.code ? '#4a90d9' : '#ddd',
-                        background: currentUserReactionCode === r.code ? '#e8f0fe' : '#f9f9f9',
-                        borderRadius: 16, cursor: (authed && !isOwnContent) ? 'pointer' : 'default',
-                        fontSize: 14, lineHeight: 1,
-                        opacity: isOwnContent ? 0.6 : 1,
-                    }}
+                    className={`reaction-button ${currentUserReactionCode === r.code ? 'reaction-button--active' : ''} ${isOwnContent ? 'reaction-button--disabled' : ''}`}
                 >
-                    <span>{r.symbol}</span>
-                    <span style={{ fontSize: 12, color: '#555' }}>{r.count}</span>
+                    <span className="reaction-symbol">{r.symbol}</span>
+                    <span className="reaction-count">{r.count}</span>
                 </button>
             ))}
 
             {authed && !isOwnContent && (
-                <div style={{ position: 'relative' }}>
+                <div className="reaction-picker-container">
                     <button
                         onClick={() => setPickerOpen(o => !o)}
                         disabled={sending}
-                        style={{
-                            width: 32, height: 32, borderRadius: '50%',
-                            border: '1px solid #ddd', background: '#f9f9f9',
-                            cursor: 'pointer', fontSize: 16, lineHeight: 1,
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        }}
+                        className="reaction-add-btn"
                         title="Додати реакцію"
                     >
                         +
                     </button>
 
                     {pickerOpen && (
-                        <div style={{
-                            position: 'absolute', bottom: '110%', left: 0, zIndex: 10,
-                            display: 'flex', gap: 4, padding: 6,
-                            background: '#fff', border: '1px solid #ddd',
-                            borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-                        }}>
+                        <div className="reaction-picker">
                             {REACTION_TYPES.map(rt => (
                                 <button
                                     key={rt.id}
                                     onClick={() => toggleReaction(rt.id, rt.code)}
                                     disabled={sending}
-                                    style={{
-                                        fontSize: 20, background: 'none', border: 'none',
-                                        cursor: 'pointer', padding: 4, borderRadius: 4,
-                                        outline: currentUserReactionCode === rt.code ? '2px solid #4a90d9' : 'none',
-                                    }}
+                                    className={`reaction-picker-item ${currentUserReactionCode === rt.code ? 'reaction-picker-item--active' : ''}`}
                                     title={rt.code}
                                 >
                                     {rt.symbol}

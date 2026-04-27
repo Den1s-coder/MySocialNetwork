@@ -1,0 +1,156 @@
+.reaction-bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+    transition: all 0.3s ease;
+}
+
+.reaction-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    border: 1px solid;
+    border-color: var(--border-light);
+    background: var(--surface);
+    border-radius: 16px;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1;
+    transition: all 0.2s ease;
+    color: var(--text-primary);
+    box-shadow: none;
+}
+
+.reaction-button:hover:not(:disabled) {
+    background: var(--hover-bg);
+    border-color: var(--primary-color);
+    transform: translateY(-1px);
+}
+
+.reaction-button:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.reaction-button--active {
+    border-color: var(--primary-color);
+    background: rgba(255, 139, 102, 0.1);
+    font-weight: 600;
+}
+
+.reaction-button--active:hover:not(:disabled) {
+    background: rgba(255, 139, 102, 0.15);
+}
+
+.reaction-button--disabled {
+    opacity: 0.6;
+    cursor: default;
+}
+
+.reaction-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.reaction-symbol {
+    display: inline-block;
+    font-size: 16px;
+}
+
+.reaction-count {
+    font-size: 12px;
+    color: var(--text-secondary);
+    transition: color 0.3s ease;
+}
+
+.reaction-picker-container {
+    position: relative;
+}
+
+.reaction-add-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid var(--border-light);
+    background: var(--surface);
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    color: var(--text-primary);
+    box-shadow: none;
+}
+
+.reaction-add-btn:hover:not(:disabled) {
+    background: var(--hover-bg);
+    border-color: var(--primary-color);
+    transform: scale(1.1);
+}
+
+.reaction-add-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.reaction-picker {
+    position: absolute;
+    bottom: 110%;
+    left: 0;
+    z-index: 10;
+    display: flex;
+    gap: 4px;
+    padding: 6px;
+    background: var(--surface);
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+    box-shadow: var(--shadow-md);
+    animation: slideUp 0.2s ease-out;
+    transition: all 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.reaction-picker-item {
+    font-size: 20px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    outline: none;
+    transition: all 0.2s ease;
+    box-shadow: none;
+}
+
+.reaction-picker-item:hover {
+    background: var(--hover-bg);
+    transform: scale(1.2);
+}
+
+.reaction-picker-item:active {
+    transform: scale(0.95);
+}
+
+.reaction-picker-item--active {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+.reaction-picker-item:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}

@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { authFetch } from '../hooks/authFetch';
 import Avatar from '../components/Avatar';
+import './ChatList.css';
 
 const API_BASE = 'https://localhost:7142';
 
@@ -117,64 +118,41 @@ export default function ChatList() {
         return null;
     };
 
-    if (status === 'loading') return <p>Завантаження…</p>;
-    if (status === 'error') return <p>Помилка: {error}</p>;
-    if (!isAuthenticated) return <p>Авторизуйтесь для доступу до чатів</p>;
+    if (status === 'loading') return <p className="chatlist-loading">Завантаження…</p>;
+    if (status === 'error') return <p className="chatlist-error">Помилка: {error}</p>;
+    if (!isAuthenticated) return <p className="chatlist-auth">Авторизуйтесь для доступу до чатів</p>;
 
     return (
-        <div style={{ maxWidth: 800, margin: '24px auto', padding: '0 12px' }}>
+        <div className="chatlist-container">
             <h2>Мої чати</h2>
 
-            <div style={{ marginBottom: 32 }}>
+            <div className="chatlist-section">
                 <h3>Активні чати</h3>
                 {chats.length === 0 ? (
-                    <p>У вас поки немає чатів</p>
+                    <p className="chatlist-empty">У вас поки немає чатів</p>
                 ) : (
-                    <ul style={{ listStyle: 'none', padding: 0 }}>
+                    <ul className="chatlist-list">
                         {chats.map(chat => (
-                            <li key={chat.id} style={{ marginBottom: 8 }}>
-                                <Link
-                                    to={`/chat/${chat.id}`}
-                                    style={{
-                                        display: 'block',
-                                        padding: 12,
-                                        border: '1px solid #ddd',
-                                        borderRadius: 8,
-                                        textDecoration: 'none',
-                                        color: 'inherit'
-                                    }}
-                                >
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                            <li key={chat.id} className="chatlist-item">
+                                <Link to={`/chat/${chat.id}`} className="chatlist-link">
+                                    <div className="chatlist-item-header">
                                         <Avatar url={getChatAvatar(chat)} name={getChatTitle(chat)} />
-                                        <div style={{ fontWeight: 'bold' }}>
+                                        <div className="chatlist-item-title">
                                             {getChatTitle(chat)}
                                         </div>
                                     </div>
-                                    <div style={{ fontSize: 12, color: '#666', marginTop: 6 }}>
+                                    <div className="chatlist-item-type">
                                         Тип: {chat.type === 0 ? 'Приватний' : chat.type === 1 ? 'Група' : 'Канал'}
                                     </div>
 
                                     {chat.type === 1 && (
-                                        <div style={{ marginTop: 8 }}>
-                                            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                                                {normalizeParticipants(chat).map((p, idx) => (
-                                                    <div
-                                                        key={idx}
-                                                        style={{
-                                                            display: 'flex',
-                                                            alignItems: 'center',
-                                                            gap: 6,
-                                                            padding: 6,
-                                                            background: '#f5f5f5',
-                                                            borderRadius: 4,
-                                                            fontSize: 13
-                                                        }}
-                                                    >
-                                                        <Avatar url={p.profilePictureUrl} name={p.userName} size={24} />
-                                                        {p.userName}
-                                                    </div>
-                                                ))}
-                                            </div>
+                                        <div className="chatlist-participants">
+                                            {normalizeParticipants(chat).map((p, idx) => (
+                                                <div key={idx} className="chatlist-participant-tag">
+                                                    <Avatar url={p.profilePictureUrl} name={p.userName} size={24} />
+                                                    {p.userName}
+                                                </div>
+                                            ))}
                                         </div>
                                     )}
                                 </Link>
@@ -184,42 +162,25 @@ export default function ChatList() {
                 )}
             </div>
 
-            <div style={{ marginBottom: 32 }}>
+            <div className="chatlist-section">
                 <h3>Створити новий чат</h3>
                 <button
                     onClick={() => navigate('/create-group-chat')}
-                    style={{
-                        display: 'block',
-                        width: '100%',
-                        padding: 12,
-                        marginBottom: 12,
-                        background: '#28a745',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: 4,
-                        cursor: 'pointer',
-                        fontWeight: 'bold'
-                    }}
+                    className="chatlist-btn chatlist-btn--primary"
                 >
                     + Груповий чат
                 </button>
             </div>
 
-            <div>
+            <div className="chatlist-section">
                 <h3>Створити приватний чат</h3>
-                <p>Оберіть користувача для початку приватного чату:</p>
-                <div style={{ display: 'grid', gap: 8 }}>
+                <p className="chatlist-description">Оберіть користувача для початку приватного чату:</p>
+                <div className="chatlist-users">
                     {users.map(user => (
                         <button
                             key={user.id}
                             onClick={() => createPrivateChat(user.id)}
-                            style={{
-                                padding: 8,
-                                border: '1px solid #ddd',
-                                borderRadius: 4,
-                                background: 'white',
-                                cursor: 'pointer'
-                            }}
+                            className="chatlist-btn chatlist-btn--secondary"
                         >
                             {user.name} ({user.email})
                         </button>

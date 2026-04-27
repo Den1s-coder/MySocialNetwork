@@ -4,6 +4,7 @@ import { useAuth } from "../hooks/useAuth";
 import { authFetch } from "../hooks/authFetch";
 import Avatar from "../components/Avatar";
 import RoleBadge from "../components/RoleBadge";
+import './FriendshipList.css';
 
 const API_BASE = "https://localhost:7142";
 
@@ -182,39 +183,16 @@ export default function FriendshipList() {
     );
 
     const renderFriendItem = (it, actions, isRequest = false) => (
-        <li
-            key={`${it.status}-${it.friendshipId}`}
-            style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                padding: "12px",
-                borderBottom: "1px solid #eee",
-                borderRadius: "8px",
-                marginBottom: "8px",
-                backgroundColor: "#fafafa",
-                transition: "background-color 0.2s",
-            }}
-        >
-            <Link
-                to={`/user/${it.userId}`}
-                style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 12,
-                    flex: 1,
-                    textDecoration: "none",
-                    color: "inherit",
-                }}
-            >
+        <li key={`${it.status}-${it.friendshipId}`} className="friendship-item">
+            <Link to={`/user/${it.userId}`} className="friendship-user-link">
                 <Avatar url={it.avatar} name={it.displayName} size={48} />
-                <div>
-                    <div style={{ fontWeight: 600, display: "flex", alignItems: "center", gap: 8 }}>
+                <div className="friendship-user-info">
+                    <div className="friendship-user-name">
                         {it.displayName}
                         <RoleBadge role={it.role} />
                     </div>
-                    <div style={{ fontSize: 12, color: "#666" }}>{it.email}</div>
-                    <div style={{ fontSize: 12, color: "#888" }}>
+                    <div className="friendship-user-email">{it.email}</div>
+                    <div className="friendship-user-status">
                         Статус: {isRequest ? "Заявка" : it.status}
                     </div>
                 </div>
@@ -224,95 +202,50 @@ export default function FriendshipList() {
     );
 
     return (
-        <div style={{ padding: 20 }}>
+        <div className="friendship-container">
             <h2>Друзі та заявки</h2>
 
-            <div style={{ marginBottom: 12 }}>
+            <div className="friendship-search-section">
                 <input
                     placeholder="Пошук за ім'ям або email"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    style={{
-                        padding: 8,
-                        width: 320,
-                        borderRadius: "4px",
-                        border: "1px solid #ddd",
-                    }}
+                    className="friendship-search-input"
                 />
-                <button
-                    onClick={fetchAll}
-                    style={{
-                        marginLeft: 8,
-                        padding: "8px 12px",
-                        cursor: "pointer",
-                        borderRadius: "4px",
-                        border: "1px solid #ddd",
-                        backgroundColor: "#f5f5f5",
-                    }}
-                >
+                <button onClick={fetchAll} className="friendship-refresh-btn">
                     Оновити
                 </button>
             </div>
 
-            {loading && <div>Завантаження...</div>}
+            {loading && <div className="friendship-loading">Завантаження...</div>}
 
-            {error && (
-                <div
-                    style={{
-                        color: "red",
-                        marginBottom: 12,
-                        padding: "12px",
-                        backgroundColor: "#ffebee",
-                        borderRadius: "4px",
-                    }}
-                >
-                    Помилка: {error}
-                </div>
-            )}
+            {error && <div className="friendship-error">Помилка: {error}</div>}
 
             {!loading && filtered.length === 0 && (
-                <div style={{ color: "#999" }}>Список порожній.</div>
+                <div className="friendship-empty">Список порожній.</div>
             )}
 
             <h3>Заявки ({pending.length})</h3>
-            <ul style={{ listStyle: "none", padding: 0 }}>
+            <ul className="friendship-list">
                 {pending.length === 0 ? (
-                    <li style={{ padding: "12px", color: "#999" }}>Немає заявок</li>
+                    <li className="friendship-empty-item">Немає заявок</li>
                 ) : (
                     pending.map((it) =>
                         renderFriendItem(
                             it,
                             (
-                                <div style={{ display: "flex", gap: "8px" }}>
+                                <div className="friendship-actions">
                                     <button
                                         onClick={() => onAccept(it.friendshipId)}
                                         disabled={busyIds.has(String(it.friendshipId))}
-                                        style={{
-                                            padding: "6px 12px",
-                                            cursor: busyIds.has(String(it.friendshipId))
-                                                ? "not-allowed"
-                                                : "pointer",
-                                            opacity: busyIds.has(String(it.friendshipId)) ? 0.6 : 1,
-                                            borderRadius: "4px",
-                                            border: "1px solid #ddd",
-                                            backgroundColor: "#fff",
-                                        }}
+                                        className="friendship-btn friendship-btn--primary"
                                     >
                                         {busyIds.has(String(it.friendshipId)) ? "..." : "Прийняти"}
                                     </button>
                                     <button
                                         onClick={() => onDecline(it.friendshipId)}
                                         disabled={busyIds.has(String(it.friendshipId))}
-                                        style={{
-                                            padding: "6px 12px",
-                                            cursor: busyIds.has(String(it.friendshipId))
-                                                ? "not-allowed"
-                                                : "pointer",
-                                            opacity: busyIds.has(String(it.friendshipId)) ? 0.6 : 1,
-                                            borderRadius: "4px",
-                                            border: "1px solid #ddd",
-                                            backgroundColor: "#f5f5f5",
-                                        }}
+                                        className="friendship-btn friendship-btn--secondary"
                                     >
                                         {busyIds.has(String(it.friendshipId)) ? "..." : "Відхилити"}
                                     </button>
@@ -325,9 +258,9 @@ export default function FriendshipList() {
             </ul>
 
             <h3>Друзі ({friends.length})</h3>
-            <ul style={{ listStyle: "none", padding: 0 }}>
+            <ul className="friendship-list">
                 {friends.length === 0 ? (
-                    <li style={{ padding: "12px", color: "#999" }}>Немає друзів</li>
+                    <li className="friendship-empty-item">Немає друзів</li>
                 ) : (
                     friends.map((it) =>
                         renderFriendItem(
@@ -337,16 +270,7 @@ export default function FriendshipList() {
                                     <button
                                         onClick={() => onRemove(it.userId)}
                                         disabled={busyIds.has(String(it.userId))}
-                                        style={{
-                                            padding: "6px 12px",
-                                            cursor: busyIds.has(String(it.userId))
-                                                ? "not-allowed"
-                                                : "pointer",
-                                            opacity: busyIds.has(String(it.userId)) ? 0.6 : 1,
-                                            borderRadius: "4px",
-                                            border: "1px solid #ddd",
-                                            backgroundColor: "#f5f5f5",
-                                        }}
+                                        className="friendship-btn friendship-btn--danger"
                                     >
                                         {busyIds.has(String(it.userId)) ? "..." : "Видалити"}
                                     </button>
