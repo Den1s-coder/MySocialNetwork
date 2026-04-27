@@ -75,33 +75,6 @@
     transition: color 0.3s ease;
 }
 
-.chat-date-separator {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 16px 0;
-    gap: 12px;
-}
-
-.chat-date-separator::before,
-.chat-date-separator::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--border-light);
-    transition: background 0.3s ease;
-}
-
-.chat-date-label {
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--text-secondary);
-    padding: 0 8px;
-    background: var(--surface);
-    white-space: nowrap;
-    transition: color 0.3s ease;
-}
-
 .chat-message {
     margin-bottom: 12px;
     display: flex;
@@ -156,7 +129,6 @@
 .chat-input {
     flex: 1;
     padding: 8px;
-    padding-right: 40px; 
     border: 1px solid var(--border-light);
     border-radius: 4px;
     background: var(--surface);
@@ -313,80 +285,4 @@
 .chat-sidebar-actions .chat-btn {
     width: 100%;
     padding: 10px 12px;
-}
-
-.chat-message-photo {
-    max-width: 300px;
-    max-height: 300px;
-    border-radius: 8px;
-    margin-bottom: 8px;
-    object-fit: cover;
-    cursor: pointer;
-    transition: transform 0.2s ease;
-}
-
-.chat-message-photo:hover {
-    transform: scale(1.02);
-}
-
-.chat-input-file {
-    display: none;
-}
-
-.chat-message-bubble p {
-    margin: 0;
-}
-
-.chat-message-bubble img + p {
-    margin-top: 8px;
-}
-
-.chat-message-edited {
-    font-size: 0.85em;
-    opacity: 0.7;
-    margin-left: 8px;
-}
-
-.chat-message-edit-form {
-    display: flex;
-    gap: 8px;
-    margin-top: 8px;
-}
-
-.chat-message-edit-input {
-    flex: 1;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 1em;
-}
-
-.chat-message-action-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 1.2em;
-    padding: 4px 8px;
-    opacity: 0.7;
-    transition: opacity 0.2s;
-}
-
-.chat-message-action-btn:hover {
-    opacity: 1;
-}
-
-.chat-input-container {
-    flex: 1;
-    position: relative;
-    display: flex;
-}
-
-.emoji-button-wrapper {
-    position: absolute;
-    right: 8px;
-    top: 50%;
-    transform: translateY(-50%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }

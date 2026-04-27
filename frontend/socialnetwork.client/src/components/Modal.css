@@ -4,12 +4,13 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.4);
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 1000;
     animation: fadeIn 0.2s ease-in-out;
+    backdrop-filter: blur(2px);
 }
 
 @keyframes fadeIn {
@@ -22,12 +23,13 @@
 }
 
 .modal-content {
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    background: var(--surface);
+    border-radius: 20px;
+    box-shadow: var(--shadow-lg);
     max-height: 90vh;
     overflow-y: auto;
     animation: slideUp 0.3s ease-out;
+    transition: background-color 0.3s ease;
 }
 
 @keyframes slideUp {
@@ -48,7 +50,7 @@
 
 .modal-medium {
     width: 90%;
-    max-width: 600px;
+    max-width: 550px;
 }
 
 .modal-large {
@@ -60,13 +62,17 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px;
-    border-bottom: 1px solid #e0e0e0;
+    padding: 24px 24px 16px 24px;
+    border-bottom: 1px solid var(--border-light);
+    transition: border-color 0.3s ease;
 }
 
 .modal-header h2 {
-    font-size: 20px;
-    color: #333;
+    font-size: 22px;
+    color: var(--text-primary);
+    margin: 0;
+    font-weight: 700;
+    transition: color 0.3s ease;
 }
 
 .modal-close-btn {
@@ -74,22 +80,43 @@
     border: none;
     font-size: 24px;
     cursor: pointer;
-    color: #666;
+    color: var(--text-secondary);
     padding: 0;
-    width: 32px;
-    height: 32px;
+    width: 36px;
+    height: 36px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 4px;
-    transition: all 0.2s;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    box-shadow: none;
 }
 
 .modal-close-btn:hover {
-    background-color: #f0f0f0;
-    color: #333;
+    background-color: var(--hover-bg);
+    color: var(--text-primary);
+    transform: none;
+    box-shadow: none;
 }
 
 .modal-body {
-    padding: 20px;
+    padding: 24px;
+}
+
+.modal-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.modal-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+    background: var(--border-light);
+    border-radius: 3px;
+    transition: background 0.3s ease;
+}
+
+.modal-content::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-light);
 }

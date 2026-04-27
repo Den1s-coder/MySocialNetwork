@@ -1,7 +1,6 @@
-/* eslint-disable react-refresh/only-export-components */
 import { createContext, useState, useEffect } from 'react';
 
-export const ThemeContext = createContext(null);
+export const ThemeContext = createContext();
 
 const LIGHT_THEME = 'light';
 const DARK_THEME = 'dark';
@@ -9,21 +8,24 @@ const STORAGE_KEY = 'app-theme';
 
 export function ThemeProvider({ children }) {
     const [theme, setTheme] = useState(() => {
-        if (typeof window === 'undefined') return LIGHT_THEME;
-        try {
-            return localStorage.getItem(STORAGE_KEY) || LIGHT_THEME;
-        } catch {
-            return LIGHT_THEME;
+        // Спочатку перевіряємо localStorage
+        const savedTheme = localStorage.getItem(STORAGE_KEY);
+        if (savedTheme) {
+            return savedTheme;
         }
+        
+        // Потім перевіряємо системні налаштування
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            return DARK_THEME;
+        }
+        
+        return LIGHT_THEME;
     });
 
+    // Застосовуємо тему до DOM
     useEffect(() => {
-        try {
-            document.documentElement.setAttribute('data-theme', theme);
-            localStorage.setItem(STORAGE_KEY, theme);
-        } catch (e) {
-            console.error('Failed to save theme:', e);
-        }
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem(STORAGE_KEY, theme);
     }, [theme]);
 
     const toggleTheme = () => {
