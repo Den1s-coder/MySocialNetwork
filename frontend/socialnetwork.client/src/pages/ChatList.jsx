@@ -12,6 +12,8 @@ export default function ChatList() {
     const { accessToken, isAuthenticated, currentUserId, currentUserName } = useAuth();
     const [chats, setChats] = useState([]);
     const [users, setUsers] = useState([]);
+    const [filteredUsers, setFilteredUsers] = useState([]);
+    const [searchQuery, setSearchQuery] = useState('');
     const [status, setStatus] = useState('idle');
     const [error, setError] = useState(null);
 
@@ -41,6 +43,7 @@ export default function ChatList() {
                 if (!usersRes.ok) throw new Error(`HTTP ${usersRes.status}`);
                 const usersData = await usersRes.json();
                 setUsers(usersData);
+                setFilteredUsers(usersData);
 
                 setStatus('idle');
             } catch (e) {
@@ -50,6 +53,20 @@ export default function ChatList() {
         };
         loadData();
     }, [accessToken]);
+
+    const handleSearch = (query) => {
+        setSearchQuery(query);
+        if (!query.trim()) {
+            setFilteredUsers(users);
+        } else {
+            const lowerQuery = query.toLowerCase();
+            const filtered = users.filter(user =>
+                user.name.toLowerCase().includes(lowerQuery) ||
+                user.email.toLowerCase().includes(lowerQuery)
+            );
+            setFilteredUsers(filtered);
+        }
+    };
 
     const createPrivateChat = async (otherUserId) => {
         try {
@@ -175,16 +192,27 @@ export default function ChatList() {
             <div className="chatlist-section">
                 <h3>Створити приватний чат</h3>
                 <p className="chatlist-description">Оберіть користувача для початку приватного чату:</p>
+                <input
+                    type="text"
+                    placeholder="Пошук за ім'ям або email..."
+                    value={searchQuery}
+                    onChange={(e) => handleSearch(e.target.value)}
+                    className="chatlist-search-input"
+                />
                 <div className="chatlist-users">
-                    {users.map(user => (
-                        <button
-                            key={user.id}
-                            onClick={() => createPrivateChat(user.id)}
-                            className="chatlist-btn chatlist-btn--secondary"
-                        >
-                            {user.name} ({user.email})
-                        </button>
-                    ))}
+                    {filteredUsers.length === 0 ? (
+                        <p className="chatlist-empty">Користувачів не знайдено</p>
+                    ) : (
+                        filteredUsers.map(user => (
+                            <button
+                                key={user.id}
+                                onClick={() => createPrivateChat(user.id)}
+                                className="chatlist-btn chatlist-btn--secondary"
+                            >
+                                {user.name} ({user.email})
+                            </button>
+                        ))
+                    )}
                 </div>
             </div>
         </div>
