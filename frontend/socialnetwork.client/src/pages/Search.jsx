@@ -1,15 +1,16 @@
 import { useState, useEffect } from 'react';
-import { useSearchParams} from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { authFetch } from '../hooks/authFetch';
 import Avatar from '../components/Avatar';
 import { Link } from 'react-router-dom';
 import './Search.css';
 
-const API_BASE = import.meta.env.VITE_API_BASE || '';
+const API_BASE = 'https://localhost:7142';
 const PAGE_SIZE = 10;
 
 export default function Search() {
     const [searchParams, setSearchParams] = useSearchParams();
+    const navigate = useNavigate();
     const query = searchParams.get('q') || '';
     const searchType = searchParams.get('type') || 'all'; 
 
@@ -23,19 +24,19 @@ export default function Search() {
     const [hasMoreUsers, setHasMoreUsers] = useState(false);
 
     useEffect(() => {
-        const trimmedQuery = query.trim();
-        
-        if (!trimmedQuery) {
+        if (!query.trim()) {
             setPosts([]);
             setUsers([]);
-            setPostPage(1);
-            setUserPage(1);
             return;
         }
 
         const fetchResults = async () => {
             setLoading(true);
             setError(null);
+            setPosts([]);
+            setUsers([]);
+            setPostPage(1);
+            setUserPage(1);
 
             try {
                 const tasks = [];
@@ -43,7 +44,7 @@ export default function Search() {
                 if (searchType === 'all' || searchType === 'posts') {
                     tasks.push(
                         authFetch(
-                            `${API_BASE}/api/Post/search?query=${encodeURIComponent(trimmedQuery)}&pageNumber=1&pageSize=${PAGE_SIZE}`
+                            `${API_BASE}/api/Post/search?query=${encodeURIComponent(query)}&pageNumber=1&pageSize=${PAGE_SIZE}`
                         )
                             .then(res => {
                                 if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -65,7 +66,7 @@ export default function Search() {
                 if (searchType === 'all' || searchType === 'users') {
                     tasks.push(
                         authFetch(
-                            `${API_BASE}/api/User/search?query=${encodeURIComponent(trimmedQuery)}&pageNumber=1&pageSize=${PAGE_SIZE}`
+                            `${API_BASE}/api/User/search?query=${encodeURIComponent(query)}&pageNumber=1&pageSize=${PAGE_SIZE}`
                         )
                             .then(res => {
                                 if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -87,16 +88,12 @@ export default function Search() {
                 await Promise.all(tasks);
             } catch (e) {
                 setError(e.message || 'Помилка пошуку');
-                setPosts([]);
-                setUsers([]);
             } finally {
                 setLoading(false);
             }
         };
 
         fetchResults();
-        setPostPage(1);
-        setUserPage(1);
     }, [query, searchType]);
 
     const loadMorePosts = async () => {

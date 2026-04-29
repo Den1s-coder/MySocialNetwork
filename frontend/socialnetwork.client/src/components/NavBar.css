@@ -28,6 +28,190 @@
   align-items: center;
 }
 
+.search-wrapper {
+  flex: 1;
+  max-width: 400px;
+  margin: 0 16px;
+  position: relative;
+}
+
+.search-form {
+  display: flex;
+  align-items: center;
+  background: var(--hover-bg);
+  border: 1px solid var(--border-light);
+  border-radius: 6px;
+  padding: 0 8px;
+  transition: all 0.2s ease;
+}
+
+.search-form:focus-within {
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.search-input-navbar {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 8px 8px;
+  font-size: 14px;
+  color: var(--text-primary);
+  outline: none;
+  transition: color 0.3s ease;
+}
+
+.search-input-navbar::placeholder {
+  color: var(--text-secondary);
+  transition: color 0.3s ease;
+}
+
+.search-btn-navbar {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 4px 8px;
+  transition: opacity 0.2s ease;
+}
+
+.search-btn-navbar:hover {
+  opacity: 0.7;
+}
+
+.search-suggestions-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--surface);
+  border: 1px solid var(--border-light);
+  border-top: none;
+  border-radius: 0 0 6px 6px;
+  max-height: 500px;
+  overflow-y: auto;
+  z-index: 1300;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  margin-top: -1px;
+}
+
+.suggestions-loading {
+  padding: 16px;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.suggestions-empty {
+  padding: 16px;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.suggestions-section {
+  border-bottom: 1px solid var(--border-light);
+}
+
+.suggestions-section:last-of-type {
+  border-bottom: none;
+}
+
+.suggestions-header {
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  background: var(--hover-bg);
+}
+
+.suggestions-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.suggestion-item {
+  padding: 0;
+  margin: 0;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.suggestion-item:last-child {
+  border-bottom: none;
+}
+
+.suggestion-button {
+  width: 100%;
+  padding: 8px 12px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-align: left;
+  transition: background 0.2s ease;
+}
+
+.suggestion-button:hover {
+  background: var(--hover-bg);
+}
+
+.suggestion-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.suggestion-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.suggestion-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.suggestion-meta {
+  font-size: 12px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.suggestions-footer {
+  padding: 8px;
+  border-top: 1px solid var(--border-light);
+  background: var(--hover-bg);
+}
+
+.see-all-button {
+  width: 100%;
+  padding: 8px 12px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #007bff;
+  font-size: 13px;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.see-all-button:hover {
+  color: #0056b3;
+  text-decoration: underline;
+}
+
 .avatar-wrapper {
   position: relative;
   display: flex;
@@ -212,11 +396,13 @@
   justify-content: space-between;
   width: 100%;
   padding: 0 16px;
+  gap: 16px;
 }
 
 .brand {
   font-size: 18px;
   font-weight: 700;
   color: var(--text-primary);
+  white-space: nowrap;
   transition: color 0.3s ease;
 }
