@@ -7,6 +7,7 @@ import NewPost from './pages/NewPost.jsx'
 import Post from './pages/Post.jsx'
 import ChatList from './pages/ChatList.jsx'
 import Chat from './pages/Chat.jsx'
+import Search from './pages/Search.jsx'
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import NavBar from './components/NavBar.jsx';
 import FriendshipList from './pages/FriendshipList.jsx';
@@ -34,6 +35,7 @@ function App() {
             <Route path="/chat/:chatId" element={<Chat />} />
             <Route path="/friends" element={<FriendshipList />} />
             <Route path="/settings" element={<Settings />} />
+            <Route path="/search" element={<Search />} />
             <Route path="/create-group-chat" element={<CreateGroupChat />} />
             <Route 
               path="/admin" 
