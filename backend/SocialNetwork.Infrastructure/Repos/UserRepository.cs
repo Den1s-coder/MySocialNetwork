@@ -63,6 +63,25 @@ namespace SocialNetwork.Infrastructure.Repos
                 .FirstOrDefaultAsync(u => u.Name == userName, cancellationToken);
         }
 
+        public async Task<(IEnumerable<User> Items, int Total)> SearchAsync(string query, int page, int pageSize, CancellationToken cancellationToken = default)
+        {
+            var lowerQuery = query.ToLower();
+            var searchQuery = _context.Users
+                .AsNoTracking()
+                .Where(u => !u.IsBanned && 
+                    (u.Name.ToLower().Contains(lowerQuery) || 
+                     u.Email.ToLower().Contains(lowerQuery)))
+                .OrderBy(u => u.Name);
+
+            var total = await searchQuery.CountAsync(cancellationToken);
+            var items = await searchQuery
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync(cancellationToken);
+
+            return (items, total);
+        }
+
         public async Task UpdateAsync(User updatedUser, CancellationToken cancellationToken = default)
         {
             var existingUser = await _context.Users

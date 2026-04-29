@@ -1,63 +1,46 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
+using SocialNetwork.Application.DTO;
 using SocialNetwork.Application.DTO.Users;
 using SocialNetwork.Application.Interfaces;
-using SocialNetwork.Domain.Enums;
 using System.Security.Claims;
 
 namespace SocialNetwork.API.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
     public class UserController : ControllerBase
     {
-        private readonly ILogger<UserController> _logger;
         private readonly IUserService _userService;
-        public UserController(ILogger<UserController> logger, IUserService userService)
+        private readonly ILogger<UserController> _logger;
+
+        public UserController(IUserService userService, ILogger<UserController> logger)
         {
-            _logger = logger;
             _userService = userService;
+            _logger = logger;
         }
 
         [HttpGet("users")]
         public async Task<IActionResult> GetAllUsers(CancellationToken cancellationToken = default)
         {
-            var usersDto = await _userService.GetAllUsersAsync(cancellationToken);
-
-            return Ok(usersDto);
+            var users = await _userService.GetAllAsync(cancellationToken);
+            return Ok(users);
         }
 
-        [HttpGet("users/{id:guid}")]
-        public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken = default)
+        [HttpGet("search")]
+        [ProducesResponseType(typeof(PaginetedResult<UserDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<PaginetedResult<UserDto>>> SearchUsers(
+            [FromQuery] string query,
+            [FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 10,
+            CancellationToken cancellationToken = default)
         {
-            var userDto = await _userService.GetByIdAsync(id, cancellationToken);
+            if (string.IsNullOrWhiteSpace(query))
+                return BadRequest(new { message = "Search query cannot be empty" });
 
-            if (userDto == null) return NotFound();
-
-            return Ok(userDto);
-        }
-
-        [HttpGet("users/by-email")]
-        public async Task<IActionResult> GetByEmail([FromQuery] string email, CancellationToken cancellationToken = default)
-        {
-            var userDto = await _userService.GetUserByEmailAsync(email, cancellationToken);
-            if (userDto == null)
-            {
-                return NotFound();
-            }
-            return Ok(userDto);
-        }
-
-        [HttpGet("users/by-username")]
-        public async Task<IActionResult> GetByUserName([FromQuery] string username, CancellationToken cancellationToken = default)
-        {
-            var userDto = await _userService.GetUserByNameAsync(username, cancellationToken);
-
-            if (userDto == null) return NotFound();
-
-            return Ok(userDto);
+            var result = await _userService.SearchAsync(query, pageNumber, pageSize, cancellationToken);
+            return Ok(result);
         }
 
         [Authorize]
@@ -65,65 +48,36 @@ namespace SocialNetwork.API.Controllers
         public async Task<IActionResult> GetProfile(CancellationToken cancellationToken = default)
         {
             var sid = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Sid)?.Value;
-            if (string.IsNullOrEmpty(sid) || !Guid.TryParse(sid, out var userId))
-            {
-                _logger.LogWarning("GetProfile: missing or invalid Sid claim");
+            if (!Guid.TryParse(sid, out var userId))
                 return Unauthorized();
-            }
 
-            var userDto = await _userService.GetByIdAsync(userId, cancellationToken);
-            if (userDto == null)
-            {
-                _logger.LogWarning("GetProfile: user not found {UserId}", userId);
-                return NotFound();
-            }
+            var user = await _userService.GetByIdAsync(userId, cancellationToken);
+            return Ok(user);
+        }
 
-            return Ok(userDto);
+        [HttpGet("users/{userId:guid}")]
+        public async Task<IActionResult> GetUserById(Guid userId, CancellationToken cancellationToken = default)
+        {
+            var user = await _userService.GetByIdAsync(userId, cancellationToken);
+            return Ok(user);
+        }
+
+        [HttpGet("by-name/{userName}")]
+        public async Task<IActionResult> GetUserByName(string userName, CancellationToken cancellationToken = default)
+        {
+            var user = await _userService.GetByUserNameAsync(userName, cancellationToken);
+            return Ok(user);
         }
 
         [Authorize]
         [HttpPut("profile")]
-        public async Task<IActionResult> UpdateProfile([FromBody] UserDto updatedUserDto, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> UpdateProfile([FromBody] UserDto userDto, CancellationToken cancellationToken = default)
         {
-            var UserIdClaim = Guid.Parse(User.Claims.First(c => c.Type == ClaimTypes.Sid).Value);
+            var sid = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Sid)?.Value;
+            if (!Guid.TryParse(sid, out var userId))
+                return Unauthorized();
 
-            updatedUserDto.Id = UserIdClaim;
-
-            await _userService.UpdateProfileAsync(updatedUserDto, cancellationToken);
-            return Ok();
-        }
-
-        [Authorize]
-        [HttpPost("change-password")]
-        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto changePasswordDto, CancellationToken cancellationToken = default)
-        {
-            var UserIdClaim = Guid.Parse(User.Claims.First(c => c.Type == ClaimTypes.Sid).Value);
-            await _userService.ChangePasswordAsync(UserIdClaim, changePasswordDto, cancellationToken);
-            return Ok();
-        }
-
-        [Authorize]
-        [HttpPost("change-email")]
-        public async Task<IActionResult> ChangeEmail([FromBody] ChangeEmailDto changeEmailDto, CancellationToken cancellationToken = default)
-        {
-            var UserIdClaim = Guid.Parse(User.Claims.First(c => c.Type == ClaimTypes.Sid).Value);
-            await _userService.ChangeEmailAsync(UserIdClaim, changeEmailDto, cancellationToken);
-            return Ok();
-        }
-
-        [Authorize(Roles = "Admin")]
-        [HttpPost("users/{userId:guid}/role")]
-        public async Task<IActionResult> ChangeUserRole(
-            Guid userId, 
-            [FromBody] ChangeUserRoleRequest request,
-            CancellationToken cancellationToken = default)
-        {
-            if (!Enum.TryParse<UserRole>(request.NewRole, out var userRole))
-            {
-                return BadRequest($"Невалідна роль: {request.NewRole}");
-            }
-
-            await _userService.ChangeUserRoleAsync(userId, userRole, cancellationToken);
+            await _userService.UpdateAsync(userId, userDto, cancellationToken);
             return Ok();
         }
 
@@ -131,16 +85,40 @@ namespace SocialNetwork.API.Controllers
         [HttpPost("users/{userId:guid}/ban")]
         public async Task<IActionResult> BanUser(Guid userId, CancellationToken cancellationToken = default)
         {
-            await _userService.BanUser(userId, cancellationToken);
+            await _userService.BanUserAsync(userId, cancellationToken);
             return Ok();
         }
 
         [Authorize(Roles = "Admin")]
-        [HttpGet("users/by-role")]
-        public async Task<IActionResult> GetUsersByRole([FromQuery] UserRole role, CancellationToken cancellationToken = default)
+        [HttpPost("users/{userId:guid}/role")]
+        public async Task<IActionResult> ChangeUserRole(Guid userId, [FromBody] ChangeUserRoleRequest request, CancellationToken cancellationToken = default)
         {
-            var usersDto = await _userService.GetUsersByRoleAsync(role, cancellationToken);
-            return Ok(usersDto);
+            await _userService.ChangeRoleAsync(userId, request.NewRole, cancellationToken);
+            return Ok();
+        }
+
+        [Authorize]
+        [HttpPost("change-password")]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto changePasswordDto, CancellationToken cancellationToken = default)
+        {
+            var sid = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Sid)?.Value;
+            if (!Guid.TryParse(sid, out var userId))
+                return Unauthorized();
+
+            await _userService.ChangePasswordAsync(userId, changePasswordDto, cancellationToken);
+            return Ok();
+        }
+
+        [Authorize]
+        [HttpPost("change-email")]
+        public async Task<IActionResult> ChangeEmail([FromBody] ChangeEmailDto changeEmailDto, CancellationToken cancellationToken = default)
+        {
+            var sid = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Sid)?.Value;
+            if (!Guid.TryParse(sid, out var userId))
+                return Unauthorized();
+
+            await _userService.ChangeEmailAsync(userId, changeEmailDto, cancellationToken);
+            return Ok();
         }
     }
 }

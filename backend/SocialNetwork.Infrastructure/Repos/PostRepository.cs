@@ -96,6 +96,26 @@ namespace SocialNetwork.Infrastructure.Repos
                 .ToListAsync();
         }
 
+        public async Task<(IEnumerable<Post> Items, int Total)> SearchAsync(string query, int page, int pageSize, CancellationToken cancellationToken = default)
+        {
+            var searchQuery = _context.Posts
+                .AsNoTracking()
+                .Where(p => !p.IsBanned && p.Text.Contains(query))
+                .Include(p => p.Comments)
+                .Include(p => p.User)
+                .Include(p => p.Reactions)
+                    .ThenInclude(r => r.ReactionType)
+                .OrderByDescending(p => p.CreatedAt);
+
+            var total = await searchQuery.CountAsync(cancellationToken);
+            var items = await searchQuery
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync(cancellationToken);
+
+            return (items, total);
+        }
+
         public async Task UpdateAsync(Post updatedPost, CancellationToken cancellationToken = default)
         {
             var existingPost = await _context.Posts.FirstOrDefaultAsync(p => p.Id == updatedPost.Id);
