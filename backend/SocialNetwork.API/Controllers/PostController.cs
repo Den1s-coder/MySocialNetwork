@@ -34,6 +34,22 @@ namespace SocialNetwork.API.Controllers
             return Ok(pagedPosts);
         }
 
+        [HttpGet("search")]
+        [ProducesResponseType(typeof(PaginetedResult<PostDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<PaginetedResult<PostDto>>> SearchPosts(
+            [FromQuery] string query,
+            [FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 10,
+            CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(query))
+                return BadRequest(new { message = "Search query cannot be empty" });
+
+            var result = await _postService.SearchAsync(query, pageNumber, pageSize, cancellationToken);
+            return Ok(result);
+        }
+
         [HttpGet("{postId:guid}")]
         public async Task<IActionResult> GetById(Guid postId, CancellationToken cancellationToken = default)
         {
