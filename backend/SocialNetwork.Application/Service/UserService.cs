@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
+using SocialNetwork.Application.DTO;
 using SocialNetwork.Application.DTO.Auth;
 using SocialNetwork.Application.DTO.Users;
 using SocialNetwork.Application.Interfaces;
@@ -23,7 +24,7 @@ namespace SocialNetwork.Application.Service
             _mapper = mapper;
         }
 
-        public async Task BanUser(Guid id, CancellationToken cancellationToken = default)
+        public async Task BanUserAsync(Guid id, CancellationToken cancellationToken = default)
         {
             var user = await _userRepository.GetByIdAsync(id, cancellationToken);
             if (user == null)
@@ -69,6 +70,20 @@ namespace SocialNetwork.Application.Service
             await _userRepository.UpdateAsync(user, cancellationToken);
         }
 
+        public async Task ChangeRoleAsync(Guid id, string newRole, CancellationToken cancellationToken = default)
+        {
+            var user = await _userRepository.GetByIdAsync(id, cancellationToken);
+
+            if (user == null)
+                throw new ArgumentException("User not found");
+
+            if (!Enum.TryParse<UserRole>(newRole, out var role))
+                throw new ArgumentException("Invalid role");
+
+            user.Role = role;
+            await _userRepository.UpdateAsync(user, cancellationToken);
+        }
+
         public async Task ChangeUserRoleAsync(Guid userId, UserRole newRole, CancellationToken cancellationToken = default)
         {
             var user = await _userRepository.GetByIdAsync(userId, cancellationToken);
@@ -80,6 +95,13 @@ namespace SocialNetwork.Application.Service
             await _userRepository.UpdateAsync(user, cancellationToken);
         }
 
+        public async Task<IEnumerable<UserDto>> GetAllAsync(CancellationToken cancellationToken = default)
+        {
+            var users = await _userRepository.GetAllAsync(cancellationToken);
+            
+            return _mapper.Map<IEnumerable<UserDto>>(users);
+        }
+
         public async Task<IEnumerable<UserDto>> GetAllUsersAsync(CancellationToken cancellationToken = default)
         {
             var users = await _userRepository.GetAllAsync(cancellationToken);
@@ -87,9 +109,23 @@ namespace SocialNetwork.Application.Service
             return _mapper.Map<IEnumerable<UserDto>>(users);
         }
 
-        public async Task<UserDto> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+        public async Task<UserDto?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
             var user = await _userRepository.GetByIdAsync(id, cancellationToken);
+
+            return _mapper.Map<UserDto?>(user);
+        }
+
+        public async Task<UserDto?> GetByEmailAsync(string email, CancellationToken cancellationToken = default)
+        {
+            var user = await _userRepository.GetByEmailAsync(email, cancellationToken);
+
+            return _mapper.Map<UserDto?>(user);
+        }
+
+        public async Task<UserDto?> GetByUserNameAsync(string userName, CancellationToken cancellationToken = default)
+        {
+            var user = await _userRepository.GetByUserNameAsync(userName, cancellationToken);
 
             return _mapper.Map<UserDto?>(user);
         }
@@ -122,6 +158,38 @@ namespace SocialNetwork.Application.Service
         {
             var users = await _userRepository.GetUsersByRoleAsync(role, cancellationToken);
             return _mapper.Map<IEnumerable<UserDto>>(users);
+        }
+
+        public async Task<PaginetedResult<UserDto>> SearchAsync(string query, int page, int pageSize, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(query))
+                throw new ArgumentException("Search query cannot be empty", nameof(query));
+
+            var (items, total) = await _userRepository.SearchAsync(query, page, pageSize, cancellationToken);
+
+            var result = new PaginetedResult<UserDto>
+            {
+                Items = _mapper.Map<IEnumerable<UserDto>>(items),
+                TotalCount = total,
+                Page = page,
+                PageSize = pageSize
+            };
+            return result;
+        }
+
+        public async Task UpdateAsync(Guid id, UserDto userDto, CancellationToken cancellationToken = default)
+        {
+            var existingUser = await _userRepository.GetByIdAsync(id, cancellationToken);
+
+            if (existingUser == null)
+            {
+                throw new ArgumentException("User not found");
+            }
+
+            existingUser.Name = userDto.Name;
+            existingUser.Email = userDto.Email;
+            existingUser.ProfilePictureUrl = userDto.ProfilePictureUrl;
+            await _userRepository.UpdateAsync(existingUser, cancellationToken);
         }
 
         public async Task UpdateProfileAsync(UserDto updatedUserDto, CancellationToken cancellationToken = default)

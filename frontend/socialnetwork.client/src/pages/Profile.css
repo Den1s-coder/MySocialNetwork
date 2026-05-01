@@ -4,11 +4,12 @@
   padding: 0 12px;
 }
 
-.title { 
+.title {
   margin: 0 0 20px 0;
   font-size: 24px;
-  color: #1a1a1a;
+  color: var(--text-primary);
   font-weight: 700;
+  transition: color 0.3s ease;
 }
 
 .profile-header {
@@ -17,9 +18,11 @@
   align-items: flex-start;
   margin-bottom: 20px;
   padding: 16px;
-  background: #f9f9f9;
+  background: var(--surface);
+  border: 1px solid var(--border-light);
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-sm);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .profile-avatar {
@@ -46,13 +49,14 @@
 .avatar-placeholder {
   width: 100px;
   height: 100px;
-  background: linear-gradient(135deg, #e0e0e0 0%, #f5f5f5 100%);
+  background: linear-gradient(135deg, var(--border-light) 0%, var(--surface) 100%);
   border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 48px;
-  color: #999;
+  color: var(--text-secondary);
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
 .avatar-overlay {
@@ -86,7 +90,7 @@
   font-size: 28px;
   font-weight: 300;
   color: #333;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-md);
 }
 
 .profile-info {
@@ -108,8 +112,9 @@
 .profile-name {
   font-size: 20px;
   font-weight: 700;
-  color: #1a1a1a;
+  color: var(--text-primary);
   line-height: 1.2;
+  transition: color 0.3s ease;
 }
 
 .profile-edit-btn {
@@ -120,36 +125,40 @@
   padding: 4px 8px;
   border-radius: 4px;
   transition: background-color 0.2s;
+  box-shadow: none;
 }
 
 .profile-edit-btn:hover {
-  background-color: rgba(0, 0, 0, 0.1);
+  background-color: var(--hover-bg);
 }
 
 .profile-email {
   font-size: 14px;
-  color: #666;
+  color: var(--text-secondary);
   margin-bottom: 8px;
   word-break: break-word;
+  transition: color 0.3s ease;
 }
 
 .profile-bio {
   font-size: 14px;
-  color: #555;
+  color: var(--text-secondary);
   margin-bottom: 8px;
   max-width: 100%;
   word-break: break-word;
   line-height: 1.4;
+  transition: color 0.3s ease;
 }
 
 .profile-banned {
-  color: #d32f2f;
+  color: white;
   font-size: 13px;
   font-weight: 600;
-  background-color: #ffebee;
+  background-color: var(--error);
   padding: 4px 8px;
   border-radius: 4px;
   display: inline-block;
+  transition: background-color 0.3s ease;
 }
 
 .edit-form {
@@ -162,18 +171,21 @@
 .edit-input,
 .edit-textarea {
   padding: 10px 12px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-light);
   border-radius: 6px;
   font-size: 14px;
   font-family: inherit;
   resize: vertical;
+  background-color: var(--surface);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
 
 .edit-input:focus,
 .edit-textarea:focus {
   outline: none;
-  border-color: #0066cc;
-  box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.1);
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(255, 139, 102, 0.1);
 }
 
 .edit-actions {
@@ -193,21 +205,22 @@
 }
 
 .edit-save {
-  background-color: #0066cc;
+  background-color: var(--primary-color);
   color: white;
 }
 
 .edit-save:hover {
-  background-color: #0052a3;
+  background-color: var(--primary-dark);
 }
 
 .edit-cancel {
-  background-color: #f0f0f0;
-  color: #333;
+  background-color: var(--disabled-bg);
+  color: var(--text-primary);
+  box-shadow: none;
 }
 
 .edit-cancel:hover {
-  background-color: #e0e0e0;
+  background-color: var(--border-light);
 }
 
 .profile-stats {
@@ -215,9 +228,10 @@
   gap: 16px;
   margin-bottom: 20px;
   padding: 16px;
-  background: #fff;
+  background: var(--surface);
   border-radius: 8px;
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--border-light);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .stat-item {
@@ -229,15 +243,17 @@
 .stat-number {
   font-size: 24px;
   font-weight: 700;
-  color: #0066cc;
+  color: var(--primary-color);
   margin-bottom: 4px;
+  transition: color 0.3s ease;
 }
 
 .stat-label {
   font-size: 12px;
-  color: #999;
+  color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  transition: color 0.3s ease;
 }
 
 .profile-actions {
@@ -249,39 +265,40 @@
 
 .profile-button {
   padding: 10px 16px;
-  border: 1px solid #ddd;
-  background: #fff;
+  border: 1px solid var(--border-light);
+  background: var(--surface);
   border-radius: 6px;
   cursor: pointer;
   font-size: 14px;
   font-weight: 500;
   transition: all 0.2s ease;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .profile-button:hover {
-  background-color: #f5f5f5;
-  border-color: #bbb;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  background-color: var(--hover-bg);
+  border-color: var(--primary-color);
+  box-shadow: var(--shadow-sm);
 }
 
 .profile-button--primary {
-  background-color: #0066cc;
+  background-color: var(--primary-color);
   color: white;
-  border-color: #0066cc;
+  border-color: var(--primary-color);
 }
 
 .profile-button--primary:hover {
-  background-color: #0052a3;
-  border-color: #0052a3;
+  background-color: var(--primary-dark);
+  border-color: var(--primary-dark);
 }
 
 .friends-section {
   margin-bottom: 24px;
   padding: 16px;
-  background: #fff;
+  background: var(--surface);
   border-radius: 8px;
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--border-light);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .friends-title {
@@ -289,8 +306,9 @@
   font-weight: 600;
   margin: 0 0 12px 0;
   cursor: pointer;
-  color: #1a1a1a;
+  color: var(--text-primary);
   user-select: none;
+  transition: color 0.3s ease;
 }
 
 .friends-grid {
@@ -306,16 +324,16 @@
   gap: 8px;
   padding: 12px;
   border-radius: 8px;
-  background: #f9f9f9;
+  background: var(--hover-bg);
   text-decoration: none;
-  color: #333;
-  transition: all 0.2s;
-  border: 1px solid #e0e0e0;
+  color: var(--text-primary);
+  transition: all 0.2s ease;
+  border: 1px solid var(--border-light);
 }
 
 .friend-card:hover {
-  background-color: #f0f0f0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  background-color: var(--border-light);
+  box-shadow: var(--shadow-sm);
   transform: translateY(-2px);
 }
 
@@ -324,11 +342,12 @@
   height: 64px;
   border-radius: 50%;
   object-fit: cover;
-  background: #e0e0e0;
+  background: var(--border-light);
   font-size: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: background-color 0.3s ease;
 }
 
 .friend-name {
@@ -340,32 +359,34 @@
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+  color: var(--text-primary);
+  transition: color 0.3s ease;
 }
 
-.post-list { 
-  list-style: none; 
-  padding: 0; 
-  margin: 0; 
+.post-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
 .post-card {
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--border-light);
   border-radius: 8px;
   padding: 12px;
   margin-bottom: 12px;
-  background: #fff;
-  transition: all 0.2s ease-in-out;
+  background: var(--surface);
+  transition: all 0.2s ease;
 }
 
-.post-card:hover { 
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  border-color: #d0d0d0;
+.post-card:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--primary-light);
 }
 
-.post-card__link { 
-  display: block; 
-  color: inherit; 
-  text-decoration: none; 
+.post-card__link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
 }
 
 .post-card__header {
@@ -378,7 +399,7 @@
 
 .post-card__meta {
   font-size: 14px;
-  color: #666;
+  color: var(--text-secondary);
   font-weight: 600;
   text-align: left;
   text-decoration: none;
@@ -386,7 +407,7 @@
 }
 
 .post-card__meta:hover {
-  color: #0066cc;
+  color: var(--primary-color);
   text-decoration: underline;
 }
 
@@ -394,39 +415,43 @@
   font-size: 15px;
   margin-top: 8px;
   white-space: pre-wrap;
-  color: #333;
+  color: var(--text-primary);
   line-height: 1.5;
   word-break: break-word;
+  transition: color 0.3s ease;
 }
 
 .post-card__time {
   font-size: 12px;
   margin-top: 8px;
-  color: #999;
+  color: var(--text-secondary);
   text-align: right;
   white-space: nowrap;
+  transition: color 0.3s ease;
 }
 
 .post-card--banned {
   display: block;
-  color: #999;
+  color: var(--text-secondary);
   text-decoration: none;
   cursor: default;
   opacity: 0.7;
 }
 
 .post-card--banned .post-card__text {
-  color: #d32f2f;
+  color: var(--error);
   font-style: italic;
 }
 
 .posts-empty {
   text-align: center;
   padding: 40px 20px;
-  color: #999;
+  color: var(--text-secondary);
   font-size: 14px;
-  background: #f9f9f9;
+  background: var(--hover-bg);
   border-radius: 8px;
+  border: 1px solid var(--border-light);
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
 .loading {
@@ -435,14 +460,17 @@
   align-items: center;
   min-height: 200px;
   font-size: 14px;
-  color: #666;
+  color: var(--text-secondary);
+  transition: color 0.3s ease;
 }
 
 .error {
   padding: 16px;
-  background-color: #ffebee;
+  background-color: rgba(239, 83, 80, 0.1);
   border-radius: 8px;
-  color: #d32f2f;
+  color: var(--error);
   font-size: 14px;
   margin-bottom: 16px;
+  border: 1px solid var(--error);
+  transition: all 0.3s ease;
 }

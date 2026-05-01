@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { authFetch } from '../hooks/authFetch';
 import Avatar from './Avatar';
 import Modal from './Modal';
+import './AddUsersToChatModal.css';
 
 const API_BASE = 'https://localhost:7142';
 
@@ -12,6 +13,7 @@ export default function AddUsersToChatModal({ isOpen, chatId, onClose, onSuccess
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState(null);
+    const [searchTerm, setSearchTerm] = useState('');
 
     useEffect(() => {
         if (!isOpen || !chatId) return;
@@ -21,6 +23,7 @@ export default function AddUsersToChatModal({ isOpen, chatId, onClose, onSuccess
                 setLoading(true);
                 setError(null);
                 setSelectedUsers([]);
+                setSearchTerm('');
 
                 const chatsRes = await authFetch(`${API_BASE}/api/Chat/chats`);
                 if (!chatsRes.ok) throw new Error('Не вдалося завантажити чати');
@@ -116,6 +119,11 @@ export default function AddUsersToChatModal({ isOpen, chatId, onClose, onSuccess
         }
     };
 
+    const filteredFriends = friends.filter(friend =>
+        (friend.name || friend.userName || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (friend.email || '').toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
     return (
         <Modal 
             isOpen={isOpen} 
@@ -124,133 +132,96 @@ export default function AddUsersToChatModal({ isOpen, chatId, onClose, onSuccess
             size="medium"
         >
             {error && (
-                <div style={{
-                    padding: 12,
-                    background: '#f8d7da',
-                    color: '#721c24',
-                    border: '1px solid #f5c6cb',
-                    borderRadius: 4,
-                    marginBottom: 16
-                }}>
-                    {error}
+                <div className="modal-error-message">
+                    <span className="modal-error-icon">⚠️</span>
+                    <span>{error}</span>
                 </div>
             )}
 
             {loading ? (
-                <div style={{ padding: 20, textAlign: 'center', color: '#666' }}>
-                    Завантаження…
+                <div className="modal-loading">
+                    <div className="modal-spinner"></div>
+                    <p>Завантаження…</p>
                 </div>
             ) : friends.length === 0 ? (
-                <div style={{
-                    padding: 20,
-                    background: '#e7f3ff',
-                    border: '1px solid #b3d9ff',
-                    borderRadius: 4,
-                    color: '#004085',
-                    textAlign: 'center'
-                }}>
-                    <p>Немає доступних друзів для додавання</p>
-                    <p style={{ fontSize: 14, margin: 0 }}>
+                <div className="modal-empty-state">
+                    <div className="modal-empty-icon">👥</div>
+                    <p className="modal-empty-title">Немає доступних друзів</p>
+                    <p className="modal-empty-description">
                         Всі ваші друзі вже в цьому чаті
                     </p>
                 </div>
             ) : (
                 <form onSubmit={handleAddUsers}>
-                    <div style={{
-                        border: '1px solid #ddd',
-                        borderRadius: 4,
-                        padding: 12,
-                        maxHeight: 350,
-                        overflowY: 'auto',
-                        marginBottom: 16
-                    }}>
-                        {friends.map(friend => (
-                            <div
-                                key={friend.id}
-                                style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    padding: 10,
-                                    borderBottom: '1px solid #f0f0f0',
-                                }}
-                            >
-                                <input
-                                    type="checkbox"
-                                    id={`user-${friend.id}`}
-                                    checked={selectedUsers.includes(friend.id)}
-                                    onChange={() => toggleUserSelection(friend.id)}
-                                    style={{
-                                        marginRight: 12,
-                                        cursor: 'pointer',
-                                        width: 18,
-                                        height: 18
-                                    }}
-                                />
-                                <label
-                                    htmlFor={`user-${friend.id}`}
-                                    style={{
-                                        cursor: 'pointer',
-                                        flex: 1,
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: 10
-                                    }}
-                                >
-                                    <Avatar
-                                        url={friend.profilePictureUrl}
-                                        name={friend.name ?? friend.userName}
-                                        size={36}
-                                    />
-                                    <div>
-                                        <div style={{ fontWeight: 500, fontSize: 14 }}>
-                                            {friend.name ?? friend.userName}
-                                        </div>
-                                        <div style={{ fontSize: 12, color: '#666' }}>
-                                            {friend.email}
-                                        </div>
-                                    </div>
-                                </label>
-                            </div>
-                        ))}
+                    <div className="modal-search-container">
+                        <input
+                            type="text"
+                            placeholder="Пошук за іменем або email…"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="modal-search-input"
+                        />
+                        <span className="modal-search-icon">🔍</span>
                     </div>
 
-                    <p style={{ fontSize: 13, color: '#666', marginBottom: 16 }}>
-                        Обрано: <strong>{selectedUsers.length}</strong> користувача(ів)
-                    </p>
+                    {filteredFriends.length === 0 ? (
+                        <div className="modal-no-results">
+                            <p>Користувачі не знайдені</p>
+                        </div>
+                    ) : (
+                        <div className="modal-users-list">
+                            {filteredFriends.map(friend => (
+                                <div
+                                    key={friend.id}
+                                    className={`modal-user-item ${selectedUsers.includes(friend.id) ? 'modal-user-item--selected' : ''}`}
+                                >
+                                    <input
+                                        type="checkbox"
+                                        id={`user-${friend.id}`}
+                                        checked={selectedUsers.includes(friend.id)}
+                                        onChange={() => toggleUserSelection(friend.id)}
+                                        className="modal-user-checkbox"
+                                    />
+                                    <label
+                                        htmlFor={`user-${friend.id}`}
+                                        className="modal-user-label"
+                                    >
+                                        <Avatar
+                                            url={friend.profilePictureUrl}
+                                            name={friend.name ?? friend.userName}
+                                            size={40}
+                                        />
+                                        <div className="modal-user-info">
+                                            <div className="modal-user-name">
+                                                {friend.name ?? friend.userName}
+                                            </div>
+                                            <div className="modal-user-email">
+                                                {friend.email}
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
+                            ))}
+                        </div>
+                    )}
 
-                    <div style={{ display: 'flex', gap: 10 }}>
+                    <div className="modal-selection-info">
+                        <span>Обрано: <strong>{selectedUsers.length}</strong> користувача(ів)</span>
+                    </div>
+
+                    <div className="modal-actions">
                         <button
                             type="submit"
                             disabled={selectedUsers.length === 0 || submitting}
-                            style={{
-                                flex: 1,
-                                padding: 10,
-                                background: selectedUsers.length === 0 || submitting ? '#ccc' : '#28a745',
-                                color: 'white',
-                                border: 'none',
-                                borderRadius: 4,
-                                cursor: selectedUsers.length === 0 || submitting ? 'not-allowed' : 'pointer',
-                                fontWeight: 'bold',
-                                fontSize: 14
-                            }}
+                            className="modal-btn modal-btn--primary"
                         >
-                            {submitting ? 'Додавання...' : 'Додати користувачів'}
+                            {submitting ? 'Додавання...' : '✓ Додати користувачів'}
                         </button>
                         <button
                             type="button"
                             onClick={onClose}
                             disabled={submitting}
-                            style={{
-                                flex: 1,
-                                padding: 10,
-                                background: '#6c757d',
-                                color: 'white',
-                                border: 'none',
-                                borderRadius: 4,
-                                cursor: submitting ? 'not-allowed' : 'pointer',
-                                fontWeight: 'bold',
-                                fontSize: 14
-                            }}
+                            className="modal-btn modal-btn--secondary"
                         >
                             Скасувати
                         </button>

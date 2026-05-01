@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import './Avatar.css';
 
 function getInitials(name) {
     if (!name) return '';
@@ -14,12 +15,12 @@ export default function Avatar({ url, name, size = 40, className, style }) {
         width: size,
         height: size,
         borderRadius: '50%',
-        background: '#ddd',
+        background: 'var(--border-light)',
         display: 'inline-flex',
         alignItems: 'center',
         justifyContent: 'center',
         fontWeight: 600,
-        color: '#333',
+        color: 'var(--text-secondary)',
         flex: '0 0 auto',
         overflow: 'hidden',
         ...style

@@ -19,6 +19,7 @@ namespace SocialNetwork.Application.Interfaces
         Task<IEnumerable<PostDto>> GetPostsByTagAsync(string tag, CancellationToken cancellationToken = default);
         Task<IEnumerable<PostDto>> GetPostsByDateRangeAsync(DateTime startDate, DateTime endDate, CancellationToken cancellationToken = default);
         Task<PaginetedResult<PostDto>> GetPagedAsync(int page, int pageSize, CancellationToken cancellationToken = default);
+        Task<PaginetedResult<PostDto>> SearchAsync(string query, int page, int pageSize, CancellationToken cancellationToken = default);
         Task ToggleReactionAsync(Guid postId, Guid userId, Guid reactionType, CancellationToken cancellationToken = default);
     }
 }
