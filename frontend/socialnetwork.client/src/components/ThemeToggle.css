@@ -1,21 +1,20 @@
 .theme-toggle {
-    background: none;
+    background: transparent !important;
     border: none;
     cursor: pointer;
     padding: 8px;
-    border-radius: 8px;
+    border-radius: 6px;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all 0.3s ease;
-    font-size: 20px;
-    box-shadow: none;
+    box-shadow: none !important;
 }
 
 .theme-toggle:hover {
-    background-color: var(--surface);
+    background-color: var(--hover-bg) !important;
     transform: scale(1.1);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: none !important;
 }
 
 .theme-toggle:active {
@@ -23,10 +22,33 @@
 }
 
 .theme-icon {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     transition: transform 0.3s ease;
+    width: 24px;
+    height: 24px;
+}
+
+.theme-icon svg {
+    width: 20px;
+    height: 20px;
+    stroke: var(--text-primary);
+    color: var(--text-primary);
 }
 
 .theme-toggle:hover .theme-icon {
     transform: rotate(20deg);
+}
+
+/* Light theme */
+[data-theme="light"] .theme-icon svg {
+    stroke: #333;
+    color: #333;
+}
+
+/* Dark theme */
+[data-theme="dark"] .theme-icon svg {
+    stroke: #f0f0f0;
+    color: #f0f0f0;
 }

@@ -24,19 +24,19 @@ export default function Search() {
     const [hasMoreUsers, setHasMoreUsers] = useState(false);
 
     useEffect(() => {
-        if (!query.trim()) {
+        const trimmedQuery = query.trim();
+        
+        if (!trimmedQuery) {
             setPosts([]);
             setUsers([]);
+            setPostPage(1);
+            setUserPage(1);
             return;
         }
 
         const fetchResults = async () => {
             setLoading(true);
             setError(null);
-            setPosts([]);
-            setUsers([]);
-            setPostPage(1);
-            setUserPage(1);
 
             try {
                 const tasks = [];
@@ -44,7 +44,7 @@ export default function Search() {
                 if (searchType === 'all' || searchType === 'posts') {
                     tasks.push(
                         authFetch(
-                            `${API_BASE}/api/Post/search?query=${encodeURIComponent(query)}&pageNumber=1&pageSize=${PAGE_SIZE}`
+                            `${API_BASE}/api/Post/search?query=${encodeURIComponent(trimmedQuery)}&pageNumber=1&pageSize=${PAGE_SIZE}`
                         )
                             .then(res => {
                                 if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -66,7 +66,7 @@ export default function Search() {
                 if (searchType === 'all' || searchType === 'users') {
                     tasks.push(
                         authFetch(
-                            `${API_BASE}/api/User/search?query=${encodeURIComponent(query)}&pageNumber=1&pageSize=${PAGE_SIZE}`
+                            `${API_BASE}/api/User/search?query=${encodeURIComponent(trimmedQuery)}&pageNumber=1&pageSize=${PAGE_SIZE}`
                         )
                             .then(res => {
                                 if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -88,12 +88,16 @@ export default function Search() {
                 await Promise.all(tasks);
             } catch (e) {
                 setError(e.message || 'Помилка пошуку');
+                setPosts([]);
+                setUsers([]);
             } finally {
                 setLoading(false);
             }
         };
 
         fetchResults();
+        setPostPage(1);
+        setUserPage(1);
     }, [query, searchType]);
 
     const loadMorePosts = async () => {

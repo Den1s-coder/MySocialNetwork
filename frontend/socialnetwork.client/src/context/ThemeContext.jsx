@@ -1,6 +1,6 @@
 import { createContext, useState, useEffect } from 'react';
 
-export const ThemeContext = createContext();
+export const ThemeContext = createContext(null);
 
 const LIGHT_THEME = 'light';
 const DARK_THEME = 'dark';
@@ -8,24 +8,33 @@ const STORAGE_KEY = 'app-theme';
 
 export function ThemeProvider({ children }) {
     const [theme, setTheme] = useState(() => {
-        // Спочатку перевіряємо localStorage
-        const savedTheme = localStorage.getItem(STORAGE_KEY);
-        if (savedTheme) {
-            return savedTheme;
+        if (typeof window === 'undefined') return LIGHT_THEME;
+        try {
+            return localStorage.getItem(STORAGE_KEY) || LIGHT_THEME;
+        } catch {
+            return LIGHT_THEME;
         }
-        
-        // Потім перевіряємо системні налаштування
-        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            return DARK_THEME;
-        }
-        
-        return LIGHT_THEME;
     });
 
-    // Застосовуємо тему до DOM
     useEffect(() => {
-        document.documentElement.setAttribute('data-theme', theme);
-        localStorage.setItem(STORAGE_KEY, theme);
+        try {
+            const savedTheme = localStorage.getItem(STORAGE_KEY);
+            if (savedTheme && savedTheme !== theme) {
+                setTheme(savedTheme);
+            }
+            document.documentElement.setAttribute('data-theme', savedTheme || theme);
+        } catch (e) {
+            console.error('Failed to load theme:', e);
+        }
+    }, []);
+
+    useEffect(() => {
+        try {
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem(STORAGE_KEY, theme);
+        } catch (e) {
+            console.error('Failed to save theme:', e);
+        }
     }, [theme]);
 
     const toggleTheme = () => {

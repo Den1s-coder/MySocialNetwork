@@ -1,5 +1,6 @@
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
+import { FiSearch, FiMessageSquare, FiUsers, FiSettings, FiLogOut, FiHome } from 'react-icons/fi';
 import { useAuth } from '../hooks/useAuth';
 import { authFetch } from '../hooks/authFetch';
 import NotificationBell from './NotificationBell';
@@ -131,9 +132,10 @@ export default function NavBar() {
     const handleSearch = (e) => {
         e.preventDefault();
         if (searchQuery.trim()) {
+            const queryToSearch = searchQuery;
             setShowSuggestions(false);
             setSearchQuery('');
-            navigate(`/search?q=${encodeURIComponent(searchQuery)}&type=all`);
+            navigate(`/search?q=${encodeURIComponent(queryToSearch)}&type=all`);
         }
     };
 
@@ -153,12 +155,24 @@ export default function NavBar() {
 
     return (
         <>
-            <aside className="nav-sidebar" aria-label="Главная навигация">
+            <aside className="nav-sidebar" aria-label="Головна навігація">
                 <nav className="sidebar-nav">
-                    <Link to="/" className="sidebar-item">Головна</Link>
-                    <Link to="/chats" className="sidebar-item">Чати</Link>
-                    <Link to="/friends" className="sidebar-item">Друзі</Link>
-                    <Link to="/settings" className="sidebar-item">Налаштування</Link>
+                    <Link to="/" className="sidebar-item">
+                        <FiHome size={20} />
+                        Головна
+                    </Link>
+                    <Link to="/chats" className="sidebar-item">
+                        <FiMessageSquare size={20} />
+                        Чати
+                    </Link>
+                    <Link to="/friends" className="sidebar-item">
+                        <FiUsers size={20} />
+                        Друзі
+                    </Link>
+                    <Link to="/settings" className="sidebar-item">
+                        <FiSettings size={20} />
+                        Налаштування
+                    </Link>
                 </nav>
             </aside>
 
@@ -178,7 +192,7 @@ export default function NavBar() {
                                 aria-label="Пошук"
                             />
                             <button type="submit" className="search-btn-navbar" aria-label="Здійснити пошук">
-                                🔍
+                                <FiSearch size={20} />
                             </button>
                         </form>
 
@@ -320,6 +334,7 @@ export default function NavBar() {
                                             className="menu-button menu-button--danger"
                                             type="button"
                                         >
+                                            <FiLogOut size={18} style={{ marginRight: '8px' }} />
                                             Вийти
                                         </button>
                                     </div>

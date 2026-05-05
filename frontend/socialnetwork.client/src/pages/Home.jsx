@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { FiTrash2 } from 'react-icons/fi';
 import './Home.css';
 import { authFetch } from '../hooks/authFetch';
 import Avatar from '../components/Avatar';
@@ -70,7 +71,6 @@ export default function Home() {
         return p.authorProfilePictureUrl || p.profilePictureUrl || p.authorAvatarUrl || p.userProfilePictureUrl || null;
     };
 
-    /** Оптимістичне оновлення реакцій поста у списку */
     const handlePostReactionChanged = (postId, updatedReactions, newCode) => {
         setPosts(prev => prev.map(p =>
             p.id === postId ? { ...p, reactions: updatedReactions, currentUserReactionCode: newCode } : p
@@ -188,7 +188,6 @@ export default function Home() {
                                             <div className="post-card__time">{timeStr}</div>
                                         </Link>
 
-                                        {/* Реакції поста */}
                                         <ReactionBar
                                             reactions={p.reactions ?? []}
                                             currentUserReactionCode={p.currentUserReactionCode ?? null}
