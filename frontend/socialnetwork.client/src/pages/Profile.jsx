@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
+import { FiEdit2, FiUserPlus, FiMessageCircle, FiChevronDown, FiChevronRight } from 'react-icons/fi';
+import { MdBlock } from 'react-icons/md';
 import './Profile.css';
 import { authFetch } from '../hooks/authFetch';
 import RoleBadge from '../components/RoleBadge';
@@ -61,7 +63,7 @@ export default function Profile() {
           }
           if (!res.ok) {
             if (res.status === 404) throw new Error('Користувача не знайдено');
-            throw new Error(`Не удалось загрузить профиль (${res.status})`);
+            throw new Error(`Не удалось загрузить профіль (${res.status})`);
           }
           profileData = await res.json();
         }
@@ -296,13 +298,18 @@ export default function Profile() {
                       className="profile-edit-btn"
                       title="Редагувати профіль"
                     >
-                      ✏️
+                      <FiEdit2 size={18} />
                     </button>
                   )}
                 </div>
                 <div className="profile-email">{profile.email}</div>
                 {profile.bio && <div className="profile-bio">{profile.bio}</div>}
-                {profile.isBanned && <div className="profile-banned">🚫 Заблокований</div>}
+                {profile.isBanned && (
+                  <div className="profile-banned">
+                    <MdBlock size={16} style={{ marginRight: '4px' }} />
+                    Заблокований
+                  </div>
+                )}
               </>
             )}
           </div>
@@ -313,7 +320,7 @@ export default function Profile() {
         <div className="profile-stats">
           <div className="stat-item">
             <div className="stat-number">{posts.length}</div>
-            <div className="stat-label">Пости</div>
+            <div className="stat-label">Пості</div>
           </div>
           <div className="stat-item">
             <div className="stat-number">{friends.length}</div>
@@ -328,15 +335,22 @@ export default function Profile() {
 
       {!isOwner && profile && (
         <div className="profile-actions">
-          <button onClick={sendFriendRequest} className="profile-button profile-button--primary">➕ Додати в друзі</button>
-          <button onClick={startPrivateChat} className="profile-button">💬 Написати</button>
+          <button onClick={sendFriendRequest} className="profile-button profile-button--primary">
+            <FiUserPlus size={18} style={{ marginRight: '8px' }} />
+            Додати в друзі
+          </button>
+          <button onClick={startPrivateChat} className="profile-button">
+            <FiMessageCircle size={18} style={{ marginRight: '8px' }} />
+            Написати
+          </button>
         </div>
       )}
 
       {friends.length > 0 && (
         <div className="friends-section">
           <h3 onClick={() => setShowFriends(!showFriends)} className="friends-title">
-            {showFriends ? '▼' : '▶'} Друзі ({friends.length})
+            {showFriends ? <FiChevronDown size={18} /> : <FiChevronRight size={18} />}
+            Друзі ({friends.length})
           </h3>
           {showFriends && (
             <div className="friends-grid">
@@ -355,9 +369,9 @@ export default function Profile() {
         </div>
       )}
 
-      <h3>Пости</h3>
+      <h3>Пості</h3>
       {posts.length === 0 ? (
-        <div className="posts-empty">Пости відсутні.</div>
+        <div className="posts-empty">Пості відсутні.</div>
       ) : (
         <ul className="post-list">
           {posts.map(p => {

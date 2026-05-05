@@ -19,8 +19,8 @@ import { ThemeProvider } from './context/ThemeContext.jsx';
 
 function App() {
   return (
-    <ThemeProvider>
-      <BrowserRouter>
+    <BrowserRouter>
+      <ThemeProvider>
         <NavBar />
         <div style={{ paddingTop: 56, paddingLeft: 200 }}>
           <Routes>
@@ -47,8 +47,8 @@ function App() {
             />
           </Routes>
         </div>
-      </BrowserRouter>
-    </ThemeProvider>
+      </ThemeProvider>
+    </BrowserRouter>
   )
 }
 

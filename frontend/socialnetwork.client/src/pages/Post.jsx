@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { FiTrash2 } from 'react-icons/fi';
 import { authFetch } from '../hooks/authFetch';
 import Avatar from '../components/Avatar';
 import ReactionBar from '../components/ReactionBar';
@@ -121,16 +122,31 @@ export default function Post() {
         }
     };
 
-    /** Оновлення реакцій поста оптимістично */
     const handlePostReactionChanged = (updatedReactions, newCode) => {
         setPost(prev => prev ? { ...prev, reactions: updatedReactions, currentUserReactionCode: newCode } : prev);
     };
 
-    /** Оновлення реакцій коментаря оптимістично */
     const handleCommentReactionChanged = (commentId, updatedReactions, newCode) => {
         setComments(prev => prev.map(c =>
             c.id === commentId ? { ...c, reactions: updatedReactions, currentUserReactionCode: newCode } : c
         ));
+    };
+
+    const deleteComment = async (commentId) => {
+        if (!authed) return;
+
+        if (!window.confirm('Ви впевнені, що хочете видалити цей коментар?')) return;
+
+        try {
+            const res = await authFetch(`${API_BASE}/api/Comment/${commentId}`, {
+                method: 'DELETE',
+            });
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+            setComments(prev => prev.filter(c => c.id !== commentId));
+        } catch (err) {
+            console.error('Не вдалося видалити коментар:', err);
+        }
     };
 
     if (status === 'loading') return <div style={{ maxWidth: 700, margin: '24px auto', padding: '0 12px' }}>Завантаження…</div>;
@@ -172,7 +188,6 @@ export default function Post() {
                 </div>
                 <p style={{ whiteSpace: 'pre-wrap', marginTop: 8 }}>{post.text}</p>
 
-                {/* Реакції поста */}
                 <ReactionBar
                     reactions={post.reactions ?? []}
                     currentUserReactionCode={post.currentUserReactionCode ?? null}
@@ -229,7 +244,6 @@ export default function Post() {
                                         {c.isBanned ? '(Заблоковано адміністрацією)' : c.text}
                                     </div>
 
-                                    {/* Реакції коментаря */}
                                     {!c.isBanned && (
                                         <ReactionBar
                                             reactions={c.reactions ?? []}
@@ -243,6 +257,16 @@ export default function Post() {
                                         />
                                     )}
                                 </div>
+
+                                {authed && (
+                                    <button
+                                        onClick={() => deleteComment(c.id)}
+                                        style={{ marginLeft: 'auto', padding: '8px', borderRadius: 4, background: 'none', border: 'none', cursor: 'pointer', color: '#888' }}
+                                        title="Видалити коментар"
+                                    >
+                                        <FiTrash2 />
+                                    </button>
+                                )}
                             </div>
                         ))}
                     </div>
