@@ -21,6 +21,8 @@ export default function Home() {
     const [loadingPage, setLoadingPage] = useState(false);
 
     const [newPostText, setNewPostText] = useState('');
+    const [newPostImage, setNewPostImage] = useState(null);
+    const [imagePreview, setImagePreview] = useState(null);
     const [createStatus, setCreateStatus] = useState('idle');
     const [createError, setCreateError] = useState(null);
 
@@ -77,6 +79,63 @@ export default function Home() {
         ));
     };
 
+    const handleImageChange = (e) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            if (!file.type.startsWith('image/')) {
+                setCreateError('Виберіть файл зображення');
+                return;
+            }
+            
+            if (file.size > 5 * 1024 * 1024) {
+                setCreateError('Розмір файлу не повинен перевищувати 5MB');
+                return;
+            }
+
+            setNewPostImage(file);
+            setCreateError(null);
+
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                setImagePreview(event.target.result);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const uploadImage = async () => {
+        if (!newPostImage) return null;
+
+        const formData = new FormData();
+        formData.append('file', newPostImage);
+
+        try {
+            const token = localStorage.getItem('accessToken');
+            const res = await fetch(`${API_BASE}/api/File/upload`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                },
+                body: formData
+            });
+
+            if (!res.ok) {
+                throw new Error(`HTTP ${res.status}`);
+            }
+
+            const data = await res.json();
+            return data.fileUrl;
+        } catch (err) {
+            setCreateError('Помилка завантаження зображення');
+            throw err;
+        }
+    };
+
+    const removeImage = () => {
+        setNewPostImage(null);
+        setImagePreview(null);
+    };
+
     const submitPost = async (e) => {
         e?.preventDefault();
         if (!isAuthenticated) {
@@ -98,9 +157,14 @@ export default function Home() {
         setCreateError(null);
 
         try {
+            let imageUrl = null;
+            if (newPostImage) {
+                imageUrl = await uploadImage();
+            }
+
             const res = await authFetch(`${API_BASE}/api/Post`, {
                 method: 'POST',
-                body: JSON.stringify({ text })
+                body: JSON.stringify({ text, imageUrl })
             });
 
             if (!res.ok) {
@@ -110,6 +174,8 @@ export default function Home() {
 
             setCreateStatus('success');
             setNewPostText('');
+            setNewPostImage(null);
+            setImagePreview(null);
             setPage(1);
             await loadPosts(1);
         } catch (err) {
@@ -139,10 +205,51 @@ export default function Home() {
                             style={{ resize: 'vertical' }}
                             required
                         />
+                        
+                        <div>
+                            <label style={{ display: 'block', marginBottom: 8 }}>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleImageChange}
+                                    disabled={createStatus === 'loading'}
+                                    style={{ display: 'block' }}
+                                />
+                            </label>
+                            
+                            {imagePreview && (
+                                <div style={{ position: 'relative', marginBottom: 12 }}>
+                                    <img 
+                                        src={imagePreview} 
+                                        alt="Попередження" 
+                                        style={{ maxWidth: '100%', maxHeight: 300, borderRadius: 4 }}
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={removeImage}
+                                        disabled={createStatus === 'loading'}
+                                        style={{
+                                            position: 'absolute',
+                                            top: 4,
+                                            right: 4,
+                                            padding: '4px 8px',
+                                            background: 'rgba(0,0,0,0.5)',
+                                            color: 'white',
+                                            border: 'none',
+                                            borderRadius: 4,
+                                            cursor: 'pointer'
+                                        }}
+                                    >
+                                        ✕
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <div style={{ fontSize: 12, color: '#666' }}>{newPostText.length}/5000</div>
                             <div style={{ display: 'flex', gap: 8 }}>
-                                <button type="button" onClick={() => { setNewPostText(''); setCreateError(null); }} disabled={createStatus === 'loading'}>
+                                <button type="button" onClick={() => { setNewPostText(''); removeImage(); setCreateError(null); }} disabled={createStatus === 'loading'}>
                                     Очистити
                                 </button>
                                 <button type="submit" disabled={createStatus === 'loading'}>
@@ -185,6 +292,19 @@ export default function Home() {
                                     <>
                                         <Link to={`/post/${p.id}`} className="post-card__link">
                                             <div className="post-card__text">{p.text}</div>
+                                            {p.imageUrl && (
+                                                <img 
+                                                    src={p.imageUrl} 
+                                                    alt="Пост" 
+                                                    style={{
+                                                        maxWidth: '100%',
+                                                        maxHeight: 400,
+                                                        borderRadius: 4,
+                                                        marginTop: 8,
+                                                        objectFit: 'cover'
+                                                    }}
+                                                />
+                                            )}
                                             <div className="post-card__time">{timeStr}</div>
                                         </Link>
 

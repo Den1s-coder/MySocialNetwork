@@ -99,6 +99,38 @@ namespace SocialNetwork.API.Controllers
         }
 
         [Authorize]
+        [HttpPost("{postId:guid}/image")]
+        public async Task<IActionResult> UploadPostImage(Guid postId, IFormFile image)
+        {
+            if (image == null || image.Length == 0)
+                return BadRequest(new { message = "No image uploaded." });
+
+            var allowedMimeTypes = new[] { "image/jpeg", "image/png", "image/gif", "image/webp" };
+            if (!allowedMimeTypes.Contains(image.ContentType?.ToLower()))
+                return BadRequest(new { message = "Only image files are allowed." });
+
+            if (image.Length > 10 * 1024 * 1024)
+                return BadRequest(new { message = "File size must not exceed 10MB." });
+
+            try
+            {
+                var extension = Path.GetExtension(image.FileName);
+                var filename = $"post_{postId}_{Guid.NewGuid()}{extension}";
+
+                using var stream = image.OpenReadStream();
+                var imageUrl = await _cloudStorageService.UploadFileAsync(stream, filename, image.ContentType);
+
+                _logger.LogInformation("Post image uploaded successfully: {FileName}", filename);
+                return Ok(new { imageUrl });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error uploading post image");
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "Error uploading image." });
+            }
+        }
+
+        [Authorize]
         [HttpPost("{postId:guid}/react")]
         public async Task<IActionResult> ToggleReaction(Guid postId, [FromQuery] ToggleReactionRequest req, CancellationToken cancellationToken = default)
         {
