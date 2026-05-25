@@ -12,6 +12,9 @@ namespace SocialNetwork.Application.DTO.Posts
     {
         [Required]
         public string Text { get; set; }
+        
+        public string? ImageUrl { get; set; }
+        
         [JsonIgnore]
         public Guid UserId { get; set; }
     }

@@ -67,7 +67,7 @@ namespace SocialNetwork.Application.Service
                 throw new InvalidOperationException("Banned users cannot create posts.");
 
             await _postRepository.CreateAsync(post);
-            _logger.LogInformation("Post created successfully. AuthorId: {UserId}", post.UserId);
+            _logger.LogInformation("Post created successfully. AuthorId: {UserId}, ImageUrl: {ImageUrl}", post.UserId, post.ImageUrl);
 
             var evt = new PostCreatedEvent
             (
