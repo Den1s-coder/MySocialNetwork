@@ -286,3 +286,29 @@
     width: 100%;
     padding: 10px 12px;
 }
+
+.chat-message-photo {
+    max-width: 300px;
+    max-height: 300px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    object-fit: cover;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.chat-message-photo:hover {
+    transform: scale(1.02);
+}
+
+.chat-input-file {
+    display: none;
+}
+
+.chat-message-bubble p {
+    margin: 0;
+}
+
+.chat-message-bubble img + p {
+    margin-top: 8px;
+}

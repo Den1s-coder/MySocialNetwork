@@ -88,15 +88,15 @@ export function useChatHub({ baseUrl, getToken, chatId, onMessage }) {
         }
     };
 
-    const sendMessage = async (_chatId, content) => {
+    const sendMessage = async (_chatId, content, photoUrl = null) => {
         const conn = connRef.current;
         if (!conn || conn.state !== signalR.HubConnectionState.Connected) {
             console.warn('SignalR not connected');
             return;
         }
         try {
-            console.log('Sending message:', { _chatId, content });
-            await conn.invoke('SendMessage', _chatId, content);
+            console.log('Sending message:', { _chatId, content, photoUrl });
+            await conn.invoke('SendMessage', _chatId, content, photoUrl);
             console.log('Message sent');
         } catch (e) {
             console.error('SendMessage failed', e);

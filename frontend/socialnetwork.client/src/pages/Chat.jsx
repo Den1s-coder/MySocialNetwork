@@ -25,6 +25,9 @@ export default function Chat() {
     const [userRole, setUserRole] = useState(null);
     const [deleting, setDeleting] = useState(false);
     const [showAddUserModal, setShowAddUserModal] = useState(false);
+    const [uploadingPhoto, setUploadingPhoto] = useState(false);
+    const [selectedPhoto, setSelectedPhoto] = useState(null);
+    const fileInputRef = useRef(null);
 
     const [participantsMap, setParticipantsMap] = useState({});
     const participantsRef = useRef({});
@@ -153,11 +156,58 @@ export default function Chat() {
 
     const [text, setText] = useState('');
 
+    const handlePhotoSelect = (e) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setSelectedPhoto(file);
+        }
+    };
+
+    const uploadPhoto = async (file) => {
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            const res = await authFetch(`${API_BASE}/api/File/upload`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${accessToken}` },
+                body: formData
+            });
+
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const { fileUrl } = await res.json();
+            return fileUrl;
+        } catch (e) {
+            console.error('Помилка завантаження фото:', e);
+            alert('Не вдалося завантажити фото. ' + (e.message || ''));
+            return null;
+        }
+    };
+
     const handleSend = async (e) => {
         e.preventDefault();
-        if (!text.trim() || !connected || !chatId) return;
-        await sendMessage(chatId, text.trim());
-        setText('');
+        if ((!text.trim() && !selectedPhoto) || !connected || !chatId) return;
+
+        setUploadingPhoto(true);
+        try {
+            let photoUrl = null;
+            if (selectedPhoto) {
+                photoUrl = await uploadPhoto(selectedPhoto);
+                if (!photoUrl) {
+                    setUploadingPhoto(false);
+                    return;
+                }
+                setSelectedPhoto(null);
+                if (fileInputRef.current) {
+                    fileInputRef.current.value = '';
+                }
+            }
+
+            await sendMessage(chatId, text.trim() || '', photoUrl);
+            setText('');
+        } finally {
+            setUploadingPhoto(false);
+        }
     };
 
     const handleDeleteChat = async () => {
@@ -235,7 +285,14 @@ export default function Chat() {
                                                 {isCurrentUser ? currentUserName : m.senderName || m.senderId} • {new Date(m.sentAt).toLocaleString()}
                                             </div>
                                             <div className={`chat-message-bubble ${isCurrentUser ? 'chat-message-bubble--sent' : 'chat-message-bubble--received'}`}>
-                                                {m.content}
+                                                {m.photoUrl && (
+                                                    <img 
+                                                        src={m.photoUrl} 
+                                                        alt="Chat photo" 
+                                                        className="chat-message-photo"
+                                                    />
+                                                )}
+                                                {m.content && <p>{m.content}</p>}
                                             </div>
                                             <ReactionBar 
                                                 reactions={m.reactions || []}
@@ -263,6 +320,23 @@ export default function Chat() {
 
                     <form onSubmit={handleSend} className="chat-input-form">
                         <input
+                            type="file"
+                            ref={fileInputRef}
+                            onChange={handlePhotoSelect}
+                            accept="image/*"
+                            className="chat-input-file"
+                            style={{ display: 'none' }}
+                        />
+                        <button
+                            type="button"
+                            onClick={() => fileInputRef.current?.click()}
+                            disabled={uploadingPhoto}
+                            className="chat-btn chat-btn--secondary"
+                            title="Додати фото"
+                        >
+                            📷 {selectedPhoto ? 'Фото вибрано' : 'Фото'}
+                        </button>
+                        <input
                             value={text}
                             onChange={e => setText(e.target.value)}
                             placeholder="Введіть повідомлення..."
@@ -270,10 +344,10 @@ export default function Chat() {
                         />
                         <button
                             type="submit"
-                            disabled={!connected || !text.trim()}
+                            disabled={!connected || (!text.trim() && !selectedPhoto) || uploadingPhoto}
                             className="chat-btn chat-btn--primary"
                         >
-                            Відправити
+                            {uploadingPhoto ? 'Завантаження...' : 'Відправити'}
                         </button>
                     </form>
                 </div>

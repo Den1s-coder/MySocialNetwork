@@ -57,7 +57,7 @@ namespace SocialNetwork.API.Hubs
             }
         }
 
-        public async Task SendMessage(Guid chatId, string content)
+        public async Task SendMessage(Guid chatId, string content, string? photoUrl = null)
         {
             try
             {
@@ -77,6 +77,7 @@ namespace SocialNetwork.API.Hubs
                     SenderId = userId,
                     ChatId = chatId,
                     Content = content,
+                    PhotoUrl = photoUrl,
                     SentAt = DateTime.UtcNow
                 };
 
