@@ -94,6 +94,39 @@ namespace SocialNetwork.API.Hubs
             }
         }
 
+        public async Task EditMessage(Guid messageId, string newContent)
+        {
+            try
+            {
+                var userId = Guid.Parse(Context.User.Claims.First(c => c.Type == ClaimTypes.Sid).Value);
+
+                var message = await _messageRepository.GetByIdAsync(messageId);
+                if (message == null)
+                {
+                    throw new HubException("Message not found");
+                }
+
+                if (message.SenderId != userId)
+                {
+                    throw new HubException("You can only edit your own messages");
+                }
+
+                message.Content = newContent;
+                await _messageRepository.UpdateAsync(message);
+
+                var messageDto = _mapper.Map<MessageDto>(message);
+
+                await Clients.Group(message.ChatId.ToString()).SendAsync("MessageUpdated", messageDto);
+
+                _logger.LogInformation("EditMessage: Message {MessageId} edited successfully by user {UserId}", messageId, userId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "EditMessage: Error editing message {MessageId}", messageId);
+                throw;
+            }
+        }
+
         public async Task NotifyUserAdded(Guid chatId, Guid addedUserId, string userName)
         {
             try

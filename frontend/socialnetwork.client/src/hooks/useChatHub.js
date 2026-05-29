@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import * as signalR from '@microsoft/signalr';
 import { createChatConnection } from '../signalr';
 
-export function useChatHub({ baseUrl, getToken, onMessage, onMessageUpdated }) {
+export function useChatHub({ baseUrl, getToken, chatId, onMessage, onMessageUpdated }) {
     const [connected, setConnected] = useState(false);
     const connRef = useRef(null);
     const startPromiseRef = useRef(null);
@@ -72,6 +72,7 @@ export function useChatHub({ baseUrl, getToken, onMessage, onMessageUpdated }) {
         return () => {
             mountedRef.current = false;
             try { connection.off('ReceiveMessage', onReceive); } catch {}
+            try { connection.off('MessageUpdated', onUpdated); } catch {}
             try {
                 const p = startPromiseRef.current;
                 if (p) {
@@ -83,7 +84,7 @@ export function useChatHub({ baseUrl, getToken, onMessage, onMessageUpdated }) {
                 }
             } catch {}
         };
-    }, [baseUrl, getToken, onMessage]);
+    }, [baseUrl, getToken, onMessage, onMessageUpdated]);
 
     const joinChat = async (_chatId, userId) => {
         try {
