@@ -1,4 +1,5 @@
 ﻿import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { FiBell } from 'react-icons/fi';
 import { useAuth } from '../hooks/useAuth';
 import { authFetch } from '../hooks/authFetch';
 import { useNotificationHub } from '../hooks/useNotificationHub';
@@ -121,7 +122,7 @@ export default function NotificationBell({ apiBase = API_BASE }) {
     return (
         <div className="notification-bell" style={{ position: 'relative' }}>
             <button className="bell-button" onClick={onToggleOpen} title="Уведомления">
-                🔔
+                <FiBell size={20} strokeWidth={2} />
                 {unreadCount > 0 && <span className="badge">{unreadCount}</span>}
             </button>
 

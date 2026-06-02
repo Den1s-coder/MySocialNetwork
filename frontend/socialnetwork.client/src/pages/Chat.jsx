@@ -25,6 +25,11 @@ export default function Chat() {
     const [userRole, setUserRole] = useState(null);
     const [deleting, setDeleting] = useState(false);
     const [showAddUserModal, setShowAddUserModal] = useState(false);
+    const [uploadingPhoto, setUploadingPhoto] = useState(false);
+    const [selectedPhoto, setSelectedPhoto] = useState(null);
+    const [editingMessageId, setEditingMessageId] = useState(null);
+    const [editText, setEditText] = useState('');
+    const fileInputRef = useRef(null);
 
     const [participantsMap, setParticipantsMap] = useState({});
     const participantsRef = useRef({});
@@ -142,22 +147,107 @@ export default function Chat() {
         });
     }, []);
 
+    const onMessageUpdated = useCallback((updatedMsg) => {
+        console.log('onMessageUpdated called with:', updatedMsg);
+        setMessages(prev => 
+            prev.map(msg => 
+                msg.id === updatedMsg.id 
+                    ? { ...msg, content: updatedMsg.content, editedAt: updatedMsg.editedAt }
+                    : msg
+            )
+        );
+        setEditingMessageId(null);
+        setEditText('');
+    }, []);
+
     const getToken = useCallback(() => accessToken, [accessToken]);
 
-    const { connected, sendMessage, joinChat } = useChatHub({
+    const { connected, sendMessage, joinChat, editMessage } = useChatHub({
         baseUrl: BASE_URL,
         getToken,
         chatId,
-        onMessage
+        onMessage,
+        onMessageUpdated
     });
 
     const [text, setText] = useState('');
 
+    const handlePhotoSelect = (e) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setSelectedPhoto(file);
+        }
+    };
+
+    const uploadPhoto = async (file) => {
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            const res = await authFetch(`${API_BASE}/api/File/upload`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${accessToken}` },
+                body: formData
+            });
+
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const { fileUrl } = await res.json();
+            return fileUrl;
+        } catch (e) {
+            console.error('Помилка завантаження фото:', e);
+            alert('Не вдалося завантажити фото. ' + (e.message || ''));
+            return null;
+        }
+    };
+
     const handleSend = async (e) => {
         e.preventDefault();
-        if (!text.trim() || !connected || !chatId) return;
-        await sendMessage(chatId, text.trim());
-        setText('');
+        if ((!text.trim() && !selectedPhoto) || !connected || !chatId) return;
+
+        setUploadingPhoto(true);
+        try {
+            let photoUrl = null;
+            if (selectedPhoto) {
+                photoUrl = await uploadPhoto(selectedPhoto);
+                if (!photoUrl) {
+                    setUploadingPhoto(false);
+                    return;
+                }
+                setSelectedPhoto(null);
+                if (fileInputRef.current) {
+                    fileInputRef.current.value = '';
+                }
+            }
+
+            await sendMessage(chatId, text.trim() || '', photoUrl);
+            setText('');
+        } finally {
+            setUploadingPhoto(false);
+        }
+    };
+
+    const handleEditMessage = (messageId, currentContent) => {
+        setEditingMessageId(messageId);
+        setEditText(currentContent);
+    };
+
+    const handleSaveEdit = async () => {
+        if (!editText.trim()) {
+            alert('Текст повідомлення не може бути порожнім');
+            return;
+        }
+
+        try {
+            await editMessage(editingMessageId, editText.trim());
+        } catch (e) {
+            console.error('Помилка редагування повідомлення:', e);
+            alert('Не вдалося відредагувати повідомлення');
+        }
+    };
+
+    const handleCancelEdit = () => {
+        setEditingMessageId(null);
+        setEditText('');
     };
 
     const handleDeleteChat = async () => {
@@ -223,6 +313,7 @@ export default function Chat() {
                         ) : (
                             messages.map(m => {
                                 const isCurrentUser = String(m.senderId).toLowerCase() === String(currentUserId).toString().toLowerCase();
+                                const isEditing = editingMessageId === m.id;
 
                                 return (
                                     <div
@@ -232,11 +323,54 @@ export default function Chat() {
                                         {!isCurrentUser && <Avatar url={m.senderProfilePictureUrl} name={m.senderName} size={36} />}
                                         <div className="chat-message-content">
                                             <div className="chat-message-meta">
-                                                {isCurrentUser ? currentUserName : m.senderName || m.senderId} • {new Date(m.sentAt).toLocaleString()}
+                                                   {isCurrentUser ? currentUserName : m.senderName || m.senderId} • {new Date(m.sentAt).toLocaleString()}
+                                                {m.editedAt && <span className="chat-message-edited"> (відредаговано)</span>}
                                             </div>
-                                            <div className={`chat-message-bubble ${isCurrentUser ? 'chat-message-bubble--sent' : 'chat-message-bubble--received'}`}>
-                                                {m.content}
-                                            </div>
+                                            {isEditing ? (
+                                                <div className="chat-message-edit-form">
+                                                    <input
+                                                        type="text"
+                                                        value={editText}
+                                                        onChange={(e) => setEditText(e.target.value)}
+                                                        className="chat-message-edit-input"
+                                                        autoFocus
+                                                    />
+                                                    <button
+                                                        onClick={handleSaveEdit}
+                                                        className="chat-btn chat-btn--primary"
+                                                    >
+                                                        Зберегти
+                                                    </button>
+                                                    <button
+                                                        onClick={handleCancelEdit}
+                                                        className="chat-btn chat-btn--secondary"
+                                                    >
+                                                        Відміна
+                                                    </button>
+                                                </div>
+                                            ) : (
+                                                <>
+                                                    <div className={`chat-message-bubble ${isCurrentUser ? 'chat-message-bubble--sent' : 'chat-message-bubble--received'}`}>
+                                                        {m.photoUrl && (
+                                                            <img 
+                                                                src={m.photoUrl} 
+                                                                alt="Chat photo" 
+                                                                className="chat-message-photo"
+                                                            />
+                                                        )}
+                                                        {m.content && <p>{m.content}</p>}
+                                                    </div>
+                                                    {isCurrentUser && (
+                                                        <button
+                                                            onClick={() => handleEditMessage(m.id, m.content)}
+                                                            className="chat-message-action-btn"
+                                                            title="Редагувати повідомлення"
+                                                        >
+                                                            ✏️
+                                                        </button>
+                                                    )}
+                                                </>
+                                            )}
                                             <ReactionBar 
                                                 reactions={m.reactions || []}
                                                 currentUserReactionCode={m.currentUserReactionCode}
@@ -263,6 +397,23 @@ export default function Chat() {
 
                     <form onSubmit={handleSend} className="chat-input-form">
                         <input
+                            type="file"
+                            ref={fileInputRef}
+                            onChange={handlePhotoSelect}
+                            accept="image/*"
+                            className="chat-input-file"
+                            style={{ display: 'none' }}
+                        />
+                        <button
+                            type="button"
+                            onClick={() => fileInputRef.current?.click()}
+                            disabled={uploadingPhoto}
+                            className="chat-btn chat-btn--secondary"
+                            title="Додати фото"
+                        >
+                            📷 {selectedPhoto ? 'Фото вибрано' : 'Фото'}
+                        </button>
+                        <input
                             value={text}
                             onChange={e => setText(e.target.value)}
                             placeholder="Введіть повідомлення..."
@@ -270,10 +421,10 @@ export default function Chat() {
                         />
                         <button
                             type="submit"
-                            disabled={!connected || !text.trim()}
+                            disabled={!connected || (!text.trim() && !selectedPhoto) || uploadingPhoto}
                             className="chat-btn chat-btn--primary"
                         >
-                            Відправити
+                            {uploadingPhoto ? 'Завантаження...' : 'Відправити'}
                         </button>
                     </form>
                 </div>

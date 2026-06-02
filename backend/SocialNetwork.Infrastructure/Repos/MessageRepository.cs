@@ -99,8 +99,18 @@ namespace SocialNetwork.Infrastructure.Repos
 
         public async Task UpdateAsync(Message message, CancellationToken cancellationToken = default)
         {
-            _context.Messages.Update(message);
-            await _context.SaveChangesAsync();
+            try
+            {
+                message.EditedAt = DateTime.UtcNow;
+                _context.Messages.Update(message);
+                await _context.SaveChangesAsync(cancellationToken);
+                _logger.LogInformation("MessageRepository.UpdateAsync: Message {MessageId} updated successfully", message.Id);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "MessageRepository.UpdateAsync: Error updating message {MessageId}", message.Id);
+                throw;
+            }
         }
 
         public async Task ToggleReactionAsync(Guid messageId, Guid UserId, Guid ReactionTypeId, CancellationToken cancellationToken = default)

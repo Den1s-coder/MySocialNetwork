@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import * as signalR from '@microsoft/signalr';
 import { createChatConnection } from '../signalr';
 
-export function useChatHub({ baseUrl, getToken, chatId, onMessage }) {
+export function useChatHub({ baseUrl, getToken, chatId, onMessage, onMessageUpdated }) {
     const [connected, setConnected] = useState(false);
     const connRef = useRef(null);
     const startPromiseRef = useRef(null);
@@ -18,7 +18,13 @@ export function useChatHub({ baseUrl, getToken, chatId, onMessage }) {
             onMessage?.(msg);
         };
 
+        const onUpdated = (msg) => {
+            console.log('Message updated:', msg);
+            onMessageUpdated?.(msg);
+        };
+
         connection.on('ReceiveMessage', onReceive);
+        connection.on('MessageUpdated', onUpdated);
 
         connection.onreconnecting((err) => {
             console.warn('SignalR reconnecting', err);
@@ -66,6 +72,7 @@ export function useChatHub({ baseUrl, getToken, chatId, onMessage }) {
         return () => {
             mountedRef.current = false;
             try { connection.off('ReceiveMessage', onReceive); } catch {}
+            try { connection.off('MessageUpdated', onUpdated); } catch {}
             try {
                 const p = startPromiseRef.current;
                 if (p) {
@@ -77,7 +84,7 @@ export function useChatHub({ baseUrl, getToken, chatId, onMessage }) {
                 }
             } catch {}
         };
-    }, [baseUrl, getToken, onMessage]);
+    }, [baseUrl, getToken, onMessage, onMessageUpdated]);
 
     const joinChat = async (_chatId, userId) => {
         try {
@@ -88,15 +95,15 @@ export function useChatHub({ baseUrl, getToken, chatId, onMessage }) {
         }
     };
 
-    const sendMessage = async (_chatId, content) => {
+    const sendMessage = async (_chatId, content, photoUrl = null) => {
         const conn = connRef.current;
         if (!conn || conn.state !== signalR.HubConnectionState.Connected) {
             console.warn('SignalR not connected');
             return;
         }
         try {
-            console.log('Sending message:', { _chatId, content });
-            await conn.invoke('SendMessage', _chatId, content);
+            console.log('Sending message:', { _chatId, content, photoUrl });
+            await conn.invoke('SendMessage', _chatId, content, photoUrl);
             console.log('Message sent');
         } catch (e) {
             console.error('SendMessage failed', e);
@@ -104,5 +111,21 @@ export function useChatHub({ baseUrl, getToken, chatId, onMessage }) {
         }
     };
 
-    return { connected, joinChat, sendMessage };
+    const editMessage = async (messageId, newContent) => {
+        const conn = connRef.current;
+        if (!conn || conn.state !== signalR.HubConnectionState.Connected) {
+            console.warn('SignalR not connected');
+            return;
+        }
+        try {
+            console.log('Editing message:', { messageId, newContent });
+            await conn.invoke('EditMessage', messageId, newContent);
+            console.log('Message edited');
+        } catch (e) {
+            console.error('EditMessage failed', e);
+            throw e;
+        }
+    };
+
+    return { connected, joinChat, sendMessage, editMessage };
 }
