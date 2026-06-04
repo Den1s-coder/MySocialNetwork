@@ -31,8 +31,8 @@ export default function EmojiPickerButton({ onEmojiSelect }) {
                 type="button"
                 onClick={() => setShowPicker(!showPicker)}
                 className="emoji-picker-button"
-                title="Ð”Ð¾Ð´Ð°Ñ‚Ð¸ ÐµÐ¼Ð¾Ð´Ð·Ñ–"
-                aria-label="Ð•Ð¼Ð¾Ð´Ð·Ñ–"
+                title="Äîäàòè åìîäç³"
+                aria-label="Åìîäç³"
             >
                 <MdEmojiEmotions size={20} />
             </button>
