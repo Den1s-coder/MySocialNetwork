@@ -6,6 +6,7 @@ import { authFetch } from '../hooks/authFetch';
 import Avatar from '../components/Avatar';
 import ReactionBar from '../components/ReactionBar';
 import AddUsersToChatModal from '../components/AddUsersToChatModal';
+import EmojiPickerButton from '../components/EmojiPickerButton';
 import './Chat.css';
 
 const BASE_URL = import.meta.env.VITE_API_BASE || '';
@@ -54,6 +55,7 @@ export default function Chat() {
     const [selectedPhoto, setSelectedPhoto] = useState(null);
     const [editingMessageId, setEditingMessageId] = useState(null);
     const [editText, setEditText] = useState('');
+    const [text, setText] = useState('');
     const fileInputRef = useRef(null);
 
     const [participantsMap, setParticipantsMap] = useState({});
@@ -194,8 +196,6 @@ export default function Chat() {
         onMessage,
         onMessageUpdated
     });
-
-    const [text, setText] = useState('');
 
     const handlePhotoSelect = (e) => {
         const file = e.target.files?.[0];
@@ -563,12 +563,19 @@ export default function Chat() {
                         >
                             📷 {selectedPhoto ? 'Фото вибрано' : 'Фото'}
                         </button>
-                        <input
-                            value={text}
-                            onChange={e => setText(e.target.value)}
-                            placeholder="Введіть повідомлення..."
-                            className="chat-input"
-                        />
+                        <div style={{ position: 'relative' }} className="chat-input-container">
+                            <input
+                                value={text}
+                                onChange={e => setText(e.target.value)}
+                                placeholder="Введіть повідомлення..."
+                                className="chat-input"
+                            />
+                            <div style={{ position: 'absolute', bottom: 8, left: 8 }}>
+                                <EmojiPickerButton 
+                                    onEmojiSelect={(emoji) => setText(prev => prev + emoji)}
+                                />
+                            </div>
+                        </div>
                         <button
                             type="submit"
                             disabled={!connected || (!text.trim() && !selectedPhoto) || uploadingPhoto}

@@ -5,6 +5,7 @@ import './Home.css';
 import { authFetch } from '../hooks/authFetch';
 import Avatar from '../components/Avatar';
 import ReactionBar from '../components/ReactionBar';
+import EmojiPickerButton from '../components/EmojiPickerButton';
 import { useAuth } from '../hooks/useAuth';
 
 const API_BASE = 'https://localhost:7142';
@@ -196,15 +197,22 @@ export default function Home() {
             {isAuthenticated ? (
                 <section className="create-post" style={{ marginBottom: 16, padding: 12, border: '1px solid #e6e6e6', borderRadius: 8 }}>
                     <form onSubmit={submitPost} style={{ display: 'grid', gap: 8 }}>
-                        <textarea
-                            placeholder="Що у вас на думці?"
-                            value={newPostText}
-                            onChange={(e) => setNewPostText(e.target.value)}
-                            rows={4}
-                            maxLength={5000}
-                            style={{ resize: 'vertical' }}
-                            required
-                        />
+                        <div style={{ position: 'relative' }}>
+                            <textarea
+                                placeholder="Що у вас на думці?"
+                                value={newPostText}
+                                onChange={(e) => setNewPostText(e.target.value)}
+                                rows={4}
+                                maxLength={5000}
+                                style={{ resize: 'vertical', width: '100%' }}
+                                required
+                            />
+                            <div style={{ position: 'absolute', bottom: 8, left: 8 }}>
+                                <EmojiPickerButton 
+                                    onEmojiSelect={(emoji) => setNewPostText(prev => prev + emoji)}
+                                />
+                            </div>
+                        </div>
                         
                         <div>
                             <label style={{ display: 'block', marginBottom: 8 }}>
