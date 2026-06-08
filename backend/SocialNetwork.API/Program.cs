@@ -7,6 +7,7 @@ using SocialNetwork.API.Services;
 using SocialNetwork.Application;
 using SocialNetwork.Application.Interfaces;
 using SocialNetwork.Application.Mappings;
+using SocialNetwork.Domain.Enums;
 using SocialNetwork.Domain.Interfaces;
 using SocialNetwork.Infrastructure;
 using SocialNetwork.Infrastructure.Services;

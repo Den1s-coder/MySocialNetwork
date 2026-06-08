@@ -18,7 +18,7 @@ namespace SocialNetwork.Infrastructure.Services
         {
             _blobServiceClient = blobServiceClient;
             _containers = containers ?? throw new ArgumentNullException(nameof(containers));
-            _apiBaseUrl = apiBaseUrl ?? "http://20.2.91.81"; 
+            _apiBaseUrl = apiBaseUrl ?? "https://localhost:7142"; 
 
             var parts = connectionString.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
             _accountName = parts.FirstOrDefault(p => p.StartsWith("AccountName=", StringComparison.OrdinalIgnoreCase))?.Split('=', 2)[1];
@@ -76,10 +76,10 @@ namespace SocialNetwork.Infrastructure.Services
 
         public string GetFileUrl(string fileName, ContainerType containerType)
         {
-            if (!_containers.TryGetValue(containerType, out _))
+            if (!_containers.TryGetValue(containerType, out var containerName))
                 throw new InvalidOperationException($"Container type {containerType} is not configured.");
 
-            return $"{_apiBaseUrl.TrimEnd('/')}/api/File/{containerType}/{fileName}";
+            return $"{_apiBaseUrl.TrimEnd('/')}/api/File/{containerName}/{fileName}";
         }
 
         public async Task<bool> FileExistsAsync(string fileName, ContainerType containerType)
