@@ -24,7 +24,10 @@ export function createNotificationConnection({ baseUrl, getToken }) {
 			accessTokenFactory: async () => {
 				const token = await getToken?.();
 				return token ?? '';
-			}
+			},
+			skipNegotiation: true,
+			transport: signalR.HttpTransportType.WebSockets,
+			withCredentials: true
 		})
 		.withAutomaticReconnect({
 			nextRetryDelayInMilliseconds: ctx => {
