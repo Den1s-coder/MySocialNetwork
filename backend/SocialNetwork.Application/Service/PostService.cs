@@ -18,18 +18,21 @@ namespace SocialNetwork.Application.Service
         private readonly IMapper _mapper;
         private readonly ILogger<PostService> _logger;
         private readonly IEventDispatcher _eventDispatcher;
+        private readonly ICloudStorageService _cloudStorageService; // Додано для зберігання фото
 
         public PostService(IPostRepository postRepository,
             IUserRepository userRepository, 
             IMapper mapper,
             ILogger<PostService> logger,
-            IEventDispatcher eventDispatcher)
+            IEventDispatcher eventDispatcher,
+            ICloudStorageService cloudStorageService) // Додано в конструктор
         {
             _postRepository = postRepository;
             _userRepository = userRepository;
             _mapper = mapper;
             _logger = logger;
             _eventDispatcher = eventDispatcher;
+            _cloudStorageService = cloudStorageService; // Ініціалізація
         }
         public async Task BanPost(Guid id, CancellationToken cancellationToken = default)
         {

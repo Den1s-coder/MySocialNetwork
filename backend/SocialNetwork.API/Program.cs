@@ -7,9 +7,11 @@ using SocialNetwork.API.Services;
 using SocialNetwork.Application;
 using SocialNetwork.Application.Interfaces;
 using SocialNetwork.Application.Mappings;
+using SocialNetwork.Domain.Enums;
 using SocialNetwork.Domain.Interfaces;
 using SocialNetwork.Infrastructure;
 using SocialNetwork.Infrastructure.Services;
+using System.Collections.Generic;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,11 +35,19 @@ builder.Services.AddApplication();
 builder.Services.AddScoped<INotificationPublisher, NotificationPublisher>();
 
 var storageConnection = builder.Configuration.GetValue<string>("AzureStorage:ConnectionString");
-var storageContainer = builder.Configuration.GetValue<string>("AzureStorage:ContainerName");
+var containerConfig = builder.Configuration.GetSection("AzureStorage:Containers");
+
+var containers = new Dictionary<ContainerType, string>
+{
+    { ContainerType.Avatars, containerConfig.GetValue<string>("Avatars") },
+    { ContainerType.PostPhotos, containerConfig.GetValue<string>("PostPhotos") },
+    { ContainerType.CommentPhotos, containerConfig.GetValue<string>("CommentPhotos") },
+    { ContainerType.MessagePhotos, containerConfig.GetValue<string>("MessagePhotos") }
+};
 
 builder.Services.AddSingleton(sp => new BlobServiceClient(storageConnection));
 builder.Services.AddScoped<ICloudStorageService>(sp =>
-    new AzureBlobStorageService(sp.GetRequiredService<BlobServiceClient>(), storageContainer, storageConnection));
+    new AzureBlobStorageService(sp.GetRequiredService<BlobServiceClient>(), containers, storageConnection));
 
 builder.Services.AddCors(options =>
 {
