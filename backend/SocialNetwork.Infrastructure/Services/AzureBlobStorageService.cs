@@ -76,10 +76,10 @@ namespace SocialNetwork.Infrastructure.Services
 
         public string GetFileUrl(string fileName, ContainerType containerType)
         {
-            if (!_containers.TryGetValue(containerType, out var containerName))
+            if (!_containers.TryGetValue(containerType, out _))
                 throw new InvalidOperationException($"Container type {containerType} is not configured.");
 
-            return $"{_apiBaseUrl.TrimEnd('/')}/api/File/{containerName}/{fileName}";
+            return $"{_apiBaseUrl.TrimEnd('/')}/api/File/{containerType}/{fileName}";
         }
 
         public async Task<bool> FileExistsAsync(string fileName, ContainerType containerType)
