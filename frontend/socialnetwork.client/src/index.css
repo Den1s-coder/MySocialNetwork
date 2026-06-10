@@ -1,7 +1,7 @@
 :root {
-  --primary-color: #FF8B66;
-  --primary-light: #FFB399;
-  --primary-dark: #FF6B47;
+  --primary-color: #2563EB;
+  --primary-light: #3B82F6;
+  --primary-dark: #1E40AF;
   --background: #FFF5F0;
   --surface: #FFFFFF;
   --text-primary: #2C2C2C;
@@ -56,13 +56,13 @@ button {
   color: white;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(255, 139, 102, 0.2);
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.2);
 }
 
 button:hover:not(:disabled) {
   background-color: var(--primary-dark);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(255, 139, 102, 0.3);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
 }
 
 button:active:not(:disabled) {
@@ -93,7 +93,7 @@ input, textarea, select {
 input:focus, textarea:focus, select:focus {
   outline: none;
   border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(255, 139, 102, 0.1);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
 input::placeholder, textarea::placeholder {
@@ -119,12 +119,12 @@ input[type="range"]::-webkit-slider-thumb {
     background: var(--primary-color);
     cursor: pointer;
     transition: all 0.2s ease;
-    box-shadow: 0 2px 6px rgba(255, 139, 102, 0.4);
+    box-shadow: 0 2px 6px rgba(37, 99, 235, 0.4);
 }
 
 input[type="range"]::-webkit-slider-thumb:hover {
     transform: scale(1.2);
-    box-shadow: 0 4px 12px rgba(255, 139, 102, 0.6);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.6);
 }
 
 input[type="range"]::-webkit-slider-runnable-track {
@@ -141,12 +141,12 @@ input[type="range"]::-moz-range-thumb {
     cursor: pointer;
     border: none;
     transition: all 0.2s ease;
-    box-shadow: 0 2px 6px rgba(255, 139, 102, 0.4);
+    box-shadow: 0 2px 6px rgba(37, 99, 235, 0.4);
 }
 
 input[type="range"]::-moz-range-thumb:hover {
     transform: scale(1.2);
-    box-shadow: 0 4px 12px rgba(255, 139, 102, 0.6);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.6);
 }
 
 input[type="range"]::-moz-range-track {
@@ -160,19 +160,19 @@ input[type="range"]::-moz-range-progress {
     border-radius: 3px;
 }
 
-/* Темна тема */
+/* Світла тема */
 [data-theme="dark"] input[type="range"] {
     background: var(--border-light);
 }
 
 [data-theme="dark"] input[type="range"]::-webkit-slider-thumb {
     background: var(--primary-color);
-    box-shadow: 0 2px 6px rgba(255, 139, 102, 0.3);
+    box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
 }
 
 [data-theme="dark"] input[type="range"]::-moz-range-thumb {
     background: var(--primary-color);
-    box-shadow: 0 2px 6px rgba(255, 139, 102, 0.3);
+    box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
 }
 
 [data-theme="dark"] input[type="range"]::-moz-range-progress {
@@ -180,14 +180,14 @@ input[type="range"]::-moz-range-progress {
 }
 
 :root[data-theme="light"] {
-  --primary-color: #FF8B66;
-  --primary-light: #FFB399;
-  --primary-dark: #FF6B47;
+  --primary-color: #2563EB;
+  --primary-light: #3B82F6;
+  --primary-dark: #1E40AF;
   --background: #FFF5F0;
   --surface: #FFFFFF;
   --text-primary: #2C2C2C;
   --text-secondary: #666666;
-  --border-light: #FFD7C3;
+  --border-light: #E5E7EB;
   --success: #4CAF50;
   --error: #FF6B6B;
   --warning: #FFA726;
@@ -199,14 +199,14 @@ input[type="range"]::-moz-range-progress {
 }
 
 :root[data-theme="dark"] {
-  --primary-color: #FF8B66;
-  --primary-light: #FFB399;
-  --primary-dark: #FF6B47;
-  --background: #1A1A1A;
-  --surface: #2D2D2D;
-  --text-primary: #FFFFFF;
-  --text-secondary: #B0B0B0;
-  --border-light: #3D3D3D;
+  --primary-color: #3B82F6;
+  --primary-light: #60A5FA;
+  --primary-dark: #1E40AF;
+  --background: #0F1419;
+  --surface: #1A1F2E;
+  --text-primary: #E5E7EB;
+  --text-secondary: #9CA3AF;
+  --border-light: #374151;
   --success: #66BB6A;
   --error: #EF5350;
   --warning: #FFA726;
@@ -214,7 +214,7 @@ input[type="range"]::-moz-range-progress {
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
   --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
   --hover-bg: rgba(255, 255, 255, 0.08);
-  --disabled-bg: #1F1F1F;
+  --disabled-bg: #111827;
 }
 
 * {
@@ -298,14 +298,14 @@ input, textarea, select {
 input:focus, textarea:focus, select:focus {
   outline: none;
   border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(255, 139, 102, 0.15);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
 input::placeholder, textarea::placeholder {
   color: var(--text-secondary);
 }
 
-/* Стилізація range input (повзунка) */
+/* Стилізація range input (слайдери) */
 input[type="range"] {
     width: 100%;
     height: 6px;
@@ -326,12 +326,12 @@ input[type="range"]::-webkit-slider-thumb {
     background: var(--primary-color);
     cursor: pointer;
     transition: all 0.2s ease;
-    box-shadow: 0 2px 6px rgba(255, 139, 102, 0.4);
+    box-shadow: 0 2px 6px rgba(37, 99, 235, 0.4);
 }
 
 input[type="range"]::-webkit-slider-thumb:hover {
     transform: scale(1.2);
-    box-shadow: 0 4px 12px rgba(255, 139, 102, 0.6);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.6);
 }
 
 input[type="range"]::-webkit-slider-runnable-track {
@@ -349,12 +349,12 @@ input[type="range"]::-moz-range-thumb {
     cursor: pointer;
     border: none;
     transition: all 0.2s ease;
-    box-shadow: 0 2px 6px rgba(255, 139, 102, 0.4);
+    box-shadow: 0 2px 6px rgba(37, 99, 235, 0.4);
 }
 
 input[type="range"]::-moz-range-thumb:hover {
     transform: scale(1.2);
-    box-shadow: 0 4px 12px rgba(255, 139, 102, 0.6);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.6);
 }
 
 input[type="range"]::-moz-range-track {
@@ -375,12 +375,12 @@ input[type="range"]::-moz-range-progress {
 
 [data-theme="dark"] input[type="range"]::-webkit-slider-thumb {
     background: var(--primary-color);
-    box-shadow: 0 2px 6px rgba(255, 139, 102, 0.3);
+    box-shadow: 0 2px 6px rgba(59, 130, 246, 0.3);
 }
 
 [data-theme="dark"] input[type="range"]::-moz-range-thumb {
     background: var(--primary-color);
-    box-shadow: 0 2px 6px rgba(255, 139, 102, 0.3);
+    box-shadow: 0 2px 6px rgba(59, 130, 246, 0.3);
 }
 
 [data-theme="dark"] input[type="range"]::-moz-range-progress {
