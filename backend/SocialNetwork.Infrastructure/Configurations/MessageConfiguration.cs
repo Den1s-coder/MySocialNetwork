@@ -22,8 +22,15 @@ namespace SocialNetwork.Infrastructure.Configurations
                 .HasMaxLength(1000)
                 .IsRequired();
 
+            builder.Property(m => m.PhotoUrl)
+                .HasMaxLength(4000)
+                .IsRequired(false);
+
             builder.Property(m => m.SentAt)
                 .IsRequired();
+
+            builder.Property(m => m.EditedAt)
+                .IsRequired(false);
 
             builder.HasOne(m => m.Chat)
                    .WithMany(c => c.Messages)
