@@ -75,6 +75,33 @@
     transition: color 0.3s ease;
 }
 
+.chat-date-separator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 16px 0;
+    gap: 12px;
+}
+
+.chat-date-separator::before,
+.chat-date-separator::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border-light);
+    transition: background 0.3s ease;
+}
+
+.chat-date-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    padding: 0 8px;
+    background: var(--surface);
+    white-space: nowrap;
+    transition: color 0.3s ease;
+}
+
 .chat-message {
     margin-bottom: 12px;
     display: flex;
