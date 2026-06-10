@@ -61,6 +61,10 @@ namespace SocialNetwork.Infrastructure.Migrations
                     b.Property<DateTime?>("EditedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("PhotoUrl")
+                        .HasMaxLength(4000)
+                        .HasColumnType("nvarchar(4000)");
+
                     b.Property<Guid>("SenderId")
                         .HasColumnType("uniqueidentifier");
 
@@ -310,46 +314,46 @@ namespace SocialNetwork.Infrastructure.Migrations
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000001"),
                             Code = "like",
-                            CreatedAt = new DateTime(2026, 3, 12, 6, 59, 46, 719, DateTimeKind.Utc).AddTicks(9416),
+                            CreatedAt = new DateTime(2026, 6, 10, 16, 6, 39, 956, DateTimeKind.Utc).AddTicks(9397),
                             SortOrder = 10,
                             Symbol = "👍",
-                            UpdatedAt = new DateTime(2026, 3, 12, 6, 59, 46, 719, DateTimeKind.Utc).AddTicks(9419)
+                            UpdatedAt = new DateTime(2026, 6, 10, 16, 6, 39, 956, DateTimeKind.Utc).AddTicks(9400)
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000002"),
                             Code = "love",
-                            CreatedAt = new DateTime(2026, 3, 12, 6, 59, 46, 720, DateTimeKind.Utc).AddTicks(284),
+                            CreatedAt = new DateTime(2026, 6, 10, 16, 6, 39, 957, DateTimeKind.Utc).AddTicks(363),
                             SortOrder = 20,
                             Symbol = "❤️",
-                            UpdatedAt = new DateTime(2026, 3, 12, 6, 59, 46, 720, DateTimeKind.Utc).AddTicks(284)
+                            UpdatedAt = new DateTime(2026, 6, 10, 16, 6, 39, 957, DateTimeKind.Utc).AddTicks(364)
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000003"),
                             Code = "laugh",
-                            CreatedAt = new DateTime(2026, 3, 12, 6, 59, 46, 720, DateTimeKind.Utc).AddTicks(290),
+                            CreatedAt = new DateTime(2026, 6, 10, 16, 6, 39, 957, DateTimeKind.Utc).AddTicks(371),
                             SortOrder = 30,
                             Symbol = "😂",
-                            UpdatedAt = new DateTime(2026, 3, 12, 6, 59, 46, 720, DateTimeKind.Utc).AddTicks(291)
+                            UpdatedAt = new DateTime(2026, 6, 10, 16, 6, 39, 957, DateTimeKind.Utc).AddTicks(372)
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000004"),
                             Code = "sad",
-                            CreatedAt = new DateTime(2026, 3, 12, 6, 59, 46, 720, DateTimeKind.Utc).AddTicks(293),
+                            CreatedAt = new DateTime(2026, 6, 10, 16, 6, 39, 957, DateTimeKind.Utc).AddTicks(374),
                             SortOrder = 40,
                             Symbol = "😢",
-                            UpdatedAt = new DateTime(2026, 3, 12, 6, 59, 46, 720, DateTimeKind.Utc).AddTicks(293)
+                            UpdatedAt = new DateTime(2026, 6, 10, 16, 6, 39, 957, DateTimeKind.Utc).AddTicks(374)
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000005"),
                             Code = "angry",
-                            CreatedAt = new DateTime(2026, 3, 12, 6, 59, 46, 720, DateTimeKind.Utc).AddTicks(295),
+                            CreatedAt = new DateTime(2026, 6, 10, 16, 6, 39, 957, DateTimeKind.Utc).AddTicks(376),
                             SortOrder = 50,
                             Symbol = "😡",
-                            UpdatedAt = new DateTime(2026, 3, 12, 6, 59, 46, 720, DateTimeKind.Utc).AddTicks(295)
+                            UpdatedAt = new DateTime(2026, 6, 10, 16, 6, 39, 957, DateTimeKind.Utc).AddTicks(376)
                         });
                 });
 
