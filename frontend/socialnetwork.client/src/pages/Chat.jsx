@@ -7,6 +7,7 @@ import Avatar from '../components/Avatar';
 import ReactionBar from '../components/ReactionBar';
 import AddUsersToChatModal from '../components/AddUsersToChatModal';
 import EmojiPickerButton from '../components/EmojiPickerButton';
+import { AiFillEdit, AiFillCamera } from "react-icons/ai";
 import './Chat.css';
 
 const BASE_URL = 'https://localhost:7142';
@@ -411,8 +412,8 @@ export default function Chat() {
                                                                         onClick={() => handleEditMessage(m.id, m.content)}
                                                                         className="chat-message-action-btn"
                                                                         title="Редагувати повідомлення"
-                                                                    >
-                                                                        ✏️
+                                                                        >
+                                                                            <AiFillEdit size={20} style={{color: "gray"}} />
                                                                     </button>
                                                                 )}
                                                             </>
@@ -460,7 +461,7 @@ export default function Chat() {
                             className="chat-btn chat-btn--secondary"
                             title="Додати фото"
                         >
-                            📷 {selectedPhoto ? 'Фото вибрано' : 'Фото'}
+                            <AiFillCamera size={ 20 } /> {selectedPhoto ? 'Фото вибрано' : 'Фото'}
                         </button>
                         <div style={{ position: 'relative' }} className="chat-input-container">
                             <input
