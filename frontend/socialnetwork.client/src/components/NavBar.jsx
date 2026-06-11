@@ -239,7 +239,7 @@ export default function NavBar() {
 
                                 {!suggestionsLoading && suggestions.posts.length > 0 && (
                                     <div className="suggestions-section">
-                                        <div className="suggestions-header">Пості</div>
+                                        <div className="suggestions-header">Пости</div>
                                         <ul className="suggestions-list">
                                             {suggestions.posts.map(post => (
                                                 <li key={post.id} className="suggestion-item post-item">
@@ -278,7 +278,7 @@ export default function NavBar() {
                                                 navigate(`/search?q=${encodeURIComponent(searchQuery)}&type=all`);
                                             }}
                                         >
-                                            Переглянути все результати
+                                            Переглянути всі результати
                                         </button>
                                     </div>
                                 )}
