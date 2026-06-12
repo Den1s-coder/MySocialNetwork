@@ -6,10 +6,37 @@ import { authFetch } from '../hooks/authFetch';
 import Avatar from '../components/Avatar';
 import ReactionBar from '../components/ReactionBar';
 import AddUsersToChatModal from '../components/AddUsersToChatModal';
+import EmojiPickerButton from '../components/EmojiPickerButton';
+import { AiFillEdit, AiFillCamera } from "react-icons/ai";
 import './Chat.css';
 
 const BASE_URL = 'https://localhost:7142';
 const API_BASE = 'https://localhost:7142';
+
+const formatDate = (date) => {
+    const d = new Date(date);
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    const dateStr = d.toLocaleDateString('uk-UA');
+    const todayStr = today.toLocaleDateString('uk-UA');
+    const yesterdayStr = yesterday.toLocaleDateString('uk-UA');
+
+    if (dateStr === todayStr) return 'Сьогодні';
+    if (dateStr === yesterdayStr) return 'Вчора';
+    return dateStr;
+};
+
+const formatTime = (date) => {
+    const d = new Date(date);
+    return d.toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit' });
+}
+
+const getDateKey = (date) => {
+    const d = new Date(date);
+    return d.toLocaleDateString('uk-UA');
+};
 
 export default function Chat() {
     const { chatId } = useParams();
@@ -29,6 +56,7 @@ export default function Chat() {
     const [selectedPhoto, setSelectedPhoto] = useState(null);
     const [editingMessageId, setEditingMessageId] = useState(null);
     const [editText, setEditText] = useState('');
+    const [text, setText] = useState('');
     const fileInputRef = useRef(null);
 
     const [participantsMap, setParticipantsMap] = useState({});
@@ -170,8 +198,6 @@ export default function Chat() {
         onMessageUpdated
     });
 
-    const [text, setText] = useState('');
-
     const handlePhotoSelect = (e) => {
         const file = e.target.files?.[0];
         if (file) {
@@ -282,6 +308,21 @@ export default function Chat() {
         return roles[role] || 'Unknown';
     };
 
+    const groupedMessages = messages.reduce((groups, message) => {
+        const dateKey = getDateKey(message.sentAt);
+        if (!groups[dateKey]) {
+            groups[dateKey] = [];
+        }
+        groups[dateKey].push(message);
+        return groups;
+    }, {});
+
+    const sortedDateKeys = Object.keys(groupedMessages).sort((a, b) => {
+        const dateA = new Date(a);
+        const dateB = new Date(b);
+        return dateA - dateB;
+    });
+
     if (loading) return <p>Завантаження чату…</p>;
     if (!isAuthenticated) return <p>Авторизуйтесь для доступу до чату</p>;
 
@@ -311,87 +352,96 @@ export default function Chat() {
                         {messages.length === 0 ? (
                             <p className="chat-empty">Повідомлень поки немає</p>
                         ) : (
-                            messages.map(m => {
-                                const isCurrentUser = String(m.senderId).toLowerCase() === String(currentUserId).toString().toLowerCase();
-                                const isEditing = editingMessageId === m.id;
-
-                                return (
-                                    <div
-                                        key={m.id ?? `${m.chatId}-${m.sentAt}-${m.senderId}`}
-                                        className={`chat-message ${isCurrentUser ? 'chat-message--sent' : 'chat-message--received'}`}
-                                    >
-                                        {!isCurrentUser && <Avatar url={m.senderProfilePictureUrl} name={m.senderName} size={36} />}
-                                        <div className="chat-message-content">
-                                            <div className="chat-message-meta">
-                                                   {isCurrentUser ? currentUserName : m.senderName || m.senderId} • {new Date(m.sentAt).toLocaleString()}
-                                                {m.editedAt && <span className="chat-message-edited"> (відредаговано)</span>}
-                                            </div>
-                                            {isEditing ? (
-                                                <div className="chat-message-edit-form">
-                                                    <input
-                                                        type="text"
-                                                        value={editText}
-                                                        onChange={(e) => setEditText(e.target.value)}
-                                                        className="chat-message-edit-input"
-                                                        autoFocus
-                                                    />
-                                                    <button
-                                                        onClick={handleSaveEdit}
-                                                        className="chat-btn chat-btn--primary"
-                                                    >
-                                                        Зберегти
-                                                    </button>
-                                                    <button
-                                                        onClick={handleCancelEdit}
-                                                        className="chat-btn chat-btn--secondary"
-                                                    >
-                                                        Відміна
-                                                    </button>
-                                                </div>
-                                            ) : (
-                                                <>
-                                                    <div className={`chat-message-bubble ${isCurrentUser ? 'chat-message-bubble--sent' : 'chat-message-bubble--received'}`}>
-                                                        {m.photoUrl && (
-                                                            <img 
-                                                                src={m.photoUrl} 
-                                                                alt="Chat photo" 
-                                                                className="chat-message-photo"
-                                                            />
-                                                        )}
-                                                        {m.content && <p>{m.content}</p>}
-                                                    </div>
-                                                    {isCurrentUser && (
-                                                        <button
-                                                            onClick={() => handleEditMessage(m.id, m.content)}
-                                                            className="chat-message-action-btn"
-                                                            title="Редагувати повідомлення"
-                                                        >
-                                                            ✏️
-                                                        </button>
-                                                    )}
-                                                </>
-                                            )}
-                                            <ReactionBar 
-                                                reactions={m.reactions || []}
-                                                currentUserReactionCode={m.currentUserReactionCode}
-                                                entityId={m.id}
-                                                entityType="Message"
-                                                authed={true}
-                                                currentUserId={currentUserId}
-                                                entityAuthorId={m.senderId}
-                                                onReactionChanged={(updatedReactions, newCode) => {
-                                                    setMessages(messages.map(msg => 
-                                                        msg.id === m.id 
-                                                            ? { ...msg, reactions: updatedReactions, currentUserReactionCode: newCode }
-                                                            : msg
-                                                    ));
-                                                }}
-                                            />
+                            <>
+                                {sortedDateKeys.map(dateKey => (
+                                    <div key={dateKey}>
+                                        <div className="chat-date-separator">
+                                            <span className="chat-date-label">{formatDate(groupedMessages[dateKey][0].sentAt)}</span>
                                         </div>
-                                        {isCurrentUser && <Avatar url={m.senderProfilePictureUrl} name={m.senderName} size={36} />}
+                                        {groupedMessages[dateKey].map(m => {
+                                            const isCurrentUser = String(m.senderId).toLowerCase() === String(currentUserId).toString().toLowerCase();
+                                            const isEditing = editingMessageId === m.id;
+
+                                            return (
+                                                <div
+                                                    key={m.id ?? `${m.chatId}-${m.sentAt}-${m.senderId}`}
+                                                    className={`chat-message ${isCurrentUser ? 'chat-message--sent' : 'chat-message--received'}`}
+                                                >
+                                                    {!isCurrentUser && <Avatar url={m.senderProfilePictureUrl} name={m.senderName} size={36} />}
+                                                    <div className="chat-message-content">
+                                                        <div className="chat-message-meta">
+                                                            {isCurrentUser ? currentUserName : m.senderName || m.senderId} • {formatTime(m.sentAt)}
+                                                            {m.editedAt && <span className="chat-message-edited"> (відредаговано)</span>}
+                                                        </div>
+                                                        {isEditing ? (
+                                                            <div className="chat-message-edit-form">
+                                                                <input
+                                                                    type="text"
+                                                                    value={editText}
+                                                                    onChange={(e) => setEditText(e.target.value)}
+                                                                    className="chat-message-edit-input"
+                                                                    autoFocus
+                                                                />
+                                                                <button
+                                                                    onClick={handleSaveEdit}
+                                                                    className="chat-btn chat-btn--primary"
+                                                                >
+                                                                    Зберегти
+                                                                </button>
+                                                                <button
+                                                                    onClick={handleCancelEdit}
+                                                                    className="chat-btn chat-btn--secondary"
+                                                                >
+                                                                    Відміна
+                                                                </button>
+                                                            </div>
+                                                        ) : (
+                                                            <>
+                                                                <div className={`chat-message-bubble ${isCurrentUser ? 'chat-message-bubble--sent' : 'chat-message-bubble--received'}`}>
+                                                                    {m.photoUrl && (
+                                                                        <img 
+                                                                            src={m.photoUrl} 
+                                                                            alt="Chat photo" 
+                                                                            className="chat-message-photo"
+                                                                        />
+                                                                    )}
+                                                                    {m.content && <p>{m.content}</p>}
+                                                                </div>
+                                                                {isCurrentUser && (
+                                                                    <button
+                                                                        onClick={() => handleEditMessage(m.id, m.content)}
+                                                                        className="chat-message-action-btn"
+                                                                        title="Редагувати повідомлення"
+                                                                        >
+                                                                            <AiFillEdit size={20} style={{color: "gray"}} />
+                                                                    </button>
+                                                                )}
+                                                            </>
+                                                        )}
+                                                        <ReactionBar 
+                                                            reactions={m.reactions || []}
+                                                            currentUserReactionCode={m.currentUserReactionCode}
+                                                            entityId={m.id}
+                                                            entityType="Message"
+                                                            authed={true}
+                                                            currentUserId={currentUserId}
+                                                            entityAuthorId={m.senderId}
+                                                            onReactionChanged={(updatedReactions, newCode) => {
+                                                                setMessages(messages.map(msg => 
+                                                                    msg.id === m.id 
+                                                                        ? { ...msg, reactions: updatedReactions, currentUserReactionCode: newCode }
+                                                                        : msg
+                                                                ));
+                                                            }}
+                                                        />
+                                                    </div>
+                                                    {isCurrentUser && <Avatar url={m.senderProfilePictureUrl} name={m.senderName} size={36} />}
+                                                </div>
+                                            );
+                                        })}
                                     </div>
-                                );
-                            })
+                                ))}
+                            </>
                         )}
                     </div>
 
@@ -411,14 +461,21 @@ export default function Chat() {
                             className="chat-btn chat-btn--secondary"
                             title="Додати фото"
                         >
-                            📷 {selectedPhoto ? 'Фото вибрано' : 'Фото'}
+                            <AiFillCamera size={ 20 } /> {selectedPhoto ? 'Фото вибрано' : 'Фото'}
                         </button>
-                        <input
-                            value={text}
-                            onChange={e => setText(e.target.value)}
-                            placeholder="Введіть повідомлення..."
-                            className="chat-input"
-                        />
+                        <div style={{ position: 'relative' }} className="chat-input-container">
+                            <input
+                                value={text}
+                                onChange={e => setText(e.target.value)}
+                                placeholder="Введіть повідомлення..."
+                                className="chat-input"
+                            />
+                            <div style={{ position: 'absolute', bottom: 8, left: 8 }}>
+                                <EmojiPickerButton 
+                                    onEmojiSelect={(emoji) => setText(prev => prev + emoji)}
+                                />
+                            </div>
+                        </div>
                         <button
                             type="submit"
                             disabled={!connected || (!text.trim() && !selectedPhoto) || uploadingPhoto}

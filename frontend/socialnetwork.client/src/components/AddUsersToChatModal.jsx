@@ -3,6 +3,7 @@ import { authFetch } from '../hooks/authFetch';
 import Avatar from './Avatar';
 import Modal from './Modal';
 import './AddUsersToChatModal.css';
+import { BsFillPeopleFill } from "react-icons/bs";
 
 const API_BASE = 'https://localhost:7142';
 
@@ -144,8 +145,8 @@ export default function AddUsersToChatModal({ isOpen, chatId, onClose, onSuccess
                     <p>Завантаження…</p>
                 </div>
             ) : friends.length === 0 ? (
-                <div className="modal-empty-state">
-                    <div className="modal-empty-icon">👥</div>
+                    <div className="modal-empty-state">
+                        <div className="modal-empty-icon"><BsFillPeopleFill size={ 35 } /></div>
                     <p className="modal-empty-title">Немає доступних друзів</p>
                     <p className="modal-empty-description">
                         Всі ваші друзі вже в цьому чаті

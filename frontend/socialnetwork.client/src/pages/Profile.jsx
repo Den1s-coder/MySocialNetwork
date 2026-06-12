@@ -320,7 +320,7 @@ export default function Profile() {
         <div className="profile-stats">
           <div className="stat-item">
             <div className="stat-number">{posts.length}</div>
-            <div className="stat-label">Пості</div>
+            <div className="stat-label">Пости</div>
           </div>
           <div className="stat-item">
             <div className="stat-number">{friends.length}</div>
