@@ -463,15 +463,15 @@ export default function Chat() {
                         >
                             <AiFillCamera size={ 20 } /> {selectedPhoto ? 'Фото вибрано' : 'Фото'}
                         </button>
-                        <div style={{ position: 'relative' }} className="chat-input-container">
+                        <div className="chat-input-container">
                             <input
                                 value={text}
                                 onChange={e => setText(e.target.value)}
                                 placeholder="Введіть повідомлення..."
                                 className="chat-input"
                             />
-                            <div style={{ position: 'absolute', bottom: 8, left: 8 }}>
-                                <EmojiPickerButton 
+                            <div className="emoji-button-wrapper">
+                                <EmojiPickerButton
                                     onEmojiSelect={(emoji) => setText(prev => prev + emoji)}
                                 />
                             </div>

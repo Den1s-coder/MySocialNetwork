@@ -156,6 +156,7 @@
 .chat-input {
     flex: 1;
     padding: 8px;
+    padding-right: 40px; 
     border: 1px solid var(--border-light);
     border-radius: 4px;
     background: var(--surface);
@@ -372,4 +373,20 @@
 
 .chat-message-action-btn:hover {
     opacity: 1;
+}
+
+.chat-input-container {
+    flex: 1;
+    position: relative;
+    display: flex;
+}
+
+.emoji-button-wrapper {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
