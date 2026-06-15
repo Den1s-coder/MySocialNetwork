@@ -56,6 +56,26 @@
     --epr-category-icon-filter-color: var(--text-secondary) !important;
 }
 
+.emoji-picker-wrapper :global(.emoji-picker-react) button {
+    background: transparent !important;
+    box-shadow: none !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    transform: none !important;
+    margin: 0 !important;
+}
+
+.emoji-picker-wrapper :global(.emoji-picker-react) :global(.epr-emoji) {
+    padding: 4px !important;
+}
+
+.emoji-picker-wrapper :global(.emoji-picker-react) input[type="search"] {
+    background-color: transparent;
+    box-shadow: none;
+}
+
 [data-theme="dark"] .emoji-picker-wrapper :global(.emoji-picker-react) {
     --epr-bg-color: #1A1F2E !important;
     --epr-text-color: #E5E7EB !important;
@@ -134,4 +154,28 @@
 
 [data-theme="light"] .emoji-picker-wrapper :global(.epr-category-nav-button.active) {
     color: #2563EB !important;
+}
+
+.emoji-picker-wrapper button {
+    background: transparent !important;
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    min-width: unset !important;
+    min-height: unset !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    transform: none !important;
+    border-radius: 0 !important;
+}
+
+.emoji-picker-wrapper button.epr-emoji {
+    padding: 5px !important;
+}
+
+.emoji-picker-wrapper button.epr-search-clear-btn {
+    background: transparent !important;
+    box-shadow: none !important;
+    width: 20px !important;
+    height: 20px !important;
 }
