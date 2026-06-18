@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { FiTrash2 } from 'react-icons/fi';
 import './Home.css';
 import { authFetch } from '../hooks/authFetch';
 import Avatar from '../components/Avatar';
@@ -27,7 +26,7 @@ export default function Home() {
     const [createStatus, setCreateStatus] = useState('idle');
     const [createError, setCreateError] = useState(null);
 
-    const loadPosts = async (pageNumber = 1, signalToken = {}) => {
+    const loadPosts = async (pageNumber = 1) => {
         setLoadingPage(true);
         setError(null);
         try {

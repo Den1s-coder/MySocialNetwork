@@ -61,7 +61,7 @@ export default function AddUsersToChatModal({ isOpen, chatId, onClose, onSuccess
         };
 
         loadData();
-    }, [isOpen, chatId]);
+    }, [isOpen, chatId, setCurrentMembers]);
 
     const toggleUserSelection = (userId) => {
         setSelectedUsers(prev =>

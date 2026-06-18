@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { authFetch } from '../hooks/authFetch';
 import { useUserRole } from '../hooks/useUserRole';
 import './AdminPanel.css';
@@ -7,7 +6,6 @@ import './AdminPanel.css';
 const API_BASE = 'https://localhost:7142';
 
 export default function AdminPanel() {
-    const navigate = useNavigate();
     const { isAdmin, loading: roleLoading } = useUserRole();
 
     const [users, setUsers] = useState([]);

@@ -67,6 +67,7 @@ export default function Chat() {
     const { chatId } = useParams();
     const navigate = useNavigate();
     const { accessToken, isAuthenticated, currentUserId, currentUserName } = useAuth();
+
     const [messages, setMessages] = useState([]);
     const [loading, setLoading] = useState(true);
     const [chatTitle, setChatTitle] = useState(null);
@@ -84,18 +85,8 @@ export default function Chat() {
     const [text, setText] = useState('');
     const fileInputRef = useRef(null);
 
-    const [participantsMap, setParticipantsMap] = useState({});
     const participantsRef = useRef({});
-    const updateParticipants = (map) => { setParticipantsMap(map); participantsRef.current = map; };
-
-    if (!chatId) {
-        return <div>Chat ID not found in URL</div>;
-    }
-
-    const isValidGuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(chatId);
-    if (!isValidGuid) {
-        return <div>Invalid chat ID: {chatId}</div>;
-    }
+    const updateParticipants = (map) => { participantsRef.current = map; };
 
     useEffect(() => {
         if (!isAuthenticated) {
@@ -127,17 +118,17 @@ export default function Chat() {
                     if (chat) {
                         const ucs = chat.userChats || chat.UserChats || [];
                         const normalizedParticipants = [];
-                        
+
                         (ucs || []).forEach(uc => {
                             const id = (uc.userId || uc.UserId || uc.user?.id || '')?.toString().toLowerCase();
-                            const name = uc.userName || uc.UserName || uc.user?.name || uc.user?.name || '';
-                            const pic = uc.profilePictureUrl || uc.ProfilePictureUrl || uc.user?.profilePictureUrl || uc.user?.profilePictureUrl || null;
+                            const name = uc.userName || uc.UserName || uc.user?.name || '';
+                            const pic = uc.profilePictureUrl || uc.ProfilePictureUrl || uc.user?.profilePictureUrl || null;
                             const role = uc.role || uc.Role || 0;
-                            
+
                             if (id) {
                                 participantsData[id] = { userName: name, profilePictureUrl: pic, role };
                                 normalizedParticipants.push({ id, name, pic, role });
-                                
+
                                 if (id === String(currentUserId).toLowerCase()) {
                                     setUserRole(role);
                                 }
@@ -168,7 +159,7 @@ export default function Chat() {
                     const p = participantsData[sid];
                     return {
                         ...m,
-                        senderName: m.senderName || (p && p.userName) || m.senderName || null,
+                        senderName: m.senderName || (p && p.userName) || null,
                         senderProfilePictureUrl: m.senderProfilePictureUrl || (p && p.profilePictureUrl) || null
                     };
                 });
@@ -190,7 +181,7 @@ export default function Chat() {
         const p = participantsRef.current[sid];
         const enriched = {
             ...msg,
-            senderName: msg.senderName || (p && p.userName) || msg.senderName || null,
+            senderName: msg.senderName || (p && p.userName) || null,
             senderProfilePictureUrl: msg.senderProfilePictureUrl || (p && p.profilePictureUrl) || null
         };
 
@@ -202,9 +193,9 @@ export default function Chat() {
 
     const onMessageUpdated = useCallback((updatedMsg) => {
         console.log('onMessageUpdated called with:', updatedMsg);
-        setMessages(prev => 
-            prev.map(msg => 
-                msg.id === updatedMsg.id 
+        setMessages(prev =>
+            prev.map(msg =>
+                msg.id === updatedMsg.id
                     ? { ...msg, content: updatedMsg.content, editedAt: updatedMsg.editedAt }
                     : msg
             )
@@ -215,138 +206,21 @@ export default function Chat() {
 
     const getToken = useCallback(() => accessToken, [accessToken]);
 
-    const { connected, sendMessage, joinChat, editMessage } = useChatHub({
+    const { connected, sendMessage, editMessage } = useChatHub({
         baseUrl: BASE_URL,
         getToken,
-        chatId,
         onMessage,
         onMessageUpdated
     });
 
-    const handlePhotoSelect = (e) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            setSelectedPhoto(file);
-        }
-    };
+    if (!chatId) {
+        return <div>Chat ID not found in URL</div>;
+    }
 
-    const uploadPhoto = async (file) => {
-        try {
-            const formData = new FormData();
-            formData.append('file', file);
-
-            const res = await authFetch(`${API_BASE}/api/File/upload`, {
-                method: 'POST',
-                headers: { 'Authorization': `Bearer ${accessToken}` },
-                body: formData
-            });
-
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            const { fileUrl } = await res.json();
-            return fileUrl;
-        } catch (e) {
-            console.error('Помилка завантаження фото:', e);
-            alert('Не вдалося завантажити фото. ' + (e.message || ''));
-            return null;
-        }
-    };
-
-    const handleSend = async (e) => {
-        e.preventDefault();
-        if ((!text.trim() && !selectedPhoto) || !connected || !chatId) return;
-
-        setUploadingPhoto(true);
-        try {
-            let photoUrl = null;
-            if (selectedPhoto) {
-                photoUrl = await uploadPhoto(selectedPhoto);
-                if (!photoUrl) {
-                    setUploadingPhoto(false);
-                    return;
-                }
-                setSelectedPhoto(null);
-                if (fileInputRef.current) {
-                    fileInputRef.current.value = '';
-                }
-            }
-
-            await sendMessage(chatId, text.trim() || '', photoUrl);
-            setText('');
-        } finally {
-            setUploadingPhoto(false);
-        }
-    };
-
-    const handleEditMessage = (messageId, currentContent) => {
-        setEditingMessageId(messageId);
-        setEditText(currentContent);
-    };
-
-    const handleSaveEdit = async () => {
-        if (!editText.trim()) {
-            alert('Текст повідомлення не може бути порожнім');
-            return;
-        }
-
-        try {
-            await editMessage(editingMessageId, editText.trim());
-        } catch (e) {
-            console.error('Помилка редагування повідомлення:', e);
-            alert('Не вдалося відредагувати повідомлення');
-        }
-    };
-
-    const handleCancelEdit = () => {
-        setEditingMessageId(null);
-        setEditText('');
-    };
-
-    const handleDeleteChat = async () => {
-        if (!window.confirm('Ви впевнені, що хочете видалити цей чат? Це не можна буде скасувати.')) {
-            return;
-        }
-
-        setDeleting(true);
-        try {
-            const res = await authFetch(`${API_BASE}/api/Chat/${chatId}`, {
-                method: 'DELETE',
-                headers: { 'Authorization': `Bearer ${accessToken}` }
-            });
-
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            
-            navigate('/chats');
-        } catch (e) {
-            console.error('Помилка видалення чату:', e);
-            alert('Не вдалося видалити чат. ' + (e.message || ''));
-        } finally {
-            setDeleting(false);
-        }
-    };
-
-    const handleModalSuccess = () => {
-        window.location.reload();
-    };
-
-    const getRoleName = (role) => {
-        const roles = { 0: 'Owner', 1: 'Admin', 2: 'Member' };
-        return roles[role] || 'Unknown';
-    };
-
-    const groupedMessages = messages.reduce((groups, message) => {
-        const dateKey = getDateKey(message.sentAt);
-        if (!groups[dateKey]) {
-            groups[dateKey] = [];
-        }
-        groups[dateKey].push(message);
-        return groups;
-    }, {});
-
-    const sortedDateKeys = Object.keys(groupedMessages).sort((a, b) => {
-        const dateA = new Date(a);
-        const dateB = new Date(b);
-        return dateA - dateB;
-    });
+    const isValidGuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(chatId);
+    if (!isValidGuid) {
+        return <div>Invalid chat ID: {chatId}</div>;
+    }
 
     if (loading) return <p>Завантаження чату…</p>;
     if (!isAuthenticated) return <p>Авторизуйтесь для доступу до чату</p>;
@@ -486,7 +360,7 @@ export default function Chat() {
                             <h2>{chatTitle ? `Чат з ${chatTitle}` : `Чат ${chatId}`}</h2>
                         </div>
                         <div className="chat-header-buttons">
-                            <button 
+                            <button
                                 onClick={() => setShowParticipants(!showParticipants)}
                                 className="chat-btn chat-btn--secondary"
                             >
@@ -549,9 +423,9 @@ export default function Chat() {
                                                             <>
                                                                 <div className={`chat-message-bubble ${isCurrentUser ? 'chat-message-bubble--sent' : 'chat-message-bubble--received'}`}>
                                                                     {m.photoUrl && (
-                                                                        <img 
-                                                                            src={m.photoUrl} 
-                                                                            alt="Chat photo" 
+                                                                        <img
+                                                                            src={m.photoUrl}
+                                                                            alt="Chat photo"
                                                                             className="chat-message-photo"
                                                                         />
                                                                     )}
@@ -562,13 +436,13 @@ export default function Chat() {
                                                                         onClick={() => handleEditMessage(m.id, m.content)}
                                                                         className="chat-message-action-btn"
                                                                         title="Редагувати повідомлення"
-                                                                        >
-                                                                            <AiFillEdit size={20} style={{color: "gray"}} />
+                                                                    >
+                                                                        <AiFillEdit size={20} style={{ color: "gray" }} />
                                                                     </button>
                                                                 )}
                                                             </>
                                                         )}
-                                                        <ReactionBar 
+                                                        <ReactionBar
                                                             reactions={m.reactions || []}
                                                             currentUserReactionCode={m.currentUserReactionCode}
                                                             entityId={m.id}
@@ -577,8 +451,8 @@ export default function Chat() {
                                                             currentUserId={currentUserId}
                                                             entityAuthorId={m.senderId}
                                                             onReactionChanged={(updatedReactions, newCode) => {
-                                                                setMessages(messages.map(msg => 
-                                                                    msg.id === m.id 
+                                                                setMessages(messages.map(msg =>
+                                                                    msg.id === m.id
                                                                         ? { ...msg, reactions: updatedReactions, currentUserReactionCode: newCode }
                                                                         : msg
                                                                 ));
@@ -611,7 +485,7 @@ export default function Chat() {
                             className="chat-btn chat-btn--secondary"
                             title="Додати фото"
                         >
-                            <AiFillCamera size={ 20 } /> {selectedPhoto ? 'Фото вибрано' : 'Фото'}
+                            <AiFillCamera size={20} /> {selectedPhoto ? 'Фото вибрано' : 'Фото'}
                         </button>
                         <div className="chat-input-container">
                             <input
@@ -639,7 +513,7 @@ export default function Chat() {
                 {showParticipants && (
                     <div className="chat-sidebar">
                         <h3>Учасники ({participants.length})</h3>
-                        
+
                         <div className="chat-participants">
                             {participants.map(participant => (
                                 <div key={participant.id} className="chat-participant">
@@ -678,7 +552,7 @@ export default function Chat() {
                 )}
             </div>
 
-            <AddUsersToChatModal 
+            <AddUsersToChatModal
                 isOpen={showAddUserModal}
                 chatId={chatId}
                 onClose={() => setShowAddUserModal(false)}

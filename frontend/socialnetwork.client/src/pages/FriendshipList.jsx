@@ -9,7 +9,7 @@ import './FriendshipList.css';
 const API_BASE = "https://localhost:7142";
 
 export default function FriendshipList() {
-    const { accessToken, isAuthenticated, currentUserId } = useAuth();
+    const { accessToken, isAuthenticated } = useAuth();
 
     const [pending, setPending] = useState([]);
     const [friends, setFriends] = useState([]);
