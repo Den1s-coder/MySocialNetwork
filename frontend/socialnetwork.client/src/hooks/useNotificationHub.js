@@ -15,7 +15,7 @@ export function useNotificationHub({ baseUrl, getToken, onNotification }) {
             if (startPromiseRef.current) {
                 try { 
                     await startPromiseRef.current; 
-                } catch { }
+                } catch { /* ignore */ }
                 return;
             }
 
@@ -91,7 +91,7 @@ export function useNotificationHub({ baseUrl, getToken, onNotification }) {
                 } else {
                     if (c) c.stop().catch(() => {});
                 }
-            } catch { }
+            } catch { /* ignore */ }
         };
     }, [baseUrl, getToken, onNotification]);
 

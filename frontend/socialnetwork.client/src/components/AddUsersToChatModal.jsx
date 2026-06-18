@@ -9,7 +9,7 @@ const API_BASE = 'https://localhost:7142';
 
 export default function AddUsersToChatModal({ isOpen, chatId, onClose, onSuccess }) {
     const [friends, setFriends] = useState([]);
-    const [currentMembers, setCurrentMembers] = useState([]);
+    const [setCurrentMembers] = useState([]);
     const [selectedUsers, setSelectedUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
@@ -61,7 +61,7 @@ export default function AddUsersToChatModal({ isOpen, chatId, onClose, onSuccess
         };
 
         loadData();
-    }, [isOpen, chatId]);
+    }, [isOpen, chatId, setCurrentMembers]);
 
     const toggleUserSelection = (userId) => {
         setSelectedUsers(prev =>

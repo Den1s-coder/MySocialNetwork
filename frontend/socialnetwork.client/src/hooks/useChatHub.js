@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import * as signalR from '@microsoft/signalr';
 import { createChatConnection } from '../signalr';
 
-export function useChatHub({ baseUrl, getToken, chatId, onMessage, onMessageUpdated }) {
+export function useChatHub({ baseUrl, getToken, onMessage, onMessageUpdated }) {
     const [connected, setConnected] = useState(false);
     const connRef = useRef(null);
     const startPromiseRef = useRef(null);
@@ -59,7 +59,9 @@ export function useChatHub({ baseUrl, getToken, chatId, onMessage, onMessageUpda
                     setTimeout(() => {
                         try {
                             start();
-                        } catch {}
+                        } catch {
+                            /* ignore */
+                        }
                     }, 2000);
                 }
             } finally {
@@ -71,18 +73,21 @@ export function useChatHub({ baseUrl, getToken, chatId, onMessage, onMessageUpda
 
         return () => {
             mountedRef.current = false;
-            try { connection.off('ReceiveMessage', onReceive); } catch {}
-            try { connection.off('MessageUpdated', onUpdated); } catch {}
+
+            try { connection.off('ReceiveMessage', onReceive); } catch { /* ignore */ }
+            try { connection.off('MessageUpdated', onUpdated); } catch { /* ignore */ }
             try {
                 const p = startPromiseRef.current;
                 if (p) {
                     p.finally(() => {
-                        connection.stop().catch(() => {});
+                        connection.stop().catch(() => { /* ignore */ });
                     });
                 } else {
-                    connection.stop().catch(() => {});
+                    connection.stop().catch(() => { /* ignore */ });
                 }
-            } catch {}
+            } catch {
+                /* ignore */
+            }
         };
     }, [baseUrl, getToken, onMessage, onMessageUpdated]);
 

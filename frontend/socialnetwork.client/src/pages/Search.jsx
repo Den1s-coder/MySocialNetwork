@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useSearchParams} from 'react-router-dom';
 import { authFetch } from '../hooks/authFetch';
 import Avatar from '../components/Avatar';
 import { Link } from 'react-router-dom';
@@ -10,7 +10,6 @@ const PAGE_SIZE = 10;
 
 export default function Search() {
     const [searchParams, setSearchParams] = useSearchParams();
-    const navigate = useNavigate();
     const query = searchParams.get('q') || '';
     const searchType = searchParams.get('type') || 'all'; 
 
