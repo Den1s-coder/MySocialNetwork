@@ -9,7 +9,7 @@ const API_BASE = 'https://localhost:7142';
 
 export default function ChatList() {
     const navigate = useNavigate();
-    const { accessToken, isAuthenticated, currentUserId, currentUserName } = useAuth();
+    const { accessToken, isAuthenticated, currentUserId } = useAuth();
     const [chats, setChats] = useState([]);
     const [users, setUsers] = useState([]);
     const [filteredUsers, setFilteredUsers] = useState([]);
