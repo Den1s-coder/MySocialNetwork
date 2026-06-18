@@ -47,7 +47,7 @@ export default function NotificationBell({ apiBase = API_BASE }) {
         ]);
     }, []);
 
-    const { connection } = useNotificationHub({ baseUrl: apiBase, getToken, onNotification: handleIncoming });
+    useNotificationHub({ baseUrl: apiBase, getToken, onNotification: handleIncoming });
 
     const loadNotifications = useCallback(async () => {
         setLoading(true);

@@ -1,4 +1,4 @@
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate} from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
 import { FiSearch, FiMessageSquare, FiUsers, FiSettings, FiLogOut, FiHome } from 'react-icons/fi';
 import { useAuth } from '../hooks/useAuth';
@@ -13,7 +13,6 @@ const SUGGESTIONS_LIMIT = 3;
 
 export default function NavBar() {
     const navigate = useNavigate();
-    const [searchParams, setSearchParams] = useSearchParams();
     const { isAuthenticated, logout, accessToken, currentUserName } = useAuth();
     const { isAdmin } = useUserRole();
 
