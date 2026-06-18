@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useState, useEffect } from 'react';
 
 export const ThemeContext = createContext(null);
@@ -15,18 +16,6 @@ export function ThemeProvider({ children }) {
             return LIGHT_THEME;
         }
     });
-
-    useEffect(() => {
-        try {
-            const savedTheme = localStorage.getItem(STORAGE_KEY);
-            if (savedTheme && savedTheme !== theme) {
-                setTheme(savedTheme);
-            }
-            document.documentElement.setAttribute('data-theme', savedTheme || theme);
-        } catch (e) {
-            console.error('Failed to load theme:', e);
-        }
-    }, []);
 
     useEffect(() => {
         try {
