@@ -10,7 +10,6 @@ const PAGE_SIZE = 10;
 
 export default function Search() {
     const [searchParams, setSearchParams] = useSearchParams();
-    const navigate = useNavigate();
     const query = searchParams.get('q') || '';
     const searchType = searchParams.get('type') || 'all'; 
 
