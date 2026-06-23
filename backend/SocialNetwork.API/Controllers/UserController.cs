@@ -56,16 +56,16 @@ namespace SocialNetwork.API.Controllers
         }
 
         [HttpGet("by-email")]
-        public async Task<IActionResult> GetByEmail([FromQuery] string email)
+        public async Task<IActionResult> GetByEmail([FromQuery] string email, CancellationToken cancellationToken = default)
         {
-            var user = await _userService.GetByIdAsync(userId, cancellationToken);
+            var user = await _userService.GetByEmailAsync(email, cancellationToken);
             return Ok(user);
         }
 
         [HttpGet("by-username")]
-        public async Task<IActionResult> GetByUserName([FromQuery] string username)
+        public async Task<IActionResult> GetByUserName([FromQuery] string username, CancellationToken cancellationToken = default)
         {
-            var user = await _userService.GetByUserNameAsync(userName, cancellationToken);
+            var user = await _userService.GetByUserNameAsync(username, cancellationToken);
             return Ok(user);
         }
 
