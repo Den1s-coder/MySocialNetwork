@@ -188,6 +188,19 @@ export default function Post() {
                     </div>
                 </div>
                 <p style={{ whiteSpace: 'pre-wrap', marginTop: 8 }}>{post.text}</p>
+                {post.imageUrl && (
+                    <img
+                        src={post.imageUrl}
+                        alt="Пост"
+                        style={{
+                            maxWidth: '100%',
+                            maxHeight: 400,
+                            borderRadius: 4,
+                            marginTop: 12,
+                            display: 'block'
+                        }}
+                    />
+                )}
 
                 <ReactionBar
                     reactions={post.reactions ?? []}

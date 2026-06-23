@@ -326,10 +326,6 @@ export default function Profile() {
             <div className="stat-number">{friends.length}</div>
             <div className="stat-label">Друзі</div>
           </div>
-          <div className="stat-item">
-            <div className="stat-number">0</div>
-            <div className="stat-label">Переглядів</div>
-          </div>
         </div>
       )}
 
@@ -393,6 +389,19 @@ export default function Profile() {
                 ) : (
                   <Link to={`/post/${p.id}`} className="post-card__link">
                     <div className="post-card__text">{p.text}</div>
+                     {p.imageUrl && (
+                       <img
+                          src={p.imageUrl}
+                          alt="Пост"
+                          style={{
+                            maxWidth: '100%',
+                            maxHeight: 400,
+                            borderRadius: 4,
+                            marginTop: 8,
+                            objectFit: 'cover'
+                          }}
+                         />
+                     )}
                     <div className="post-card__time">{timeStr}</div>
                   </Link>
                 )}
