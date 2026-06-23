@@ -7,6 +7,7 @@ using SocialNetwork.Application.DTO;
 using SocialNetwork.Application.DTO.Comments;
 using SocialNetwork.Application.DTO.Posts;
 using SocialNetwork.Application.Interfaces;
+using SocialNetwork.Domain.Interfaces;
 using System.Security.Claims;
 
 namespace SocialNetwork.Tests.Controllers
@@ -15,14 +16,17 @@ namespace SocialNetwork.Tests.Controllers
     {
         private readonly Mock<IPostService> _postServiceMock;
         private readonly Mock<ILogger<PostController>> _loggerMock;
+        private readonly Mock<ICloudStorageService> _cloudStorageServiceMock;
         private readonly PostController _postController;
 
         public PostControllerTests()
         {
             _postServiceMock = new Mock<IPostService>();
             _loggerMock = new Mock<ILogger<PostController>>();
+            _cloudStorageServiceMock = new Mock<ICloudStorageService>();
 
-            _postController = new PostController(_postServiceMock.Object, _loggerMock.Object);
+
+            _postController = new PostController(_postServiceMock.Object, _cloudStorageServiceMock.Object, _loggerMock.Object);
         }
 
         private void SetupUser(Guid userId, string role = "User")

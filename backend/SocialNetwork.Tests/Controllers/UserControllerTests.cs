@@ -20,7 +20,7 @@ public class UserControllerTests
         _userServiceMock = new Mock<IUserService>();
         _loggerMock = new Mock<ILogger<UserController>>();
 
-        _userController = new UserController(_loggerMock.Object, _userServiceMock.Object);
+        _userController = new UserController(_userServiceMock.Object, _loggerMock.Object);
     }
 
     private void SetupUser(Guid userId)
@@ -57,7 +57,7 @@ public class UserControllerTests
             new UserDto { Id = Guid.NewGuid(), Name = "User2", Email = "user2@test.com" }
         };
 
-        _userServiceMock.Setup(s => s.GetAllUsersAsync(It.IsAny<CancellationToken>()))
+        _userServiceMock.Setup(s => s.GetAllAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(expectedUsers);
 
         // Act
@@ -73,7 +73,7 @@ public class UserControllerTests
     public async Task GetAllUsers_ShouldReturnOk_WhenEmpty()
     {
         // Arrange
-        _userServiceMock.Setup(s => s.GetAllUsersAsync(It.IsAny<CancellationToken>()))
+        _userServiceMock.Setup(s => s.GetAllAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(Enumerable.Empty<UserDto>());
 
         // Act
@@ -96,7 +96,7 @@ public class UserControllerTests
             .ReturnsAsync(expectedUser);
 
         // Act
-        var result = await _userController.GetById(userId);
+        var result = await _userController.GetUserById(userId);
 
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(result);
@@ -115,40 +115,7 @@ public class UserControllerTests
             .ReturnsAsync((UserDto?)null);
 
         // Act
-        var result = await _userController.GetById(userId);
-
-        // Assert
-        Assert.IsType<NotFoundResult>(result);
-    }
-
-    [Fact]
-    public async Task GetByEmail_ShouldReturnOk_WhenUserExists()
-    {
-        // Arrange
-        var email = "test@test.com";
-        var expectedUser = new UserDto { Id = Guid.NewGuid(), Name = "TestUser", Email = email };
-
-        _userServiceMock.Setup(s => s.GetUserByEmailAsync(email, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(expectedUser);
-
-        // Act
-        var result = await _userController.GetByEmail(email);
-
-        // Assert
-        var okResult = Assert.IsType<OkObjectResult>(result);
-        var returned = Assert.IsType<UserDto>(okResult.Value);
-        Assert.Equal(email, returned.Email);
-    }
-
-    [Fact]
-    public async Task GetByEmail_ShouldReturnNotFound_WhenUserDoesNotExist()
-    {
-        // Arrange
-        _userServiceMock.Setup(s => s.GetUserByEmailAsync("none@test.com", It.IsAny<CancellationToken>()))
-            .ReturnsAsync((UserDto?)null);
-
-        // Act
-        var result = await _userController.GetByEmail("none@test.com");
+        var result = await _userController.GetUserById(userId);
 
         // Assert
         Assert.IsType<NotFoundResult>(result);
@@ -161,11 +128,11 @@ public class UserControllerTests
         var username = "TestUser";
         var expectedUser = new UserDto { Id = Guid.NewGuid(), Name = username, Email = "test@test.com" };
 
-        _userServiceMock.Setup(s => s.GetUserByNameAsync(username, It.IsAny<CancellationToken>()))
+        _userServiceMock.Setup(s => s.GetByUserNameAsync(username, It.IsAny<CancellationToken>()))
             .ReturnsAsync(expectedUser);
 
         // Act
-        var result = await _userController.GetByUserName(username);
+        var result = await _userController.GetUserByName(username);
 
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(result);
@@ -177,12 +144,11 @@ public class UserControllerTests
     public async Task GetByUserName_ShouldReturnNotFound_WhenUserDoesNotExist()
     {
         // Arrange
-        _userServiceMock.Setup(s => s.GetUserByNameAsync("Unknown", It.IsAny<CancellationToken>()))
+        _userServiceMock.Setup(s => s.GetByUserNameAsync("Unknown", It.IsAny<CancellationToken>()))
             .ReturnsAsync((UserDto?)null);
 
         // Act
-        var result = await _userController.GetByUserName("Unknown");
-
+        var result = await _userController.GetUserByName("Unknown");
         // Assert
         Assert.IsType<NotFoundResult>(result);
     }
@@ -247,7 +213,7 @@ public class UserControllerTests
 
         var updatedDto = new UserDto { Name = "Updated Name", Email = "updated@test.com" };
 
-        _userServiceMock.Setup(s => s.UpdateProfileAsync(It.IsAny<UserDto>(), It.IsAny<CancellationToken>()))
+        _userServiceMock.Setup(s => s.UpdateAsync(It.IsAny<Guid>(), It.IsAny<UserDto>(), It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
 
         // Act
@@ -255,7 +221,8 @@ public class UserControllerTests
 
         // Assert
         Assert.IsType<OkResult>(result);
-        _userServiceMock.Verify(s => s.UpdateProfileAsync(
+        _userServiceMock.Verify(s => s.UpdateAsync(
+            It.Is<Guid>(id => id == userId),
             It.Is<UserDto>(dto => dto.Id == userId && dto.Name == "Updated Name"),
             It.IsAny<CancellationToken>()), Times.Once);
     }
