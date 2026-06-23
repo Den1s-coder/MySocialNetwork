@@ -102,13 +102,6 @@ namespace SocialNetwork.Application.Service
             return _mapper.Map<IEnumerable<UserDto>>(users);
         }
 
-        public async Task<IEnumerable<UserDto>> GetAllUsersAsync(CancellationToken cancellationToken = default)
-        {
-            var users = await _userRepository.GetAllAsync(cancellationToken);
-            
-            return _mapper.Map<IEnumerable<UserDto>>(users);
-        }
-
         public async Task<UserDto?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
             var user = await _userRepository.GetByIdAsync(id, cancellationToken);
@@ -128,36 +121,6 @@ namespace SocialNetwork.Application.Service
             var user = await _userRepository.GetByUserNameAsync(userName, cancellationToken);
 
             return _mapper.Map<UserDto?>(user);
-        }
-
-        public async Task<UserRole> GetUserRoleAsync(Guid userId, CancellationToken cancellationToken = default)
-        {
-            var user = await _userRepository.GetByIdAsync(userId, cancellationToken);
-
-            if (user == null)
-                throw new ArgumentException("User not found");
-
-            return user.Role;
-        }
-
-        public async Task<UserDto> GetUserByEmailAsync(string email, CancellationToken cancellationToken = default)
-        {
-            var user = await _userRepository.GetByEmailAsync(email, cancellationToken);
-
-            return _mapper.Map<UserDto?>(user);
-        }
-
-        public async Task<UserDto> GetUserByNameAsync(string name, CancellationToken cancellationToken = default)
-        {
-            var user = await _userRepository.GetByUserNameAsync(name, cancellationToken);
-
-            return _mapper.Map<UserDto?>(user);
-        }
-
-        public async Task<IEnumerable<UserDto>> GetUsersByRoleAsync(UserRole role, CancellationToken cancellationToken = default)
-        {
-            var users = await _userRepository.GetUsersByRoleAsync(role, cancellationToken);
-            return _mapper.Map<IEnumerable<UserDto>>(users);
         }
 
         public async Task<PaginetedResult<UserDto>> SearchAsync(string query, int page, int pageSize, CancellationToken cancellationToken = default)

@@ -103,29 +103,6 @@ public class FriendControllerTests
     }
 
     [Fact]
-    public async Task GetFriendsOfUser_ShouldReturnOk_WithFriends()
-    {
-        // Arrange
-        var userId = Guid.NewGuid();
-
-        var expectedFriendships = new List<Friendship>
-        {
-            new Friendship { RequesterId = userId, AddresseeId = Guid.NewGuid() }
-        };
-
-        _friendServiceMock.Setup(s => s.GetFriendsOfUser(userId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(expectedFriendships);
-
-        // Act
-        var result = await _friendController.GetFriendsOfUser(userId);
-
-        // Assert
-        var okResult = Assert.IsType<OkObjectResult>(result);
-        var returned = Assert.IsAssignableFrom<IEnumerable<Friendship>>(okResult.Value);
-        Assert.Single(returned);
-    }
-
-    [Fact]
     public async Task GetPendingFriendRequests_ShouldReturnOk_WhenUserIsAuthorized()
     {
         // Arrange
@@ -160,30 +137,6 @@ public class FriendControllerTests
 
         // Assert
         Assert.IsType<UnauthorizedResult>(result);
-    }
-
-    [Fact]
-    public async Task GetMyFriends_ShouldReturnOk_WhenUserIsAuthorized()
-    {
-        // Arrange
-        var userId = Guid.NewGuid();
-        SetupUser(userId);
-
-        var expectedFriendships = new List<Friendship>
-        {
-            new Friendship { RequesterId = userId, AddresseeId = Guid.NewGuid() }
-        };
-
-        _friendServiceMock.Setup(s => s.GetFriendsOfUser(userId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(expectedFriendships);
-
-        // Act
-        var result = await _friendController.GetMyFriends();
-
-        // Assert
-        var okResult = Assert.IsType<OkObjectResult>(result);
-        var returned = Assert.IsAssignableFrom<IEnumerable<Friendship>>(okResult.Value);
-        Assert.Single(returned);
     }
 
     [Fact]
@@ -276,7 +229,7 @@ public class FriendControllerTests
         var friendId = Guid.NewGuid();
         SetupUser(userId);
 
-        _friendServiceMock.Setup(s => s.RemoveFriend(userId, friendId))
+        _friendServiceMock.Setup(s => s.RemoveFriend(userId, friendId, It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
 
         // Act
@@ -284,7 +237,7 @@ public class FriendControllerTests
 
         // Assert
         Assert.IsType<OkResult>(result);
-        _friendServiceMock.Verify(s => s.RemoveFriend(userId, friendId), Times.Once);
+        _friendServiceMock.Verify(s => s.RemoveFriend(userId, friendId, It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -298,6 +251,6 @@ public class FriendControllerTests
 
         // Assert
         Assert.IsType<UnauthorizedResult>(result);
-        _friendServiceMock.Verify(s => s.RemoveFriend(It.IsAny<Guid>(), It.IsAny<Guid>()), Times.Never);
+        _friendServiceMock.Verify(s => s.RemoveFriend(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 }
