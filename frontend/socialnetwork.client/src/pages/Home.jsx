@@ -284,7 +284,7 @@ export default function Home() {
                         return (
                             <li key={p.id} className="post-card">
                                 <div className="post-card__header" style={{ alignItems: 'center' }}>
-                                    <Link to={`/User/by-username/${encodeURIComponent(p.userName)}`} className="post-card__meta" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                    <Link to={`/user/${encodeURIComponent(p.userName)}`} className="post-card__meta" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                                         <Avatar url={avatarUrl} name={p.userName} />
                                         <span>{p.userName}</span>
                                     </Link>
