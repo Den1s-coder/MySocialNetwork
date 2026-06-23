@@ -63,7 +63,7 @@ namespace SocialNetwork.API.Controllers
         }
 
         [HttpGet("{userId:guid}")]
-        public async Task<IActionResult> GetById([FromQuery] Guid userId, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> GetById([FromRoute] Guid userId, CancellationToken cancellationToken = default)
         {
             var user = await _userService.GetByIdAsync(userId, cancellationToken);
             return Ok(user);
