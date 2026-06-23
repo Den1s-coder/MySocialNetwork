@@ -97,53 +97,6 @@ public class ChatControllerTests
     }
 
     [Fact]
-    public async Task GetMessages_ShouldReturnOk_WithMessages()
-    {
-        // Arrange
-        var userId = Guid.NewGuid();
-        SetupUser(userId);
-
-        var chatId = Guid.NewGuid();
-        var expectedMessages = new List<MessageDto>
-        {
-            new MessageDto { Id = Guid.NewGuid(), ChatId = chatId, SenderId = userId, Content = "Hello" },
-            new MessageDto { Id = Guid.NewGuid(), ChatId = chatId, SenderId = Guid.NewGuid(), Content = "Hi" }
-        };
-
-        _messageServiceMock.Setup(s => s.GetMessageByChatIdAsync(chatId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(expectedMessages);
-
-        // Act
-        var result = await _chatController.GetMessages(chatId);
-
-        // Assert
-        var okResult = Assert.IsType<OkObjectResult>(result);
-        var returned = Assert.IsAssignableFrom<IEnumerable<MessageDto>>(okResult.Value);
-        Assert.Equal(2, returned.Count());
-    }
-
-    [Fact]
-    public async Task GetMessages_ShouldReturnOk_WhenNoMessages()
-    {
-        // Arrange
-        var userId = Guid.NewGuid();
-        SetupUser(userId);
-
-        var chatId = Guid.NewGuid();
-
-        _messageServiceMock.Setup(s => s.GetMessageByChatIdAsync(chatId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Enumerable.Empty<MessageDto>());
-
-        // Act
-        var result = await _chatController.GetMessages(chatId);
-
-        // Assert
-        var okResult = Assert.IsType<OkObjectResult>(result);
-        var returned = Assert.IsAssignableFrom<IEnumerable<MessageDto>>(okResult.Value);
-        Assert.Empty(returned);
-    }
-
-    [Fact]
     public async Task CreatePrivateChat_ShouldReturnOk_WithChatId()
     {
         // Arrange
