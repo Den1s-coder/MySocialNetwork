@@ -22,7 +22,7 @@ jobs:
     - name: Build & Test
       run: |
         dotnet build SocialNetwork_Server.sln --no-restore --configuration Release
-        dotnet test SocialNetwork_Server.sln --no-build --verbosity normal
+        dotnet test SocialNetwork_Server.sln --no-build --configuration Release --verbosity normal
 
     - name: Publish .NET
       run: dotnet publish backend/SocialNetwork.API/SocialNetwork.API.csproj -c Release -o ./publish
