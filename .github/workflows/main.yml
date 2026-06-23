@@ -1,9 +1,8 @@
-name: CI/CD Pipeline
+name: CI/CD Pipeline to Azure VM
 
 on:
   push:
     branches: [ "main", "master" ]
-  workflow_dispatch:
 
 jobs:
   build-backend:
@@ -22,7 +21,7 @@ jobs:
     - name: Build & Test
       run: |
         dotnet build SocialNetwork_Server.sln --no-restore --configuration Release
-        dotnet test SocialNetwork_Server.sln --no-build --configuration Release --verbosity normal
+        dotnet test SocialNetwork_Server.sln --no-build --verbosity normal
 
     - name: Publish .NET
       run: dotnet publish backend/SocialNetwork.API/SocialNetwork.API.csproj -c Release -o ./publish
@@ -60,7 +59,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: frontend-build
-        path: ./frontend/socialnetwork.client/dist 
+        path: ./frontend/socialnetwork.client/build 
 
   deploy:
     needs: [build-backend, build-frontend]
