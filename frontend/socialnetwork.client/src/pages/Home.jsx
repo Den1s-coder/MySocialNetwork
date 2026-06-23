@@ -47,21 +47,64 @@ export default function Home() {
                         </>
                     );
 
-                    return (
-                        <li key={p.id} className="post-card">
-                            {p.isBanned ? (
-                                <div className="post-card--banned">
-                                    {CardInner}
+                        return (
+                            <li key={p.id} className="post-card">
+                                <div className="post-card__header" style={{ alignItems: 'center' }}>
+                                    <Link to={`/User/by-username/${encodeURIComponent(p.userName)}`} className="post-card__meta" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                        <Avatar url={avatarUrl} name={p.userName} />
+                                        <span>{p.userName}</span>
+                                    </Link>
                                 </div>
-                            ) : (
-                                <Link to={`/post/${p.id}`} className="post-card__link">
-                                    {CardInner}
-                                </Link>
-                            )}
-                        </li>
-                    );
-                })}
-            </ul>
+
+                                {p.isBanned ? (
+                                    <div className="post-card--banned">
+                                        <div className="post-card__text">{'(Заблоковано адміністрацією)'}</div>
+                                        <div className="post-card__time">{timeStr}</div>
+                                    </div>
+                                ) : (
+                                    <>
+                                        <Link to={`/post/${p.id}`} className="post-card__link">
+                                            <div className="post-card__text">{p.text}</div>
+                                            {p.imageUrl && (
+                                                <img 
+                                                    src={p.imageUrl} 
+                                                    alt="Пост" 
+                                                    style={{
+                                                        maxWidth: '100%',
+                                                        maxHeight: 400,
+                                                        borderRadius: 4,
+                                                        marginTop: 8,
+                                                        objectFit: 'cover'
+                                                    }}
+                                                />
+                                            )}
+                                            <div className="post-card__time">{timeStr}</div>
+                                        </Link>
+
+                                        <ReactionBar
+                                            reactions={p.reactions ?? []}
+                                            currentUserReactionCode={p.currentUserReactionCode ?? null}
+                                            entityId={p.id}
+                                            entityType="Post"
+                                            authed={isAuthenticated}
+                                            onReactionChanged={(updatedReactions, newCode) =>
+                                                handlePostReactionChanged(p.id, updatedReactions, newCode)
+                                            }
+                                        />
+                                    </>
+                                )}
+                            </li>
+                        );
+                    })}
+                </ul>
+            )}
+            {hasMore && (
+                <div style={{ textAlign: 'center', marginTop: 12 }}>
+                    <button onClick={loadMore} disabled={loadingPage}>
+                        {loadingPage ? 'Завантаження…' : 'Завантажити ще'}
+                    </button>
+                </div>
+            )}
         </div>
     );
 }

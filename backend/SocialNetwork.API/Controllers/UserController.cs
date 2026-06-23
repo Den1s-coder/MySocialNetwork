@@ -38,7 +38,7 @@ namespace SocialNetwork.API.Controllers
             return Ok(userDto);
         }
 
-        [HttpGet("users/by-email")]
+        [HttpGet("by-email")]
         public async Task<IActionResult> GetByEmail([FromQuery] string email)
         {
             var userDto = await _userService.GetUserByEmailAsync(email);
@@ -49,7 +49,7 @@ namespace SocialNetwork.API.Controllers
             return Ok(userDto);
         }
 
-        [HttpGet("users/by-username")]
+        [HttpGet("by-username")]
         public async Task<IActionResult> GetByUserName([FromQuery] string username)
         {
             var userDto = await _userService.GetUserByNameAsync(username);
