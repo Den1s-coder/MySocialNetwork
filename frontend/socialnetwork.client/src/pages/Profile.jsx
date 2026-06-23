@@ -57,7 +57,7 @@ export default function Profile() {
               headers: accessToken ? { 'Authorization': `Bearer ${accessToken}` } : undefined
             });
           } else {
-            res = await authFetch(`${API_BASE}/api/users/by-username?username=${encodeURIComponent(idOrName)}`, {
+            res = await authFetch(`${API_BASE}/api/User/by-username?username=${encodeURIComponent(idOrName)}`, {
               headers: accessToken ? { 'Authorization': `Bearer ${accessToken}` } : undefined
             });
           }
