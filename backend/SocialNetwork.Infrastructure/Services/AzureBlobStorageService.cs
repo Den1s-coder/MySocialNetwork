@@ -18,7 +18,7 @@ namespace SocialNetwork.Infrastructure.Services
         {
             _blobServiceClient = blobServiceClient;
             _containers = containers ?? throw new ArgumentNullException(nameof(containers));
-            _apiBaseUrl = apiBaseUrl ?? "https://localhost:7142"; 
+            _apiBaseUrl = apiBaseUrl ?? "http://20.2.91.81"; 
 
             var parts = connectionString.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
             _accountName = parts.FirstOrDefault(p => p.StartsWith("AccountName=", StringComparison.OrdinalIgnoreCase))?.Split('=', 2)[1];

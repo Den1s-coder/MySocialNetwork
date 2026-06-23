@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { authFetch } from '../hooks/authFetch';
 
-const API_BASE = 'https://localhost:7142';
+const API_BASE = import.meta.env.VITE_API_BASE || '';
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
 
 export default function Register() {

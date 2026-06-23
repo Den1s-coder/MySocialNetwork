@@ -2,7 +2,7 @@
 import { authFetch } from '../hooks/authFetch';
 import './ReactionBar.css';
 
-const API_BASE = 'https://localhost:7142';
+const API_BASE = import.meta.env.VITE_API_BASE || '';
 
 const REACTION_TYPES = [
     { id: '00000000-0000-0000-0000-000000000001', code: 'like',  symbol: '👍' },

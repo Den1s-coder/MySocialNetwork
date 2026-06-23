@@ -6,7 +6,7 @@ import Avatar from "../components/Avatar";
 import RoleBadge from "../components/RoleBadge";
 import './FriendshipList.css';
 
-const API_BASE = "https://localhost:7142";
+const API_BASE = import.meta.env.VITE_API_BASE || '';
 
 export default function FriendshipList() {
     const { accessToken, isAuthenticated } = useAuth();

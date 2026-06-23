@@ -6,7 +6,7 @@ import './Profile.css';
 import { authFetch } from '../hooks/authFetch';
 import RoleBadge from '../components/RoleBadge';
 
-const API_BASE = 'https://localhost:7142';
+const API_BASE = import.meta.env.VITE_API_BASE || '';
 const guidRegex = /^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$/;
 
 export default function Profile() {

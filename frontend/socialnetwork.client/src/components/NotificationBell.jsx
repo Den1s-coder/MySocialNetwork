@@ -5,7 +5,7 @@ import { authFetch } from '../hooks/authFetch';
 import { useNotificationHub } from '../hooks/useNotificationHub';
 import './NotificationBell.css';
 
-const API_BASE = 'https://localhost:7142';
+const API_BASE = import.meta.env.VITE_API_BASE || '';
 
 function parseMessage(msgOrRaw) {
     if (!msgOrRaw) return { text: '' };

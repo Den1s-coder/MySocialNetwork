@@ -6,7 +6,7 @@ import Avatar from '../components/Avatar';
 import ReactionBar from '../components/ReactionBar';
 import EmojiPickerButton from '../components/EmojiPickerButton';
 
-const API_BASE = 'https://localhost:7142';
+const API_BASE = import.meta.env.VITE_API_BASE || '';
 const COMMENTS_PAGE_SIZE = 10;
 
 export default function Post() {

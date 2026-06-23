@@ -8,7 +8,7 @@ import ThemeToggle from './ThemeToggle';
 import { useUserRole } from '../hooks/useUserRole';
 import './NavBar.css';
 
-const API_BASE = 'https://localhost:7142';
+const API_BASE = import.meta.env.VITE_API_BASE || '';
 const SUGGESTIONS_LIMIT = 3;
 
 export default function NavBar() {

@@ -5,7 +5,7 @@ import Avatar from '../components/Avatar';
 import { Link } from 'react-router-dom';
 import './Search.css';
 
-const API_BASE = 'https://localhost:7142';
+const API_BASE = import.meta.env.VITE_API_BASE || '';
 const PAGE_SIZE = 10;
 
 export default function Search() {

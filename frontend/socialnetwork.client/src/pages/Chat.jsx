@@ -38,31 +38,6 @@ const getDateKey = (date) => {
     return d.toLocaleDateString('uk-UA');
 };
 
-const formatDate = (date) => {
-    const d = new Date(date);
-    const today = new Date();
-    const yesterday = new Date(today);
-    yesterday.setDate(yesterday.getDate() - 1);
-
-    const dateStr = d.toLocaleDateString('uk-UA');
-    const todayStr = today.toLocaleDateString('uk-UA');
-    const yesterdayStr = yesterday.toLocaleDateString('uk-UA');
-
-    if (dateStr === todayStr) return 'Сьогодні';
-    if (dateStr === yesterdayStr) return 'Вчора';
-    return dateStr;
-};
-
-const formatTime = (date) => {
-    const d = new Date(date);
-    return d.toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit' });
-}
-
-const getDateKey = (date) => {
-    const d = new Date(date);
-    return d.toLocaleDateString('uk-UA');
-};
-
 export default function Chat() {
     const { chatId } = useParams();
     const navigate = useNavigate();

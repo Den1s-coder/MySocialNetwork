@@ -3,7 +3,7 @@ import { authFetch } from '../hooks/authFetch';
 import { useUserRole } from '../hooks/useUserRole';
 import './AdminPanel.css';
 
-const API_BASE = 'https://localhost:7142';
+const API_BASE = import.meta.env.VITE_API_BASE || '';
 
 export default function AdminPanel() {
     const { isAdmin, loading: roleLoading } = useUserRole();
