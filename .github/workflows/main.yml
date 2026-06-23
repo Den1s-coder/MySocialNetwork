@@ -1,8 +1,9 @@
-name: CI/CD Pipeline to Azure VM
+name: CI/CD Pipeline
 
 on:
   push:
     branches: [ "main", "master" ]
+  workflow_dispatch:
 
 jobs:
   build-backend:
