@@ -53,7 +53,7 @@ export default function Profile() {
         } else {
           let res;
           if (guidRegex.test(idOrName)) {
-            res = await authFetch(`${API_BASE}/api/User/users/${idOrName}`, {
+            res = await authFetch(`${API_BASE}/api/User/${idOrName}`, {
               headers: accessToken ? { 'Authorization': `Bearer ${accessToken}` } : undefined
             });
           } else {

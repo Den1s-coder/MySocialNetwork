@@ -23,7 +23,7 @@ export default function FriendshipList() {
     const fetchUser = useCallback(
         async (userId) => {
             try {
-                const res = await authFetch(`${API_BASE}/api/User/users/${userId}`, { headers });
+                const res = await authFetch(`${API_BASE}/api/User/${userId}`, { headers });
                 if (!res.ok) return null;
                 return await res.json();
             } catch {
