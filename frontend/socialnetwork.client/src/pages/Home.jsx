@@ -7,7 +7,7 @@ import ReactionBar from '../components/ReactionBar';
 import EmojiPickerButton from '../components/EmojiPickerButton';
 import { useAuth } from '../hooks/useAuth';
 
-const API_BASE = 'https://localhost:7142';
+const API_BASE = import.meta.env.VITE_API_BASE || '';
 const PAGE_SIZE = 10;
 
 export default function Home() {

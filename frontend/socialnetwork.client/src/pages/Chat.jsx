@@ -10,8 +10,8 @@ import EmojiPickerButton from '../components/EmojiPickerButton';
 import { AiFillEdit, AiFillCamera } from "react-icons/ai";
 import './Chat.css';
 
-const BASE_URL = 'https://localhost:7142';
-const API_BASE = 'https://localhost:7142';
+const BASE_URL = import.meta.env.VITE_API_BASE || '';
+const API_BASE = import.meta.env.VITE_API_BASE || '';
 
 const formatDate = (date) => {
     const d = new Date(date);

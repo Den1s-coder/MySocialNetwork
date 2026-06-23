@@ -5,7 +5,7 @@ import Modal from './Modal';
 import './AddUsersToChatModal.css';
 import { BsFillPeopleFill } from "react-icons/bs";
 
-const API_BASE = 'https://localhost:7142';
+const API_BASE = import.meta.env.VITE_API_BASE || '';
 
 export default function AddUsersToChatModal({ isOpen, chatId, onClose, onSuccess }) {
     const [friends, setFriends] = useState([]);
