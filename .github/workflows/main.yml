@@ -60,7 +60,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: frontend-build
-        path: ./frontend/socialnetwork.client/build 
+        path: ./frontend/socialnetwork.client/dist 
 
   deploy:
     needs: [build-backend, build-frontend]
