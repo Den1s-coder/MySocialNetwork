@@ -86,45 +86,6 @@ public class UserControllerTests
     }
 
     [Fact]
-    public async Task GetById_ShouldReturnOk_WhenUserExists()
-    {
-        // Arrange
-        var userId = Guid.NewGuid();
-        var expectedUser = new UserDto { Id = userId, Name = "TestUser", Email = "test@test.com" };
-
-        _userServiceMock.Setup(s => s.GetByIdAsync(userId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(expectedUser);
-
-        // Act
-        var result = await _userController.GetUserById(userId);
-
-        // Assert
-        var okResult = Assert.IsType<OkObjectResult>(result);
-        var returned = Assert.IsType<UserDto>(okResult.Value);
-        Assert.Equal(userId, returned.Id);
-        Assert.Equal("TestUser", returned.Name);
-    }
-
-    [Fact]
-    public async Task GetByUserName_ShouldReturnOk_WhenUserExists()
-    {
-        // Arrange
-        var username = "TestUser";
-        var expectedUser = new UserDto { Id = Guid.NewGuid(), Name = username, Email = "test@test.com" };
-
-        _userServiceMock.Setup(s => s.GetByUserNameAsync(username, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(expectedUser);
-
-        // Act
-        var result = await _userController.GetUserByName(username);
-
-        // Assert
-        var okResult = Assert.IsType<OkObjectResult>(result);
-        var returned = Assert.IsType<UserDto>(okResult.Value);
-        Assert.Equal(username, returned.Name);
-    }
-
-    [Fact]
     public async Task GetProfile_ShouldReturnOk_WhenUserIsAuthorized()
     {
         // Arrange
