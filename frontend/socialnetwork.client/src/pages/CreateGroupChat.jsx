@@ -4,7 +4,7 @@ import { useAuth } from '../hooks/useAuth';
 import { authFetch } from '../hooks/authFetch';
 import Avatar from '../components/Avatar';
 
-const API_BASE = 'https://localhost:7142';
+const API_BASE = import.meta.env.VITE_API_BASE || '';
 
 export default function CreateGroupChat() {
     const navigate = useNavigate();
