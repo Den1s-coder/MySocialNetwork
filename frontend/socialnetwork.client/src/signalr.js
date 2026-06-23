@@ -17,3 +17,24 @@ export function createChatConnection({ baseUrl, getToken }) {
 		.configureLogging(signalR.LogLevel.Information)
 		.build();
 }
+
+export function createNotificationConnection({ baseUrl, getToken }) {
+	return new signalR.HubConnectionBuilder()
+		.withUrl(`${baseUrl}/notificationHub`, {
+			accessTokenFactory: async () => {
+				const token = await getToken?.();
+				return token ?? '';
+			},
+			skipNegotiation: true,
+			transport: signalR.HttpTransportType.WebSockets,
+			withCredentials: true
+		})
+		.withAutomaticReconnect({
+			nextRetryDelayInMilliseconds: ctx => {
+				const delays = [0, 1000, 2000, 5000, 10000];
+				return delays[Math.min(ctx.previousRetryCount + 1, delays.length - 1)];
+			}
+		})
+		.configureLogging(signalR.LogLevel.Information)
+		.build();
+}

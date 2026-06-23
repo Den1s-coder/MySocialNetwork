@@ -1,0 +1,108 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  build-backend:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x' 
+
+    - name: Restore dependencies
+      run: dotnet restore SocialNetwork_Server.sln 
+
+    - name: Build & Test
+      run: |
+        dotnet build SocialNetwork_Server.sln --no-restore --configuration Release
+        dotnet test SocialNetwork_Server.sln --no-build --configuration Release --verbosity normal
+
+    - name: Publish .NET
+      run: dotnet publish backend/SocialNetwork.API/SocialNetwork.API.csproj -c Release -o ./publish
+
+    - name: Upload Backend Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: backend-publish
+        path: ./publish
+
+  build-frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./frontend/socialnetwork.client
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '24.x' 
+        cache: 'npm'
+        cache-dependency-path: './frontend/socialnetwork.client/package-lock.json'
+
+    - name: Install dependencies
+      run: npm ci 
+
+    - name: Run ESLint & Build
+      run: |
+        npx eslint .
+        npm run build
+      
+    - name: Upload Frontend Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: frontend-build
+        path: ./frontend/socialnetwork.client/dist 
+
+  deploy:
+    needs: [build-backend, build-frontend]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Download Backend Artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: backend-publish
+        path: ./publish
+
+    - name: Download Frontend Artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: frontend-build
+        path: ./build
+
+    - name: Copy Backend to Azure VM
+      uses: appleboy/scp-action@v0.1.7
+      with:
+        host: ${{ secrets.AZURE_VM_IP }}
+        username: ${{ secrets.AZURE_VM_USER }}
+        key: ${{ secrets.AZURE_VM_SSH_KEY }}
+        source: "./publish/*" 
+        target: "/var/www/mysocialnetwork/server"
+        strip_components: 1
+
+    - name: Copy Frontend to Azure VM
+      uses: appleboy/scp-action@v0.1.7
+      with:
+        host: ${{ secrets.AZURE_VM_IP }}
+        username: ${{ secrets.AZURE_VM_USER }}
+        key: ${{ secrets.AZURE_VM_SSH_KEY }}
+        source: "./build/*"
+        target: "/var/www/mysocialnetwork/client"
+        strip_components: 1
+
+    - name: Restart .NET Service on VM
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.AZURE_VM_IP }}
+        username: ${{ secrets.AZURE_VM_USER }}
+        key: ${{ secrets.AZURE_VM_SSH_KEY }}
+        script: |
+          sudo systemctl restart mysocialnetwork.service

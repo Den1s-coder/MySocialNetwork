@@ -1,13 +1,37 @@
 <!doctype html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vite + React</title>
-  </head>
-  <body>
+</head>
+<body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
-  </body>
+
+    <script>
+        (function () {
+            try {
+                if (navigator.permissions) {
+                    if (typeof navigator.permissions.query === 'function') {
+                        navigator.permissions.query = navigator.permissions.query.bind(navigator.permissions);
+                    } else {
+                        navigator.permissions.query = function () {
+                            return Promise.resolve({ state: 'prompt' });
+                        };
+                    }
+                } else {
+                    navigator.permissions = {
+                        query: function () { return Promise.resolve({ state: 'prompt' }); }
+                    };
+                }
+            } catch (e) {
+                console.warn('Permissions API bind/polyfill failed', e);
+            }
+        })();
+    </script>
+
+    <script src="https://accounts.google.com/gsi/client" async defer onload="window.dispatchEvent(new Event('gsi-loaded'))"></script>
+</body>
 </html>

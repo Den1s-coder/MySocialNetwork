@@ -2,8 +2,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
-using SocialNetwork.Application.DTO;
+using SocialNetwork.Application.DTO.Chats;
 using SocialNetwork.Domain.Entities;
+using SocialNetwork.Domain.Entities.Chats;
 using SocialNetwork.Domain.Interfaces;
 using SocialNetwork.Infrastructure;
 using System.Runtime.CompilerServices;
@@ -56,7 +57,7 @@ namespace SocialNetwork.API.Hubs
             }
         }
 
-        public async Task SendMessage(Guid chatId, string content)
+        public async Task SendMessage(Guid chatId, string content, string? photoUrl = null)
         {
             try
             {
@@ -76,6 +77,7 @@ namespace SocialNetwork.API.Hubs
                     SenderId = userId,
                     ChatId = chatId,
                     Content = content,
+                    PhotoUrl = photoUrl,
                     SentAt = DateTime.UtcNow
                 };
 
@@ -88,6 +90,66 @@ namespace SocialNetwork.API.Hubs
             catch (Exception ex)
             {
                 _logger.LogError(ex, "SendMessage: Error sending message to chat {ChatId}", chatId);
+                throw;
+            }
+        }
+
+        public async Task EditMessage(Guid messageId, string newContent)
+        {
+            try
+            {
+                var userId = Guid.Parse(Context.User.Claims.First(c => c.Type == ClaimTypes.Sid).Value);
+
+                var message = await _messageRepository.GetByIdAsync(messageId);
+                if (message == null)
+                {
+                    throw new HubException("Message not found");
+                }
+
+                if (message.SenderId != userId)
+                {
+                    throw new HubException("You can only edit your own messages");
+                }
+
+                message.Content = newContent;
+                await _messageRepository.UpdateAsync(message);
+
+                var messageDto = _mapper.Map<MessageDto>(message);
+
+                await Clients.Group(message.ChatId.ToString()).SendAsync("MessageUpdated", messageDto);
+
+                _logger.LogInformation("EditMessage: Message {MessageId} edited successfully by user {UserId}", messageId, userId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "EditMessage: Error editing message {MessageId}", messageId);
+                throw;
+            }
+        }
+
+        public async Task NotifyUserAdded(Guid chatId, Guid addedUserId, string userName)
+        {
+            try
+            {
+                _logger.LogInformation("User {UserName} (ID: {UserId}) added to chat {ChatId}", userName, addedUserId, chatId);
+
+                var systemMessage = new Message
+                {
+                    Id = Guid.NewGuid(),
+                    ChatId = chatId,
+                    SenderId = Guid.Empty, 
+                    Content = $"{userName} присоединился к чату",
+                    SentAt = DateTime.UtcNow
+                };
+
+                await _messageRepository.CreateAsync(systemMessage);
+                var messageDto = _mapper.Map<MessageDto>(systemMessage);
+
+                await Clients.Group(chatId.ToString()).SendAsync("ReceiveMessage", messageDto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "NotifyUserAdded: Error notifying user addition to chat {ChatId}", chatId);
                 throw;
             }
         }

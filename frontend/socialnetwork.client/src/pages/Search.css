@@ -1,0 +1,239 @@
+.search-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 24px 12px;
+}
+
+.search-header {
+    margin-bottom: 32px;
+}
+
+.search-header h1 {
+    font-size: 32px;
+    margin-bottom: 16px;
+    color: #333;
+}
+
+.search-input-wrapper {
+    margin-bottom: 16px;
+}
+
+.search-input {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.search-filters {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.filter-btn {
+    padding: 8px 16px;
+    background: #f5f5f5;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.filter-btn:hover {
+    background: #efefef;
+    border-color: #999;
+}
+
+.filter-btn.active {
+    background: #007bff;
+    color: white;
+    border-color: #0056b3;
+}
+
+.search-error {
+    padding: 16px;
+    background: #ffe6e6;
+    border: 1px solid #ff4444;
+    border-radius: 8px;
+    color: #cc0000;
+    margin-bottom: 16px;
+}
+
+.search-loading {
+    text-align: center;
+    padding: 48px 16px;
+    color: #666;
+    font-size: 16px;
+}
+
+.search-empty {
+    text-align: center;
+    padding: 64px 16px;
+    color: #999;
+    font-size: 18px;
+}
+
+.search-section {
+    margin-bottom: 48px;
+}
+
+.search-section h2 {
+    font-size: 20px;
+    margin-bottom: 16px;
+    color: #333;
+}
+
+.search-no-results {
+    padding: 24px;
+    text-align: center;
+    color: #999;
+    background: #f9f9f9;
+    border-radius: 8px;
+}
+
+.search-posts-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.search-post-card {
+    padding: 16px;
+    border-bottom: 1px solid #eee;
+    transition: background 0.2s ease;
+}
+
+.search-post-card:last-child {
+    border-bottom: none;
+}
+
+.search-post-card:hover {
+    background: #f9f9f9;
+}
+
+.search-post-header {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    margin-bottom: 12px;
+    text-decoration: none;
+    color: inherit;
+}
+
+.search-post-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.search-post-meta strong {
+    font-weight: 600;
+    color: #333;
+}
+
+.search-post-meta small {
+    color: #999;
+    font-size: 12px;
+}
+
+.search-post-text {
+    display: block;
+    color: #333;
+    text-decoration: none;
+    line-height: 1.5;
+    word-break: break-word;
+    transition: color 0.2s ease;
+}
+
+.search-post-text:hover {
+    color: #007bff;
+}
+
+.search-users-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.search-user-card {
+    padding: 16px;
+    border-bottom: 1px solid #eee;
+    transition: background 0.2s ease;
+}
+
+.search-user-card:last-child {
+    border-bottom: none;
+}
+
+.search-user-card:hover {
+    background: #f9f9f9;
+}
+
+.search-user-link {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    text-decoration: none;
+    color: inherit;
+}
+
+.search-user-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+}
+
+.search-user-name {
+    font-weight: 600;
+    color: #333;
+}
+
+.search-user-username {
+    color: #999;
+    font-size: 14px;
+}
+
+.search-user-email {
+    color: #666;
+    font-size: 13px;
+}
+
+.load-more-btn {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    margin-top: 16px;
+    background: #f5f5f5;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.load-more-btn:hover {
+    background: #efefef;
+    border-color: #999;
+}
+
+.load-more-btn:active {
+    background: #e0e0e0;
+}

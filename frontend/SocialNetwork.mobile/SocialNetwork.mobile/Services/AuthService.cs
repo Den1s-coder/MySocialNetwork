@@ -8,13 +8,15 @@ using System.Threading.Tasks;
 using Xamarin.Essentials;
 using System.Diagnostics;
 using System.Net.Http.Headers;
+using System.Runtime.CompilerServices;
 
 namespace SocialNetwork.mobile.Services
 {
     public class AuthService : IAuthService
     {
         private readonly HttpClient _client;
-        private const string TokenKey = "auth_token";
+        private const string AccessToken = "auth_token";
+        private const string RefreshToken = "refresh_token";
 
         public AuthService()
         {
@@ -33,31 +35,45 @@ namespace SocialNetwork.mobile.Services
                 resp.EnsureSuccessStatusCode();
                 var respStr = await resp.Content.ReadAsStringAsync();
 
-                string token = null;
+                LoginResponce loginResponce = null;
                 try
                 {
-                    token = JsonConvert.DeserializeObject<string>(respStr);
+                    loginResponce = JsonConvert.DeserializeObject<LoginResponce>(respStr);
                 }
                 catch
                 {
                     try
                     {
                         var obj = JObject.Parse(respStr);
-                        if (obj["token"] != null)
-                            token = obj["token"].ToString();
+                        var access = obj["AccessToken"];
+                        var refresh = obj["RefreshToken"];
+                        loginResponce = new LoginResponce
+                        {
+                            AccessToken = access?.ToString(),
+                            RefreshToken = refresh?.ToString(),
+                        };
                     }
                     catch
                     {
-                        token = respStr?.Trim('"');
+                        var token = respStr?.Trim('"');
+                        loginResponce = new LoginResponce 
+                        { 
+                            AccessToken = token, 
+                            RefreshToken = null 
+                        };
                     }
                 }
 
-                if (!string.IsNullOrWhiteSpace(token))
+                if (!string.IsNullOrWhiteSpace(loginResponce?.AccessToken))
                 {
-                    await SecureStorage.SetAsync(TokenKey, token);
+                    await SecureStorage.SetAsync(AccessToken, loginResponce.AccessToken);
+                    if (!string.IsNullOrWhiteSpace(loginResponce.RefreshToken))
+                        await SecureStorage.SetAsync(RefreshToken, loginResponce.RefreshToken);
+
+                    _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", loginResponce.AccessToken);
                 }
 
-                return token;
+                return loginResponce?.AccessToken;
             }
             catch (Exception ex)
             {
@@ -86,7 +102,8 @@ namespace SocialNetwork.mobile.Services
         {
             try
             {
-                await SecureStorage.SetAsync(TokenKey, string.Empty);
+                await SecureStorage.SetAsync(AccessToken, string.Empty);
+                await SecureStorage.SetAsync(RefreshToken, string.Empty);
             }
             catch
             {
@@ -98,7 +115,19 @@ namespace SocialNetwork.mobile.Services
         {
             try
             {
-                return await SecureStorage.GetAsync(TokenKey);
+                return await SecureStorage.GetAsync(AccessToken);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        public async Task<string> GetRefreshTokenAsync()
+        {
+            try
+            {
+                return await SecureStorage.GetAsync(RefreshToken);
             }
             catch
             {

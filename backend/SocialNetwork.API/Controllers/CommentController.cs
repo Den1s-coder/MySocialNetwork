@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SocialNetwork.Application.DTO;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using SocialNetwork.Application.DTO.Comments;
 using SocialNetwork.Application.Interfaces;
 using SocialNetwork.Domain.Entities;
 using System.Security.Claims;
@@ -21,16 +22,16 @@ namespace SocialNetwork.API.Controllers
         }
 
         [HttpGet("{postId:guid}/comments")]
-        public async Task<IActionResult> Get(Guid postId)
+        public async Task<IActionResult> GetPaged([FromQuery]int pageNumber, [FromQuery]int pageSize ,Guid postId, CancellationToken cancellationToken = default)
         {
-            var comments = await _commentService.GetPostCommentsAsync(postId);
+            var comments = await _commentService.GetPostCommentsPagedAsync(postId, pageNumber, pageSize, cancellationToken);
 
             return Ok(comments);
         }
 
         [Authorize]
         [HttpPost("CreateComment")]
-        public async Task<IActionResult> Create([FromBody] CreateCommentDto createCommentDto)
+        public async Task<IActionResult> Create([FromBody] CreateCommentDto createCommentDto, CancellationToken cancellationToken = default)
         {
             if (!ModelState.IsValid)
             {
@@ -42,17 +43,29 @@ namespace SocialNetwork.API.Controllers
 
             createCommentDto.UserId = UserIdClaim;
 
-            await _commentService.CreateAsync(createCommentDto);
+            await _commentService.CreateAsync(createCommentDto, cancellationToken);
 
+            return Ok();
+        }
+
+        [Authorize]
+        [HttpPost("{commentId:guid}/react")]
+        public async Task<IActionResult> ToggleReaction(Guid commentId, [FromQuery] Guid reactionType, CancellationToken cancellationToken = default)
+        {
+            var sid = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Sid)?.Value;
+            if (!Guid.TryParse(sid, out var userId))
+                return Unauthorized();
+
+            await _commentService.ToggleReactionAsync(commentId, userId, reactionType, cancellationToken);
             return Ok();
         }
 
 
         [Authorize(Roles = "Admin")]
         [HttpDelete("{commentId:guid}")]
-        public async Task<IActionResult> Ban(Guid commentId)
+        public async Task<IActionResult> Ban(Guid commentId, CancellationToken cancellationToken = default)
         {
-            await _commentService.BanComment(commentId);
+            await _commentService.BanComment(commentId, cancellationToken);
 
             return Ok();
         }
