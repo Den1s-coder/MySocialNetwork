@@ -9,10 +9,10 @@ namespace SocialNetwork.Domain.Interfaces
 {
     public interface IGenerycRepository<T> where T : class
     {
-        public Task<IEnumerable<T>> GetAllAsync();
-        public Task<T?> GetByIdAsync(Guid id);
-        public Task CreateAsync(T T);
-        public Task UpdateAsync(T T);
-        public Task DeleteAsync(Guid id);
+        public Task<IEnumerable<T>> GetAllAsync(CancellationToken cancellationToken = default);
+        public Task<T?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
+        public Task CreateAsync(T T, CancellationToken cancellationToken = default);
+        public Task UpdateAsync(T T, CancellationToken cancellationToken = default);
+        public Task DeleteAsync(Guid id, CancellationToken cancellationToken = default);
     }
 }

@@ -1,15 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SocialNetwork.Domain.Entities.Users;
 
 namespace SocialNetwork.Domain.Entities
 {
     public class Notification : BaseEntity
     {
         public string Message { get; set; }
-        public string UserId { get; set; }
+        public Guid UserId { get; set; }
         public User User { get; set; }
+        public bool IsRead { get; set; } = false;
+
     }
 }

@@ -1,0 +1,220 @@
+.friendship-container {
+    padding: 20px;
+    color: var(--text-primary);
+    background: var(--background);
+    transition: all 0.3s ease;
+}
+
+.friendship-container h2 {
+    color: var(--text-primary);
+    transition: color 0.3s ease;
+}
+
+.friendship-container h3 {
+    color: var(--text-primary);
+    margin-top: 24px;
+    margin-bottom: 12px;
+    font-size: 18px;
+    transition: color 0.3s ease;
+}
+
+.friendship-search-section {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.friendship-search-input {
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid var(--border-light);
+    background: var(--surface);
+    color: var(--text-primary);
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.friendship-search-input::placeholder {
+    color: var(--text-secondary);
+}
+
+.friendship-search-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(255, 139, 102, 0.1);
+}
+
+.friendship-refresh-btn {
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    border: 1px solid var(--border-light);
+    background: var(--surface);
+    color: var(--text-primary);
+    font-weight: 500;
+    transition: all 0.2s ease;
+    box-shadow: none;
+}
+
+.friendship-refresh-btn:hover {
+    background: var(--hover-bg);
+    border-color: var(--primary-color);
+    transform: translateY(-1px);
+}
+
+.friendship-refresh-btn:active {
+    transform: translateY(0);
+}
+
+.friendship-loading,
+.friendship-empty {
+    color: var(--text-secondary);
+    padding: 12px;
+    transition: color 0.3s ease;
+}
+
+.friendship-error {
+    color: white;
+    background: var(--error);
+    margin-bottom: 12px;
+    padding: 12px;
+    border-radius: 4px;
+    border: 1px solid var(--error);
+    transition: all 0.3s ease;
+}
+
+.friendship-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.friendship-empty-item {
+    padding: 12px;
+    color: var(--text-secondary);
+    transition: color 0.3s ease;
+}
+
+.friendship-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px;
+    border-bottom: 1px solid var(--border-light);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    background: var(--surface);
+    transition: all 0.2s ease;
+}
+
+.friendship-item:hover {
+    box-shadow: var(--shadow-sm);
+    background: var(--hover-bg);
+}
+
+.friendship-user-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.2s ease;
+}
+
+.friendship-user-link:hover {
+    color: var(--primary-color);
+}
+
+.friendship-user-info {
+    flex: 1;
+}
+
+.friendship-user-name {
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-primary);
+    transition: color 0.3s ease;
+}
+
+.friendship-user-email {
+    font-size: 12px;
+    color: var(--text-secondary);
+    transition: color 0.3s ease;
+}
+
+.friendship-user-status {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+    transition: color 0.3s ease;
+}
+
+.friendship-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.friendship-btn {
+    padding: 6px 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    border: 1px solid var(--border-light);
+    background: var(--surface);
+    color: var(--text-primary);
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    box-shadow: none;
+}
+
+.friendship-btn:hover:not(:disabled) {
+    background: var(--hover-bg);
+    border-color: var(--primary-color);
+    transform: translateY(-1px);
+}
+
+.friendship-btn:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.friendship-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.friendship-btn--primary {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.friendship-btn--primary:hover:not(:disabled) {
+    background: var(--primary-dark);
+    border-color: var(--primary-dark);
+    box-shadow: var(--shadow-sm);
+}
+
+.friendship-btn--secondary {
+    background: var(--surface);
+    color: var(--text-primary);
+}
+
+.friendship-btn--secondary:hover:not(:disabled) {
+    background: var(--hover-bg);
+    border-color: var(--primary-light);
+}
+
+.friendship-btn--danger {
+    background: var(--error);
+    color: white;
+    border-color: var(--error);
+}
+
+.friendship-btn--danger:hover:not(:disabled) {
+    background: var(--error);
+    opacity: 0.9;
+    box-shadow: var(--shadow-sm);
+}

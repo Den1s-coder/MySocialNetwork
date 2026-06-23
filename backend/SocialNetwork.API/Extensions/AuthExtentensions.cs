@@ -29,13 +29,30 @@ namespace SocialNetwork.API.Extensions
                 {
                     OnMessageReceived = context =>
                     {
-                        var accessToken = context.Request.Query["access_token"];
+                        var accessToken = context.Request.Query["access_token"].FirstOrDefault();
                         var path = context.HttpContext.Request.Path;
 
-                        if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/chatHub"))
+                        if (!string.IsNullOrEmpty(accessToken))
                         {
-                            context.Token = accessToken;
+                            if (path.StartsWithSegments("/chatHub", StringComparison.OrdinalIgnoreCase) ||
+                                path.StartsWithSegments("/notificationHub", StringComparison.OrdinalIgnoreCase))
+                            {
+                                context.Token = accessToken;
+                            }
                         }
+
+                        return Task.CompletedTask;
+                    },
+                    OnAuthenticationFailed = context =>
+                    {
+                        try
+                        {
+                            var loggerFactory = context.HttpContext.RequestServices.GetService(typeof(Microsoft.Extensions.Logging.ILoggerFactory)) as Microsoft.Extensions.Logging.ILoggerFactory;
+                            var logger = loggerFactory?.CreateLogger("JwtBearer");
+                            logger?.LogWarning(context.Exception, "JWT authentication failed during OnMessageReceived for path {Path}", context.Request.Path);
+                        }
+                        catch { }
+
                         return Task.CompletedTask;
                     }
                 };

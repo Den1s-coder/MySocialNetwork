@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
-using SocialNetwork.Application.DTO;
-using SocialNetwork.Domain.Entities;
+using SocialNetwork.Application.DTO.Auth;
+using SocialNetwork.Application.DTO.Users;
+using SocialNetwork.Domain.Entities.Users;
 
 namespace SocialNetwork.Application.Mappings
 {
@@ -20,6 +21,7 @@ namespace SocialNetwork.Application.Mappings
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
                 .ForMember(dest => dest.ProfilePictureUrl, opt => opt.MapFrom(src => src.ProfilePictureUrl))
                 .ForMember(dest => dest.IsBanned, opt => opt.MapFrom(src => src.IsBanned))
+                .ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.Role.ToString()))
                 .ReverseMap();
         }
     }

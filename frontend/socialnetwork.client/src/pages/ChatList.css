@@ -1,0 +1,179 @@
+.chatlist-container {
+    max-width: 800px;
+    margin: 24px auto;
+    padding: 0 12px;
+    color: var(--text-primary);
+    background: var(--background);
+    transition: all 0.3s ease;
+}
+
+.chatlist-container h2 {
+    color: var(--text-primary);
+    transition: color 0.3s ease;
+}
+
+.chatlist-container h3 {
+    color: var(--text-primary);
+    font-size: 18px;
+    margin-top: 24px;
+    margin-bottom: 12px;
+    transition: color 0.3s ease;
+}
+
+.chatlist-section {
+    margin-bottom: 32px;
+}
+
+.chatlist-loading,
+.chatlist-empty,
+.chatlist-auth,
+.chatlist-description {
+    color: var(--text-secondary);
+    transition: color 0.3s ease;
+}
+
+.chatlist-error {
+    color: white;
+    background: var(--error);
+    padding: 12px;
+    border-radius: 4px;
+    margin-bottom: 16px;
+    border: 1px solid var(--error);
+    transition: all 0.3s ease;
+}
+
+.chatlist-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.chatlist-item {
+    margin-bottom: 8px;
+}
+
+.chatlist-link {
+    display: block;
+    padding: 12px;
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+    text-decoration: none;
+    color: inherit;
+    background: var(--surface);
+    transition: all 0.2s ease;
+}
+
+.chatlist-link:hover {
+    box-shadow: var(--shadow-sm);
+    border-color: var(--primary-color);
+    background: var(--hover-bg);
+}
+
+.chatlist-item-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.chatlist-item-title {
+    font-weight: bold;
+    color: var(--text-primary);
+    transition: color 0.3s ease;
+}
+
+.chatlist-item-type {
+    font-size: 12px;
+    color: var(--text-secondary);
+    transition: color 0.3s ease;
+    margin-top: 6px;
+}
+
+.chatlist-participants {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+}
+
+.chatlist-participant-tag {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px;
+    background: var(--hover-bg);
+    border-radius: 4px;
+    font-size: 13px;
+    color: var(--text-primary);
+    border: 1px solid var(--border-light);
+    transition: all 0.2s ease;
+}
+
+.chatlist-participant-tag:hover {
+    background: var(--border-light);
+}
+
+.chatlist-search-input {
+    width: 100%;
+    padding: 10px 12px;
+    margin-bottom: 12px;
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--text-primary);
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.chatlist-search-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.1);
+}
+
+.chatlist-btn {
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    border: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    width: 100%;
+    margin-bottom: 8px;
+    box-shadow: none;
+}
+
+.chatlist-btn:last-child {
+    margin-bottom: 0;
+}
+
+.chatlist-btn--primary {
+    background: var(--primary-color);
+    color: white;
+    display: block;
+    padding: 12px;
+}
+
+.chatlist-btn--primary:hover {
+    background: var(--primary-dark);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+}
+
+.chatlist-btn--secondary {
+    background: var(--surface);
+    color: var(--text-primary);
+    border: 1px solid var(--border-light);
+}
+
+.chatlist-btn--secondary:hover {
+    background: var(--hover-bg);
+    border-color: var(--primary-color);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+}
+
+.chatlist-users {
+    display: grid;
+    gap: 8px;
+}
