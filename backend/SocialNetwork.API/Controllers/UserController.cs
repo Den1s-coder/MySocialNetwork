@@ -55,17 +55,17 @@ namespace SocialNetwork.API.Controllers
             return Ok(user);
         }
 
-        [HttpGet("users/{userId:guid}")]
-        public async Task<IActionResult> GetUserById(Guid userId, CancellationToken cancellationToken = default)
+        [HttpGet("by-email")]
+        public async Task<IActionResult> GetByEmail([FromQuery] string email, CancellationToken cancellationToken = default)
         {
-            var user = await _userService.GetByIdAsync(userId, cancellationToken);
+            var user = await _userService.GetByEmailAsync(email, cancellationToken);
             return Ok(user);
         }
 
-        [HttpGet("by-name/{userName}")]
-        public async Task<IActionResult> GetUserByName(string userName, CancellationToken cancellationToken = default)
+        [HttpGet("by-username")]
+        public async Task<IActionResult> GetByUserName([FromQuery] string username, CancellationToken cancellationToken = default)
         {
-            var user = await _userService.GetByUserNameAsync(userName, cancellationToken);
+            var user = await _userService.GetByUserNameAsync(username, cancellationToken);
             return Ok(user);
         }
 
