@@ -289,7 +289,7 @@ export default function NavBar() {
                         {isAuthenticated ? (
                             <>
                                 <div className="notification-area" style={{ marginRight: 12 }}>
-                                    <NotificationBell apiBase="https://localhost:7142" />
+                                    <NotificationBell apiBase={import.meta.env.VITE_API_BASE || ''} />
                                 </div>
 
                                 <ThemeToggle />
