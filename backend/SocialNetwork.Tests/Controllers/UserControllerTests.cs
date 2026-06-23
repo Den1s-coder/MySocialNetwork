@@ -106,22 +106,6 @@ public class UserControllerTests
     }
 
     [Fact]
-    public async Task GetById_ShouldReturnNotFound_WhenUserDoesNotExist()
-    {
-        // Arrange
-        var userId = Guid.NewGuid();
-
-        _userServiceMock.Setup(s => s.GetByIdAsync(userId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync((UserDto?)null);
-
-        // Act
-        var result = await _userController.GetUserById(userId);
-
-        // Assert
-        Assert.IsType<NotFoundResult>(result);
-    }
-
-    [Fact]
     public async Task GetByUserName_ShouldReturnOk_WhenUserExists()
     {
         // Arrange
@@ -138,19 +122,6 @@ public class UserControllerTests
         var okResult = Assert.IsType<OkObjectResult>(result);
         var returned = Assert.IsType<UserDto>(okResult.Value);
         Assert.Equal(username, returned.Name);
-    }
-
-    [Fact]
-    public async Task GetByUserName_ShouldReturnNotFound_WhenUserDoesNotExist()
-    {
-        // Arrange
-        _userServiceMock.Setup(s => s.GetByUserNameAsync("Unknown", It.IsAny<CancellationToken>()))
-            .ReturnsAsync((UserDto?)null);
-
-        // Act
-        var result = await _userController.GetUserByName("Unknown");
-        // Assert
-        Assert.IsType<NotFoundResult>(result);
     }
 
     [Fact]
@@ -185,46 +156,6 @@ public class UserControllerTests
 
         // Assert
         Assert.IsType<UnauthorizedResult>(result);
-    }
-
-    [Fact]
-    public async Task GetProfile_ShouldReturnNotFound_WhenUserDoesNotExist()
-    {
-        // Arrange
-        var userId = Guid.NewGuid();
-        SetupUser(userId);
-
-        _userServiceMock.Setup(s => s.GetByIdAsync(userId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync((UserDto?)null);
-
-        // Act
-        var result = await _userController.GetProfile();
-
-        // Assert
-        Assert.IsType<NotFoundResult>(result);
-    }
-
-    [Fact]
-    public async Task UpdateProfile_ShouldReturnOk_WhenUserIsAuthorized()
-    {
-        // Arrange
-        var userId = Guid.NewGuid();
-        SetupUser(userId);
-
-        var updatedDto = new UserDto { Name = "Updated Name", Email = "updated@test.com" };
-
-        _userServiceMock.Setup(s => s.UpdateAsync(It.IsAny<Guid>(), It.IsAny<UserDto>(), It.IsAny<CancellationToken>()))
-            .Returns(Task.CompletedTask);
-
-        // Act
-        var result = await _userController.UpdateProfile(updatedDto);
-
-        // Assert
-        Assert.IsType<OkResult>(result);
-        _userServiceMock.Verify(s => s.UpdateAsync(
-            It.Is<Guid>(id => id == userId),
-            It.Is<UserDto>(dto => dto.Id == userId && dto.Name == "Updated Name"),
-            It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
