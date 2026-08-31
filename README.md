@@ -19,6 +19,8 @@ Backend part of a social network built on .NET 8 using Clean Architecture princi
 - [Database](#database)
 - [Authentication](#authentication)
 - [Real-time Chat](#real-time-chat)
+- [CI/CD](#cicd)
+- [Current Application Version](#current-application-version)
 
 ## 🎯 Project Description
 
@@ -28,7 +30,6 @@ This project is the backend part of a social network that provides APIs for mana
 
 The project uses Clean Architecture with the following layers:
 
-```
 📁 SocialNetwork.API (Presentation Layer)
 ├── Controllers/ - API Controllers
 ├── Hubs/ - SignalR Hubs for real-time communication
@@ -51,7 +52,6 @@ The project uses Clean Architecture with the following layers:
 ├── Configurations/ - EF Core configurations
 ├── Security/ - JWT providers
 └── SocialDbContext.cs - Database context
-```
 
 ## 🛠️ Technologies
 
@@ -94,6 +94,8 @@ The project uses Clean Architecture with the following layers:
 - .NET 8 SDK
 - SQL Server (local or Azure)
 - Visual Studio 2022 or VS Code
+- Node.js and npm (for frontend)
+- Google OAuth credentials and Azure Blob Storage (if needed)
 
 ### Installation Steps
 
@@ -101,12 +103,12 @@ The project uses Clean Architecture with the following layers:
 ```bash
 git clone <repository-url>
 cd SocialNetwork_Server
-```
+``` 
 
-2. **Install dependencies**
+2. **Install backend dependencies**
 ```bash
 dotnet restore
-```
+``` 
 
 3. **Configure database**
    - Update connection string in `appsettings.json`:
@@ -114,19 +116,55 @@ dotnet restore
    "ConnectionStrings": {
      "DefaultConnection": "Data Source=YOUR_SERVER;Initial Catalog=SocialNetworkDb;Integrated Security=True;TrustServerCertificate=True"
    }
-   ```
+   ``` 
 
 4. **Apply migrations**
 ```bash
 dotnet ef database update --project SocialNetwork.Infrastructure --startup-project SocialNetwork.API
-```
+``` 
 
-5. **Run the application**
+5. **Run the backend application**
 ```bash
 dotnet run --project SocialNetwork.API
-```
+``` 
 
 The application will be available at: `https://localhost:7000`
+
+### Running the Frontend Client
+
+1. **Navigate to the frontend directory**
+```bash
+cd frontend/socialnetwork.client
+``` 
+
+2. **Install frontend dependencies**
+```bash
+npm install
+``` 
+
+3. **Run the frontend application**
+```bash
+npm run dev
+``` 
+
+You can set the API URL in the `.env.local` file:
+```
+VITE_API_BASE=https://localhost:7000
+```
+
+### Running Tests
+
+To run the tests, execute:
+```bash
+dotnet test backend/SocialNetwork.Tests/SocialNetwork.Tests.csproj
+``` 
+
+### Database Migrations
+
+Migrations are stored in `backend/SocialNetwork.Infrastructure/Migrations`. To apply the latest schema, run:
+```bash
+dotnet ef database update --project backend/SocialNetwork.Infrastructure --startup-project backend/SocialNetwork.API
+``` 
 
 ## 📚 API Documentation
 
@@ -159,28 +197,16 @@ After running the application, Swagger documentation is available at:
 ## 📁 Project Structure
 
 ```
-SocialNetwork_Server/
-├── SocialNetwork.API/                 # Web API project
-│   ├── Controllers/                   # API Controllers
-│   ├── Hubs/                         # SignalR Hubs
-│   ├── Middleware/                   # Custom middleware
-│   ├── Extensions/                   # Extensions
-│   └── Program.cs                    # Entry point
-├── SocialNetwork.Application/         # Business logic
-│   ├── DTO/                         # Data Transfer Objects
-│   ├── Interfaces/                  # Service contracts
-│   ├── Service/                     # Service implementations
-│   └── Mappings/                    # AutoMapper profiles
-├── SocialNetwork.Domain/             # Domain layer
-│   ├── Entities/                    # Domain models
-│   ├── Enums/                       # Enumerations
-│   └── Interfaces/                  # Domain contracts
-├── SocialNetwork.Infrastructure/     # Infrastructure layer
-│   ├── Repos/                       # Repositories
-│   ├── Configurations/              # EF Core configurations
-│   ├── Security/                    # JWT providers
-│   └── SocialDbContext.cs           # Database context
-└── SocialNetwork.Tests/             # Tests
+MySocialNetwork/
+├── backend/
+│   ├── SocialNetwork.API/                 # Web API project
+│   ├── SocialNetwork.Application/         # Business logic
+│   ├── SocialNetwork.Domain/             # Domain layer
+│   ├── SocialNetwork.Infrastructure/     # Infrastructure layer
+│   └── SocialNetwork.Tests/             # Tests
+└── frontend/
+    ├── socialnetwork.client/             # React client
+    └── SocialNetwork.mobile/              # Mobile client
 ```
 
 ## 🗄️ Database
@@ -231,6 +257,67 @@ The project uses the built-in .NET logging system with different levels:
 - **Information** - General information
 - **Warning** - Warnings
 - **Error** - Errors
+
+## 🗳️ CI/CD
+
+For automating the verification and delivery of changes, it is recommended to use a CI/CD pipeline. The repository does not contain configurations for a specific CI provider, so the steps below describe the necessary process regardless of the platform.
+
+### Continuous Integration
+
+For each pull request and push to the main branch, the pipeline should execute:
+
+1. Restore backend dependencies.
+2. Build all projects on `.NET 8`.
+3. Run tests in `SocialNetwork.Tests`.
+4. Install frontend dependencies using `npm ci`.
+5. Lint the frontend using `npm run lint`.
+6. Build the frontend for production using `npm run build`.
+
+Example CI commands:
+```bash
+dotnet restore
+dotnet build --configuration Release --no-restore
+dotnet test backend/SocialNetwork.Tests/SocialNetwork.Tests.csproj --configuration Release --no-build
+
+cd frontend/socialnetwork.client
+npm ci
+npm run lint
+npm run build
+```
+
+### Continuous Delivery/Deployment
+
+After successful completion of CI, you can deploy the backend, frontend, and database to the target environment. Before deployment, ensure to configure secrets and environment variables for the connection string, JWT, Google OAuth, Azure Blob Storage, and `VITE_API_BASE`.
+
+Entity Framework Core migrations should be applied carefully during deployment:
+```bash
+dotnet ef database update --project backend/SocialNetwork.Infrastructure --startup-project backend/SocialNetwork.API
+```
+
+### Current Stack
+
+- Backend: `.NET 8`, ASP.NET Core Web API, Clean Architecture.
+- Data: SQL Server, Entity Framework Core `9.0.8`.
+- Authentication: JWT Bearer and Google Authentication.
+- Real-time: ASP.NET Core SignalR for chats and notifications.
+- API Documentation: Swagger/OpenAPI.
+- Web: React `19`, Vite `7`, React Router `7`.
+- File Storage: Azure Blob Storage.
+
+### Implemented Features
+
+- User registration and login via JWT.
+- Google login integration.
+- User profiles, roles, banning, and access management.
+- Posts, comments, and reactions.
+- Friends and user search functionality.
+- Private, group chats, and channels.
+- Real-time messaging via SignalR.
+- Real-time notifications.
+- Uploading avatars and other files to Azure Blob Storage.
+- Light and dark themes for the web client.
+- Emoji support in messages.
+- Swagger UI for API testing.
 
 ## 📝 License
 
